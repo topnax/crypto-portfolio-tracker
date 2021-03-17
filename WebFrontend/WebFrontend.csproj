@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="MatBlazor" Version="2.8.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.4" />
+    <PackageReference Include="SqlKata" Version="2.3.2" />
+    <PackageReference Include="SqlKata.Execution" Version="2.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CryptoStatsSource\CryptoStatsSource.csproj" />
+    <ProjectReference Include="..\Repository\Repository.csproj" />
   </ItemGroup>
 
 </Project>

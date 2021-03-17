@@ -1,17 +1,14 @@
+using System.Net.Http;
+using CryptoStatsSource;
+using Database;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ServerSideBlazor.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using CryptoStatsSource;
+using SqlKata.Compilers;
 
 namespace WebFrontend
 {
@@ -32,8 +29,13 @@ namespace WebFrontend
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-            
+
+
             services.AddScoped<ICryptoStatsSource, CoingeckoSource>();
+
+            // TODO ensure that SqlKataDatabase gets disposed
+            var dbConnection = new SqliteConnection("Data Source=data.db");
+            services.AddSingleton(ctx => new SqlKataDatabase(dbConnection, new SqliteCompiler()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
