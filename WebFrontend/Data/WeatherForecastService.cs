@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ServerSideBlazor.Data
 {
-    public class WeatherForecastService
+    public class WeatherForecastService: IDisposable
     {
         private static readonly string[] Summaries = new[]
         {
@@ -22,6 +22,11 @@ namespace ServerSideBlazor.Data
                 TemperatureC = rng.Next(-20, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             }).ToArray();
+        }
+
+        public void Dispose()
+        {
+            Console.WriteLine("Disposin foreccast...");
         }
     }
 }

@@ -14,14 +14,16 @@ namespace Database
         {
             _dbConnection = dbConnection;
             _queryFactory = new(dbConnection, compiler);
-
+            
             Console.WriteLine("SqlKataDatabase constructor invoked");
+            SqlSchema.Init(this);
         }
 
         public QueryFactory Get() => _queryFactory;
 
         public void Dispose()
         {
+            // TODO check whether dispose is called
             Console.WriteLine("Disposing SqlKataDatabase");
             _dbConnection.Close();
         }

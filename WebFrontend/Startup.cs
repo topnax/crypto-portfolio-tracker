@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using CryptoStatsSource;
 using Database;
@@ -7,6 +8,8 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Model;
+using Repository;
 using ServerSideBlazor.Data;
 using SqlKata.Compilers;
 
@@ -35,7 +38,15 @@ namespace WebFrontend
 
             // TODO ensure that SqlKataDatabase gets disposed
             var dbConnection = new SqliteConnection("Data Source=data.db");
-            services.AddSingleton(ctx => new SqlKataDatabase(dbConnection, new SqliteCompiler()));
+            var db = new SqlKataDatabase(dbConnection, new SqliteCompiler());
+            var portfolioRepository = new SqlKataPortfolioRepository(db);
+            portfolioRepository.Add(new Portfolio("My portfolio", "ADA holdings"));
+            foreach (var portfolio in portfolioRepository.All())
+            {
+                Console.WriteLine($"{portfolio.Name} - {portfolio.Description}"); 
+            }
+            dbConnection.Close();
+            services.AddSingleton(ctx => db);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

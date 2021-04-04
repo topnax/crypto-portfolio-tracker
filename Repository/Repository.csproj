@@ -13,7 +13,10 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="5.0.4" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
       <PackageReference Include="SqlKata.Execution" Version="2.3.2" />
+      <PackageReference Include="xunit.assert" Version="2.4.1" />
+      <PackageReference Include="xunit.core" Version="2.4.1" />
     </ItemGroup>
 
 </Project>
