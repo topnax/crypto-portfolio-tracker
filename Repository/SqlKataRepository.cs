@@ -23,14 +23,10 @@ namespace Repository
 
         protected abstract int _getEntryId(T entry);
 
-        public void Add(T entry)
+        public int Add(T entry)
         {
             var id = Db.Get().Query(_tableName).InsertGetId<int>(ToRow(entry));
-
-            Console.WriteLine($"added! {id}");
-            Db.Get().Query(_tableName).AsInsert(ToRow(entry)).Get();
-            id = Db.Get().Query(_tableName).InsertGetId<int>(ToRow(entry));
-            Console.WriteLine($"added! {id}");
+            return id;
         }
 
         public void Update(T entry)
@@ -43,13 +39,23 @@ namespace Repository
             Db.Get().Query(_tableName).Where("id", _getEntryId(entry)).AsDelete();
         }
 
+        public T Get(int id)
+        {
+            var result = Db.Get().Query(_tableName).Where("id", id).First();
+            if (result == null)
+            {
+                return default;
+            }
+
+            return FromRow(result);
+        }
+
         public List<T> All()
         {
             List<T> items = new List<T>();
             foreach (var row in Db.Get().Query(_tableName).Select().Get())
             {
                 items.Add(FromRow(row));
-                
             }
 
             return items;

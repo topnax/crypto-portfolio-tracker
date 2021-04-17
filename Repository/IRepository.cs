@@ -6,7 +6,9 @@ namespace Repository
     {
         public object ToRow(T entry);
 
-        public void Add(T entry);
+        public int Add(T entry);
+
+        public T Get(int id);
 
         public void Update(T entry);
 

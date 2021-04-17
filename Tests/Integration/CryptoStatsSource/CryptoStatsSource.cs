@@ -1,6 +1,7 @@
+using CryptoStatsSource;
 using Xunit;
 
-namespace CryptoStatsSource.Tests
+namespace Tests.Integration.CryptoStatsSource
 {
     public class GetMarketEntriesTest
     {
@@ -22,7 +23,7 @@ namespace CryptoStatsSource.Tests
         {
             var entries = await _source.GetMarketEntries("usd", "bitcoin");
 
-            Assert.Equal(1, entries.Count);
+            Assert.Single(entries);
             Assert.Equal("btc", entries[0].Symbol);
             // 🙏🏻 
             Assert.True(entries[0].CurrentPrice > 10000);
