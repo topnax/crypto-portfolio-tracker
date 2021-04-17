@@ -23,6 +23,16 @@ namespace Repository
             portfolio_entrY_id = entry.PortfolioEntryId,
         };
 
-        public override MarketOrder FromRow(dynamic d) => new(Currency.Czk, 0, 0, 0, DateTime.Now, true, 0, 0);
+        public override MarketOrder FromRow(dynamic d)
+        {
+            bool parsed = Enum.TryParse(d.currency, out Currency currency);
+            if (!parsed)
+            {
+                throw new SqlKataRepositoryException($"Failed to parse currency {d.currency}");
+            }
+
+            return new(currency, d.filled_price, d.fee, d.size, Utils.Utils.UnixTimeStampToDateTime(d.date), d.buy > 0,
+                0, 0);
+        }
     }
 }

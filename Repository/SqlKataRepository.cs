@@ -29,14 +29,17 @@ namespace Repository
             return id;
         }
 
-        public void Update(T entry)
+        public bool Update(T entry)
         {
-            Db.Get().Query(_tableName).Where("id", _getEntryId(entry)).AsUpdate(ToRow(entry));
+            var updated = Db.Get().Query(_tableName).Where("id", _getEntryId(entry)).Update(ToRow(entry));
+            return updated > 0;
         }
 
-        public void Delete(T entry)
+        public bool Delete(T entry)
         {
             Db.Get().Query(_tableName).Where("id", _getEntryId(entry)).AsDelete();
+            // TODO
+            return true;
         }
 
         public T Get(int id)
@@ -59,6 +62,13 @@ namespace Repository
             }
 
             return items;
+        }
+    }
+
+    public class SqlKataRepositoryException : Exception
+    {
+        public SqlKataRepositoryException(string message) : base(message)
+        {
         }
     }
 }

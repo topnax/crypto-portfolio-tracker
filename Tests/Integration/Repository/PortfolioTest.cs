@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using Database;
 using Microsoft.Data.Sqlite;
 using Model;
@@ -27,11 +28,11 @@ namespace Tests.Integration.Repository
         }
     }
 
-    public class UnitTest1 : IClassFixture<SqlKataPortfolioRepositoryFixture>
+    public class PortfolioTest : IClassFixture<SqlKataPortfolioRepositoryFixture>
     {
         private SqlKataPortfolioRepositoryFixture _portfolioFixture;
 
-        public UnitTest1(SqlKataPortfolioRepositoryFixture portfolioFixture)
+        public PortfolioTest(SqlKataPortfolioRepositoryFixture portfolioFixture)
         {
             this._portfolioFixture = portfolioFixture;
         }
@@ -68,5 +69,32 @@ namespace Tests.Integration.Repository
             Assert.True(id > 0);
             Assert.Equal(portfolio, loaded);
         }
+        
+        [Fact]
+        public void AddUpdate_Updates()
+        {
+            // arrange
+            var template = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet");
+
+            // act
+            int firstId = _portfolioFixture.PortfolioRepository.Add(template);
+            int secondId = _portfolioFixture.PortfolioRepository.Add(template);
+            var secondPortfolio = template with
+            {
+                Id = secondId
+            };
+            var firstPortfolio = template with
+            {
+                // update the first entry
+                Id = firstId,
+                // change it's name
+                Name = "Foo Portfolio"
+            };
+            _portfolioFixture.PortfolioRepository.Update(firstPortfolio);
+            
+            Assert.Equal(firstPortfolio, _portfolioFixture.PortfolioRepository.Get(firstPortfolio.Id));
+            Assert.Equal(secondPortfolio, _portfolioFixture.PortfolioRepository.Get(secondPortfolio.Id));
+        }
+
     }
 }

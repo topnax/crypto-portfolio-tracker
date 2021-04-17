@@ -17,6 +17,6 @@ namespace Repository
             portfolio_id = entry.PortfolioId
         };
         
-        public override PortfolioEntry FromRow(dynamic d) => new(d.symbol, d.portfolio_entry_id, d.id);
+        public override PortfolioEntry FromRow(dynamic d) => new((string) d.symbol, (int) d.portfolio_id, (int) d.id);
     }
 }

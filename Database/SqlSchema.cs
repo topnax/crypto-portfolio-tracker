@@ -18,7 +18,7 @@ namespace Database
                    id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                    symbol       TEXT NOT NULL,
                    portfolio_id INTEGER NOT NULL,
-                   FOREIGN KEY(portfolio_id) REFERENCES portfolios(portfolio_id)
+                   FOREIGN KEY(portfolio_id) REFERENCES portfolios(id)
                 );
 
                 CREATE TABLE IF NOT EXISTS market_orders (
@@ -30,7 +30,7 @@ namespace Database
                    date         INTEGER NOT NULL,
                    buy          INTEGER NOT NULL,
                    portfolio_entry_id INTEGER NOT NULL,
-                   FOREIGN KEY(portfolio_entry_id) REFERENCES portfolio_entries(portfolio_entry_id)
+                   FOREIGN KEY(portfolio_entry_id) REFERENCES portfolio_entries(id)
                 );
 
             ");

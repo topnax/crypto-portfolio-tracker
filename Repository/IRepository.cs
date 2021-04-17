@@ -10,9 +10,9 @@ namespace Repository
 
         public T Get(int id);
 
-        public void Update(T entry);
+        public bool Update(T entry);
 
-        public void Delete(T entry);
+        public bool Delete(T entry);
     }
 
     public interface IMarketOrderRepository : IRepository<MarketOrder>
