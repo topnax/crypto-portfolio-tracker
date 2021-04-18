@@ -2,8 +2,11 @@
 
 namespace Utils
 {
-    public static class Utils
+    public static class DateUtils
     {
+        /**
+         * Converts unix timestamp to a DateTime object
+         */
         public static DateTime UnixTimeStampToDateTime(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch

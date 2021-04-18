@@ -26,7 +26,7 @@ namespace ServerSideBlazor.Data
 
         public void Dispose()
         {
-            Console.WriteLine("Disposin foreccast...");
+            Console.WriteLine("Disposing forecast...");
         }
     }
 }

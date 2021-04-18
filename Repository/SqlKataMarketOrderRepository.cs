@@ -31,7 +31,7 @@ namespace Repository
                 throw new SqlKataRepositoryException($"Failed to parse currency {d.currency}");
             }
 
-            return new(currency, d.filled_price, d.fee, d.size, Utils.Utils.UnixTimeStampToDateTime(d.date), d.buy > 0,
+            return new(currency, d.filled_price, d.fee, d.size, Utils.DateUtils.UnixTimeStampToDateTime(d.date), d.buy > 0,
                 0, 0);
         }
     }

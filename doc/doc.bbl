@@ -1,0 +1,127 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.1 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{blockfolio2021}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=89a1b717c5e8f0cb16e9b8388e11a2bd}{%
+           family={Blockfolio},
+           familyi={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \strng{fullhash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \strng{bibnamehash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \strng{authorbibnamehash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \strng{authornamehash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \strng{authorfullhash}{89a1b717c5e8f0cb16e9b8388e11a2bd}
+      \field{sortinit}{B}
+      \field{sortinithash}{8de16967003c7207dae369d874f1456e}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Blockfolio}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://blockfolio.com/
+      \endverb
+      \verb{url}
+      \verb https://blockfolio.com/
+      \endverb
+    \endentry
+    \entry{coingecko2021}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=1202803dd40117b7ca17ee60fee464bc}{%
+           family={Coingecko},
+           familyi={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{1202803dd40117b7ca17ee60fee464bc}
+      \strng{fullhash}{1202803dd40117b7ca17ee60fee464bc}
+      \strng{bibnamehash}{1202803dd40117b7ca17ee60fee464bc}
+      \strng{authorbibnamehash}{1202803dd40117b7ca17ee60fee464bc}
+      \strng{authornamehash}{1202803dd40117b7ca17ee60fee464bc}
+      \strng{authorfullhash}{1202803dd40117b7ca17ee60fee464bc}
+      \field{sortinit}{C}
+      \field{sortinithash}{4c244ceae61406cdc0cc2ce1cb1ff703}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{CoinGecko}
+      \field{title}{Cryptocurrency Prices and Market Capitalization}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://www.coingecko.com/en
+      \endverb
+      \verb{url}
+      \verb https://www.coingecko.com/en
+      \endverb
+    \endentry
+    \entry{delta2021}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=db1f4ab5845def61a83d5df13e0c2397}{%
+           family={Delta},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{db1f4ab5845def61a83d5df13e0c2397}
+      \strng{fullhash}{db1f4ab5845def61a83d5df13e0c2397}
+      \strng{bibnamehash}{db1f4ab5845def61a83d5df13e0c2397}
+      \strng{authorbibnamehash}{db1f4ab5845def61a83d5df13e0c2397}
+      \strng{authornamehash}{db1f4ab5845def61a83d5df13e0c2397}
+      \strng{authorfullhash}{db1f4ab5845def61a83d5df13e0c2397}
+      \field{sortinit}{D}
+      \field{sortinithash}{c438b3d5d027251ba63f5ed538d98af5}
+      \field{labelnamesource}{author}
+      \field{journaltitle}{Investment Tracker for Crypto, Stocks &amp; Investments}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://delta.app/en
+      \endverb
+      \verb{url}
+      \verb https://delta.app/en
+      \endverb
+    \endentry
+    \entry{moonitor2021}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=7e20c98c0e0c5a98dde3fd3cb6d99f61}{%
+           family={Moonitor},
+           familyi={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \strng{fullhash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \strng{bibnamehash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \strng{authorbibnamehash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \strng{authornamehash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \strng{authorfullhash}{7e20c98c0e0c5a98dde3fd3cb6d99f61}
+      \field{sortinit}{M}
+      \field{sortinithash}{2e5c2f51f7fa2d957f3206819bf86dc3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Moonitor.io}
+      \field{month}{2}
+      \field{title}{Moonitor - Cryptocurrency Portfolio tracker on Desktop (macOS/Win/Linux)}
+      \field{year}{2021}
+      \verb{urlraw}
+      \verb https://moonitor.io/
+      \endverb
+      \verb{url}
+      \verb https://moonitor.io/
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

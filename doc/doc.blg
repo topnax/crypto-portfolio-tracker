@@ -1,0 +1,18 @@
+[0] Config.pm:304> INFO - This is Biber 2.14 (beta)
+[0] Config.pm:307> INFO - Logfile is 'doc.blg'
+[70] biber:322> INFO - === Ne dub 18, 2021, 23:43:20
+[82] Biber.pm:415> INFO - Reading 'doc.bcf'
+[147] Biber.pm:943> INFO - Found 4 citekeys in bib section 0
+[162] Biber.pm:4256> INFO - Processing section 0
+[162] Utils.pm:75> INFO - Globbing data source 'literatura.bib'
+[162] Utils.pm:91> INFO - Globbed data source 'literatura.bib' to literatura.bib
+[171] Biber.pm:4455> INFO - Looking for bibtex format file 'literatura.bib' for section 0
+[171] bibtex.pm:1653> INFO - LaTeX decoding ...
+[175] bibtex.pm:1471> INFO - Found BibTeX data source 'literatura.bib'
+[198] Utils.pm:293> WARN - month field 'Feb' in entry 'moonitor2021' is not an integer - this will probably not sort properly.
+[212] UCollate.pm:68> INFO - Overriding locale 'cs-CZ' defaults 'variable = shifted' with 'variable = non-ignorable'
+[213] UCollate.pm:68> INFO - Overriding locale 'cs-CZ' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[213] Biber.pm:4084> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'cs-CZ'
+[219] bbl.pm:652> INFO - Writing 'doc.bbl' with encoding 'UTF-8'
+[221] bbl.pm:755> INFO - Output to doc.bbl
+[221] Biber.pm:128> INFO - WARNINGS: 1

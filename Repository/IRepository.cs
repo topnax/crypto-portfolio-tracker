@@ -2,6 +2,7 @@ using Model;
 
 namespace Repository
 {
+    // TODO comments
     public interface IRepository<T>
     {
         public object ToRow(T entry);

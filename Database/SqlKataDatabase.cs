@@ -5,6 +5,9 @@ using SqlKata.Execution;
 
 namespace Database
 {
+    /**
+     * Wraps over a SQL database connection and adds SqlKata extensions via QueryFactory
+     */
     public class SqlKataDatabase : IDisposable
     {
         private readonly QueryFactory _queryFactory;

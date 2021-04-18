@@ -24,10 +24,6 @@ namespace Tests.Integration.Repository
             this.PortfolioRepository = new(db);
             this.PortfolioEntryRepository = new(db);
             DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar"));
-            foreach (var portfolio in PortfolioRepository.All())
-            {
-                Console.WriteLine(portfolio);
-            }
         }
 
         public void Dispose()

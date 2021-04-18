@@ -6,6 +6,7 @@ using SqlKata.Execution;
 
 namespace Repository
 {
+    // Implements IRepository using a SqlKataDatabase
     public abstract class SqlKataRepository<T> : IRepository<T>
     {
         protected readonly SqlKataDatabase Db;
