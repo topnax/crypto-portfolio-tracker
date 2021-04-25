@@ -1,0 +1,36 @@
+[PortfolioEntry|id: int;symbol: string;name: string;portfolio_id: int]
+[MarketOrder|id: int;filledPrice: decimal;fee: decimal;size: decimal,date: datetime;buy: bool;portfolio_entry_id: int]
+[Portfolio|id: int; name: string;description: string;currencyCode: int]
+
+[Portfolio]<>-0..*>[PortfolioEntry]
+[PortfolioEntry]<>-0..*>[MarketOrder]
+
+[PortfolioRepository]
+[PortfolioEntryRepository]
+[MarketOrderRepository]
+
+[PortfolioRepository] -> [Portfolio]
+[PortfolioEntryRepository] -> [PortfolioEntry]
+[MarketOrderRepository] -> [MarketOrder]
+
+[PortfolioService|createPortfolio();updatePortfolio();deletePortfolio();getPortfolio();getAllPortfolios()]
+
+[PortfolioEntryService|addEntryTo(entry;portfolio_id: int);  updateEntry(entry);deleteEntry(entry);getPortfolioEntries(portfolio_id: int)]
+
+[MarketOrderService|addOrder(order, portfolio_entry_id: int);updateOrder(order);deleteOrder(order);getAllPortfolioEntryOrders(portfolio_entry_id: int)]
+
+[SummaryService|getMarketEntrySummary(market_entry_id: int);getPortfolioEntrySummary(portfolio_entry_summary: int);getPortfolioSummary(portfolio_id: int)]
+
+
+[CryptoStatsSource|getMarketEntries(currency, ids)]
+
+[PortfolioService] -> [PortfolioRepository]
+[PortfolioEntryService] -> [PortfolioEntryRepository]
+[MarketOrderService] -> [MarketOrderRepository]
+
+[SummaryService] -> [MarketOrderService]
+[SummaryService] -> [PortfolioEntryService]
+[SummaryService] -> [CryptoStatsSource]
+
+
+
