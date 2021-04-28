@@ -119,11 +119,18 @@ namespace Tests.Integration.Repository
             var portfolioEntry1 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
             var portfolioEntry2 = new PortfolioEntry("ada", portfolioEntryRepositoryFixture.DefaultPortfolioId);
             var portfolioEntry3 = new PortfolioEntry("ltc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
-            
+
             var portfolioEntry4 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
             var portfolioEntry5 = new PortfolioEntry("eth", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
 
             // act
+            var presumablyEmptyList =
+                portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
+                    portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var presumablyEmptyList2 =
+                portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
+                    portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+
             portfolioEntry1 = portfolioEntry1 with
             {
                 Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1)
@@ -136,7 +143,7 @@ namespace Tests.Integration.Repository
             {
                 Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3)
             };
-            
+
             portfolioEntry4 = portfolioEntry4 with
             {
                 Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry4)
@@ -147,12 +154,19 @@ namespace Tests.Integration.Repository
             };
 
             // assert
-            var loadedPortfolios = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(portfolioEntryRepositoryFixture.DefaultPortfolioId);
-            Assert.Equal(3, loadedPortfolios.Count);
+            var loadedPortfolios =
+                portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
+                    portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            
+            Assert.Empty(presumablyEmptyList);
+            Assert.Empty(presumablyEmptyList2);
+            
             Assert.Equal(new List<PortfolioEntry> {portfolioEntry1, portfolioEntry2, portfolioEntry3},
                 loadedPortfolios);
-            
-            var loadedPortfoliosSecondaryPortfolio = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+
+            var loadedPortfoliosSecondaryPortfolio =
+                portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
+                    portfolioEntryRepositoryFixture.SecondaryPortfolioId);
             Assert.Equal(2, loadedPortfoliosSecondaryPortfolio.Count);
             Assert.Equal(new List<PortfolioEntry> {portfolioEntry4, portfolioEntry5},
                 loadedPortfoliosSecondaryPortfolio);

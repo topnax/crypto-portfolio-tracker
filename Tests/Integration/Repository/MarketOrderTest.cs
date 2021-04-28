@@ -14,6 +14,7 @@ namespace Tests.Integration.Repository
         public SqlKataMarketOrderRepository MarketOrderRepository;
         private SqliteConnection _dbConnection;
         public int DefaultPortfolioEntryId;
+        public int SecondaryPortfolioEntryId;
 
         public SqlKataMarketOrderRepositoryFixture()
         {
@@ -25,6 +26,7 @@ namespace Tests.Integration.Repository
             this.MarketOrderRepository = new(db);
             var defaultPortfolioId = portfolioRepository.Add(new("Foo", "Bar", Currency.Eur));
             DefaultPortfolioEntryId = portfolioEntryRepository.Add(new("btc", defaultPortfolioId));
+            SecondaryPortfolioEntryId = portfolioEntryRepository.Add(new("ltc", defaultPortfolioId));
         }
 
         public void Dispose()
@@ -136,6 +138,77 @@ namespace Tests.Integration.Repository
 
             // assert
             Assert.Equal(marketOrder, _marketOrderRepositoryFixture.MarketOrderRepository.Get(id));
+        }
+
+        [Fact]
+        public void GetAllByPortfolioEntry_Returns_Correct_Orders()
+        {
+            // fixture unique to this test
+            var marketOrderRepositoryFixture = new SqlKataMarketOrderRepositoryFixture();
+
+            // arrange
+            var marketOrder1 = new MarketOrder(new Decimal(10000.39), 10, new Decimal(1.1), DateTime.Now, true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+            var marketOrder2 = new MarketOrder(new Decimal(11000.39), 11, new Decimal(1.2),
+                DateTime.Now.Subtract(TimeSpan.FromSeconds(3600)), true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+            var marketOrder3 = new MarketOrder(new Decimal(12000.39), 12, new Decimal(1.3),
+                DateTime.Now.Subtract(TimeSpan.FromDays(30)), false,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+
+            var marketOrder4 = new MarketOrder(new Decimal(12005.39), 15, new Decimal(12),
+                DateTime.Now.Subtract(TimeSpan.FromDays(11)), false,
+                PortfolioEntryId: marketOrderRepositoryFixture.SecondaryPortfolioEntryId);
+
+            var marketOrder5 = new MarketOrder(new Decimal(12006.39), 16, new Decimal(1.5),
+                DateTime.Now.Subtract(TimeSpan.FromDays(39)), false,
+                PortfolioEntryId: marketOrderRepositoryFixture.SecondaryPortfolioEntryId);
+
+            // act
+            var presumablyEmptyList =
+                marketOrderRepositoryFixture.MarketOrderRepository.GetAllByPortfolioEntryId(marketOrderRepositoryFixture
+                    .DefaultPortfolioEntryId);
+            var presumablyEmptyList2 =
+                marketOrderRepositoryFixture.MarketOrderRepository.GetAllByPortfolioEntryId(
+                    marketOrderRepositoryFixture.SecondaryPortfolioEntryId);
+
+            marketOrder1 = marketOrder1 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder1)
+            };
+            marketOrder2 = marketOrder2 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder2)
+            };
+            marketOrder3 = marketOrder3 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder3)
+            };
+
+            marketOrder4 = marketOrder4 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder4)
+            };
+            marketOrder5 = marketOrder5 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder5)
+            };
+
+            // assert
+            var loadedPortfolios =
+                marketOrderRepositoryFixture.MarketOrderRepository.GetAllByPortfolioEntryId(marketOrderRepositoryFixture
+                    .DefaultPortfolioEntryId);
+            Assert.Empty(presumablyEmptyList);
+            Assert.Empty(presumablyEmptyList2);
+            
+            Assert.Equal(3, loadedPortfolios.Count);
+            Assert.Equal(new List<MarketOrder> {marketOrder1, marketOrder2, marketOrder3}, loadedPortfolios);
+
+            var loadedPortfoliosSecondary =
+                marketOrderRepositoryFixture.MarketOrderRepository.GetAllByPortfolioEntryId(marketOrderRepositoryFixture
+                    .SecondaryPortfolioEntryId);
+            Assert.Equal(2, loadedPortfoliosSecondary.Count);
+            Assert.Equal(new List<MarketOrder> {marketOrder4, marketOrder5}, loadedPortfoliosSecondary);
         }
     }
 }

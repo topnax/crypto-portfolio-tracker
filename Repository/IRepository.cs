@@ -21,6 +21,7 @@ namespace Repository
 
     public interface IMarketOrderRepository : IRepository<MarketOrder>
     {
+        public List<MarketOrder> GetAllByPortfolioEntryId(int portfolioEntryId);
     }
 
     public interface IPortfolioRepository : IRepository<Portfolio>

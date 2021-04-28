@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Database;
 using Model;
+using SqlKata.Execution;
 
 namespace Repository
 {
@@ -29,5 +31,8 @@ namespace Repository
             new(Decimal.Divide(d.filled_price, 100), Decimal.Divide(d.fee, 100), Decimal.Divide(d.size, 100),
                 DateTimeOffset.FromUnixTimeSeconds((int) d.date).DateTime.ToLocalTime(), d.buy > 0,
                 (int) d.id, (int) d.portfolio_entry_id);
+
+        public List<MarketOrder> GetAllByPortfolioEntryId(int portfolioEntryId) =>
+            RowsToObjects(Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryId).Get());
     }
 }
