@@ -92,13 +92,13 @@ namespace Tests.Unit.Service
         public void Delete_CallsRepository()
         {
             // arrange
-            var entryToBeUpdated = new PortfolioEntry("btc", 1, 1);
+            var entryToBeDeleted = new PortfolioEntry("btc", 1, 1);
             var repositoryMock = new Mock<IPortfolioEntryRepository>();
             repositoryMock.Setup(x => x.Delete(It.IsAny<PortfolioEntry>())).Returns(true);
             var service = new PortfolioEntryServiceImpl(repositoryMock.Object);
 
             // act
-            var delete = service.DeletePortfolioEntry(entryToBeUpdated);
+            var delete = service.DeletePortfolioEntry(entryToBeDeleted);
 
             // assert
             Assert.True(delete);
