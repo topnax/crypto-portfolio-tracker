@@ -26,4 +26,9 @@ namespace Repository
     public interface IPortfolioRepository : IRepository<Portfolio>
     {
     }
+    
+    public interface IPortfolioEntryRepository : IRepository<PortfolioEntry>
+    {
+        public List<PortfolioEntry> GetAllByPortfolioId(int portfolioId);
+    }
 }

@@ -6,7 +6,6 @@ using Model;
 using Repository;
 using SqlKata.Compilers;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Tests.Integration.Repository
 {
@@ -39,8 +38,7 @@ namespace Tests.Integration.Repository
         private SqlKataMarketOrderRepositoryFixture _marketOrderRepositoryFixture;
 
         // TODO test Delete method
-        public MarketOrderRepositoryTest(SqlKataMarketOrderRepositoryFixture marketOrderRepositoryFixture,
-            ITestOutputHelper testOutputHelper)
+        public MarketOrderRepositoryTest(SqlKataMarketOrderRepositoryFixture marketOrderRepositoryFixture)
         {
             this._marketOrderRepositoryFixture = marketOrderRepositoryFixture;
         }
@@ -86,26 +84,37 @@ namespace Tests.Integration.Repository
         {
             // fixture unique to this test
             var marketOrderRepositoryFixture = new SqlKataMarketOrderRepositoryFixture();
-            
+
             // arrange
             var marketOrder1 = new MarketOrder(new Decimal(10000.39), 10, new Decimal(1.1), DateTime.Now, true,
                 PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
-            var marketOrder2 = new MarketOrder(new Decimal(11000.39), 11, new Decimal(1.2), DateTime.Now.Subtract(TimeSpan.FromSeconds(3600)), true,
+            var marketOrder2 = new MarketOrder(new Decimal(11000.39), 11, new Decimal(1.2),
+                DateTime.Now.Subtract(TimeSpan.FromSeconds(3600)), true,
                 PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
-            var marketOrder3 = new MarketOrder(new Decimal(12000.39), 12, new Decimal(1.3), DateTime.Now.Subtract(TimeSpan.FromDays(30)), false,
+            var marketOrder3 = new MarketOrder(new Decimal(12000.39), 12, new Decimal(1.3),
+                DateTime.Now.Subtract(TimeSpan.FromDays(30)), false,
                 PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
 
             // act
-            marketOrder1 = marketOrder1 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder1)};
-            marketOrder2 = marketOrder2 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder2)};
-            marketOrder3 = marketOrder3 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder3)};
-            
+            marketOrder1 = marketOrder1 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder1)
+            };
+            marketOrder2 = marketOrder2 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder2)
+            };
+            marketOrder3 = marketOrder3 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder3)
+            };
+
             // assert
             var loadedPortfolios = marketOrderRepositoryFixture.MarketOrderRepository.GetAll();
             Assert.Equal(3, loadedPortfolios.Count);
-            Assert.Equal(new List<MarketOrder>{marketOrder1, marketOrder2, marketOrder3}, loadedPortfolios);
+            Assert.Equal(new List<MarketOrder> {marketOrder1, marketOrder2, marketOrder3}, loadedPortfolios);
         }
-        
+
         [Fact]
         public void AddUpdate_Updates()
         {

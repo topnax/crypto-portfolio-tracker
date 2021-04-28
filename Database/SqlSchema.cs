@@ -4,6 +4,7 @@ namespace Database
 {
     public class SqlSchema
     {
+        // TODO column names into constants
         public static void Init(SqlKataDatabase db)
         {
             db.Get().Statement(@"

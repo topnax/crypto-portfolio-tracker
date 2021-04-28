@@ -15,6 +15,7 @@ namespace Tests.Integration.Repository
         public SqlKataPortfolioEntryRepository PortfolioEntryRepository;
         private SqliteConnection _dbConnection;
         public int DefaultPortfolioId;
+        public int SecondaryPortfolioId;
 
         public SqlKataPortfolioEntryRepositoryFixture()
         {
@@ -24,6 +25,7 @@ namespace Tests.Integration.Repository
             this.PortfolioRepository = new(db);
             this.PortfolioEntryRepository = new(db);
             DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar", Currency.Czk));
+            SecondaryPortfolioId = PortfolioRepository.Add(new("Bar", "Bar", Currency.Czk));
         }
 
         public void Dispose()
@@ -74,27 +76,86 @@ namespace Tests.Integration.Repository
             Assert.Equal(portfolioEntry,
                 _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(portfolioEntry.Id));
         }
-        
+
         [Fact]
         public void Added_And_GetAll_AreEqual()
         {
             // fixture unique to this test
             var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
-            
+
             // arrange
             var portfolioEntry1 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
             var portfolioEntry2 = new PortfolioEntry("ada", portfolioEntryRepositoryFixture.DefaultPortfolioId);
             var portfolioEntry3 = new PortfolioEntry("ltc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
 
             // act
-            portfolioEntry1 = portfolioEntry1 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1)};
-            portfolioEntry2 = portfolioEntry2 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry2)};
-            portfolioEntry3 = portfolioEntry3 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3)};
-            
+            portfolioEntry1 = portfolioEntry1 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1)
+            };
+            portfolioEntry2 = portfolioEntry2 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry2)
+            };
+            portfolioEntry3 = portfolioEntry3 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3)
+            };
+
             // assert
             var loadedPortfolios = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAll();
             Assert.Equal(3, loadedPortfolios.Count);
-            Assert.Equal(new List<PortfolioEntry>{portfolioEntry1, portfolioEntry2, portfolioEntry3}, loadedPortfolios);
+            Assert.Equal(new List<PortfolioEntry> {portfolioEntry1, portfolioEntry2, portfolioEntry3},
+                loadedPortfolios);
+        }
+
+        [Fact]
+        public void GetAllByPortfolioId_Returns_Correct_Entries()
+        {
+            // fixture unique to this test
+            var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
+
+            // arrange
+            var portfolioEntry1 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry2 = new PortfolioEntry("ada", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry3 = new PortfolioEntry("ltc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            
+            var portfolioEntry4 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+            var portfolioEntry5 = new PortfolioEntry("eth", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+
+            // act
+            portfolioEntry1 = portfolioEntry1 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1)
+            };
+            portfolioEntry2 = portfolioEntry2 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry2)
+            };
+            portfolioEntry3 = portfolioEntry3 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3)
+            };
+            
+            portfolioEntry4 = portfolioEntry4 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry4)
+            };
+            portfolioEntry5 = portfolioEntry5 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry5)
+            };
+
+            // assert
+            var loadedPortfolios = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            Assert.Equal(3, loadedPortfolios.Count);
+            Assert.Equal(new List<PortfolioEntry> {portfolioEntry1, portfolioEntry2, portfolioEntry3},
+                loadedPortfolios);
+            
+            var loadedPortfoliosSecondaryPortfolio = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+            Assert.Equal(2, loadedPortfoliosSecondaryPortfolio.Count);
+            Assert.Equal(new List<PortfolioEntry> {portfolioEntry4, portfolioEntry5},
+                loadedPortfoliosSecondaryPortfolio);
         }
 
         [Fact]
