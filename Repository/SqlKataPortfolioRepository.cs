@@ -15,10 +15,10 @@ namespace Repository
         {
             name = entry.Name,
             description = entry.Description,
-            currency_code = entry.CurrencyCode
+            currency_code = (int) entry.Currency
         };
 
         public override Portfolio FromRow(dynamic d) =>
-            new((string) d.name, (string) d.description, (int) d.currency_code, (int) d.id);
+            new((string) d.name, (string) d.description, (Currency) d.currency_code, (int) d.id);
     }
 }

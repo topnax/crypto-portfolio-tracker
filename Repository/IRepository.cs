@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Model;
 
 namespace Repository
@@ -10,6 +11,8 @@ namespace Repository
         public int Add(T entry);
 
         public T Get(int id);
+        
+        public List<T> GetAll();
 
         public bool Update(T entry);
 

@@ -8,7 +8,7 @@ namespace Services
 {
     public interface IPortfolioService
     {
-        Portfolio CreatePortfolio(string name, string description);
+        Portfolio CreatePortfolio(string name, string description, Currency currency);
         bool DeletePortfolio(Portfolio portfolio);
         bool UpdatePortfolio(Portfolio portfolio);
         Portfolio GetPortfolio(int id);
@@ -24,10 +24,14 @@ namespace Services
             this._portfolioRepository = portfolioRepository;
         }
 
-        public Portfolio CreatePortfolio(string name, string description)
+        public Portfolio CreatePortfolio(string name, string description, Currency currency)
         {
-            var id = _portfolioRepository.Add(new(name, description));
-            return new(name, description, id);
+            var potfolio = new Portfolio(name, description, currency);
+            var id = _portfolioRepository.Add(potfolio);
+            return potfolio with
+            {
+                Id = id
+            };
         }
 
         public bool DeletePortfolio(Portfolio portfolio)
@@ -37,17 +41,17 @@ namespace Services
 
         public bool UpdatePortfolio(Portfolio portfolio)
         {
-            throw new NotImplementedException();
+            return _portfolioRepository.Update(portfolio);
         }
 
         public Portfolio GetPortfolio(int id)
         {
-            throw new NotImplementedException();
+            return _portfolioRepository.Get(id);
         }
 
         public List<Portfolio> GetPortfolios()
         {
-            throw new NotImplementedException();
+            return _portfolioRepository.GetAll();
         }
     }
 }

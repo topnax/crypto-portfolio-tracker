@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using Database;
 using Microsoft.Data.Sqlite;
@@ -30,21 +31,21 @@ namespace Tests.Integration.Repository
 
     public class PortfolioTest : IClassFixture<SqlKataPortfolioRepositoryFixture>
     {
-        private SqlKataPortfolioRepositoryFixture _portfolioFixture;
+        private SqlKataPortfolioRepositoryFixture _portfolioRepositoryFixture;
 
-        public PortfolioTest(SqlKataPortfolioRepositoryFixture portfolioFixture)
+        public PortfolioTest(SqlKataPortfolioRepositoryFixture portfolioRepositoryFixture)
         {
-            this._portfolioFixture = portfolioFixture;
+            this._portfolioRepositoryFixture = portfolioRepositoryFixture;
         }
 
         [Fact]
         public void Add_ReturnsNonZeroId()
         {
             // arrange
-            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
+            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Eur);
 
             // act
-            int id = _portfolioFixture.PortfolioRepository.Add(portfolio);
+            int id = _portfolioRepositoryFixture.PortfolioRepository.Add(portfolio);
 
             // assert
             Assert.True(id > 0);
@@ -54,11 +55,11 @@ namespace Tests.Integration.Repository
         public void Added_And_Get_AreEqual()
         {
             // arrange
-            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
+            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Czk);
 
             // act
-            int id = _portfolioFixture.PortfolioRepository.Add(portfolio);
-            var loaded = _portfolioFixture.PortfolioRepository.Get(id);
+            int id = _portfolioRepositoryFixture.PortfolioRepository.Add(portfolio);
+            var loaded = _portfolioRepositoryFixture.PortfolioRepository.Get(id);
             portfolio = portfolio with
             {
                 Id = loaded.Id
@@ -70,14 +71,36 @@ namespace Tests.Integration.Repository
         }
         
         [Fact]
+        public void Added_And_GetAll_AreEqual()
+        {
+            // fixture unique to this test
+            var portfolioRepositoryFixture = new SqlKataPortfolioRepositoryFixture();
+            
+            // arrange
+            var portfolio1 = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Czk);
+            var portfolio2 = new Portfolio("My second portfolio", "Lorem ipsum dolor sit amet", Currency.Eur);
+            var portfolio3 = new Portfolio("My third portfolio", "Lorem ipsum dolor sit amet", Currency.Usd);
+
+            // act
+            portfolio1 = portfolio1 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio1)};
+            portfolio2 = portfolio2 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio2)};
+            portfolio3 = portfolio3 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio3)};
+            
+            // assert
+            var loadedPortfolios = portfolioRepositoryFixture.PortfolioRepository.GetAll();
+            Assert.Equal(3, loadedPortfolios.Count);
+            Assert.Equal(new List<Portfolio>{portfolio1, portfolio2, portfolio3}, loadedPortfolios);
+        }
+        
+        [Fact]
         public void AddUpdate_Updates()
         {
             // arrange
-            var template = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
+            var template = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Usd);
 
             // act
-            int firstId = _portfolioFixture.PortfolioRepository.Add(template);
-            int secondId = _portfolioFixture.PortfolioRepository.Add(template);
+            int firstId = _portfolioRepositoryFixture.PortfolioRepository.Add(template);
+            int secondId = _portfolioRepositoryFixture.PortfolioRepository.Add(template);
             var secondPortfolio = template with
             {
                 Id = secondId
@@ -87,12 +110,13 @@ namespace Tests.Integration.Repository
                 // update the first entry
                 Id = firstId,
                 // change it's name
-                Name = "Foo Portfolio"
+                Name = "Foo Portfolio",
+                Currency = Currency.Eur
             };
-            _portfolioFixture.PortfolioRepository.Update(firstPortfolio);
+            _portfolioRepositoryFixture.PortfolioRepository.Update(firstPortfolio);
             
-            Assert.Equal(firstPortfolio, _portfolioFixture.PortfolioRepository.Get(firstPortfolio.Id));
-            Assert.Equal(secondPortfolio, _portfolioFixture.PortfolioRepository.Get(secondPortfolio.Id));
+            Assert.Equal(firstPortfolio, _portfolioRepositoryFixture.PortfolioRepository.Get(firstPortfolio.Id));
+            Assert.Equal(secondPortfolio, _portfolioRepositoryFixture.PortfolioRepository.Get(secondPortfolio.Id));
         }
 
     }

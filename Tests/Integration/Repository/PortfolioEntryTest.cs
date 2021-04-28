@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Database;
 using Microsoft.Data.Sqlite;
 using Model;
@@ -22,7 +23,7 @@ namespace Tests.Integration.Repository
             var db = new SqlKataDatabase(_dbConnection, new SqliteCompiler());
             this.PortfolioRepository = new(db);
             this.PortfolioEntryRepository = new(db);
-            DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar", 101));
+            DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar", Currency.Czk));
         }
 
         public void Dispose()
@@ -71,6 +72,28 @@ namespace Tests.Integration.Repository
             Assert.True(id > 0);
             Assert.Equal(portfolioEntry,
                 _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(portfolioEntry.Id));
+        }
+        
+        [Fact]
+        public void Added_And_GetAll_AreEqual()
+        {
+            // fixture unique to this test
+            var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
+            
+            // arrange
+            var portfolioEntry1 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry2 = new PortfolioEntry("ada", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry3 = new PortfolioEntry("ltc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+
+            // act
+            portfolioEntry1 = portfolioEntry1 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1)};
+            portfolioEntry2 = portfolioEntry2 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry2)};
+            portfolioEntry3 = portfolioEntry3 with {Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3)};
+            
+            // assert
+            var loadedPortfolios = portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAll();
+            Assert.Equal(3, loadedPortfolios.Count);
+            Assert.Equal(new List<PortfolioEntry>{portfolioEntry1, portfolioEntry2, portfolioEntry3}, loadedPortfolios);
         }
 
         [Fact]

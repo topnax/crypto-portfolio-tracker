@@ -3,7 +3,7 @@
 
 namespace Model
 {
-    public record Portfolio(string Name, string Description, int CurrencyCode, int Id = -1);
+    public record Portfolio(string Name, string Description, Currency Currency, int Id = -1);
 
     public record PortfolioEntry(string Symbol, int PortfolioId = -1, int Id = -1);
 
@@ -21,11 +21,10 @@ namespace Model
         }
     }
 
-
-    public enum Currency
+    public enum Currency : int
     {
-        Czk,
-        Eur,
-        Usd
+        Czk = 203,
+        Eur = 978,
+        Usd = 849
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Database;
 using Microsoft.Data.Sqlite;
 using Model;
@@ -23,7 +24,7 @@ namespace Tests.Integration.Repository
             SqlKataPortfolioRepository portfolioRepository = new(db);
             SqlKataPortfolioEntryRepository portfolioEntryRepository = new(db);
             this.MarketOrderRepository = new(db);
-            var defaultPortfolioId = portfolioRepository.Add(new("Foo", "Bar", 101));
+            var defaultPortfolioId = portfolioRepository.Add(new("Foo", "Bar", Currency.Eur));
             DefaultPortfolioEntryId = portfolioEntryRepository.Add(new("btc", defaultPortfolioId));
         }
 
@@ -81,6 +82,31 @@ namespace Tests.Integration.Repository
             Assert.Equal(marketOrder, actual);
         }
 
+        [Fact]
+        public void Added_And_GetAll_AreEqual()
+        {
+            // fixture unique to this test
+            var marketOrderRepositoryFixture = new SqlKataMarketOrderRepositoryFixture();
+            
+            // arrange
+            var marketOrder1 = new MarketOrder(new Decimal(10000.39), 10, new Decimal(1.1), DateTime.Now, true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+            var marketOrder2 = new MarketOrder(new Decimal(11000.39), 11, new Decimal(1.2), DateTime.Now.Subtract(TimeSpan.FromSeconds(3600)), true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+            var marketOrder3 = new MarketOrder(new Decimal(12000.39), 12, new Decimal(1.3), DateTime.Now.Subtract(TimeSpan.FromDays(30)), false,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+
+            // act
+            marketOrder1 = marketOrder1 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder1)};
+            marketOrder2 = marketOrder2 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder2)};
+            marketOrder3 = marketOrder3 with {Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder3)};
+            
+            // assert
+            var loadedPortfolios = marketOrderRepositoryFixture.MarketOrderRepository.GetAll();
+            Assert.Equal(3, loadedPortfolios.Count);
+            Assert.Equal(new List<MarketOrder>{marketOrder1, marketOrder2, marketOrder3}, loadedPortfolios);
+        }
+        
         [Fact]
         public void AddUpdate_Updates()
         {

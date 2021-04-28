@@ -54,6 +54,23 @@ namespace Repository
             return FromRow(result);
         }
 
+        public List<T> GetAll()
+        {
+            var result = Db.Get().Query(_tableName).Get();
+            if (result == null)
+            {
+                return default;
+            }
+
+            var list = new List<T>();
+            foreach (var row in result)
+            {
+                list.Add(FromRow(row));
+            }
+
+            return list;
+        }
+
         public List<T> All()
         {
             List<T> items = new List<T>();
