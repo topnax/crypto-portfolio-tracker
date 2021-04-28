@@ -33,6 +33,7 @@ namespace Tests.Integration.Repository
     {
         private SqlKataPortfolioRepositoryFixture _portfolioRepositoryFixture;
 
+        // TODO test Delete method
         public PortfolioTest(SqlKataPortfolioRepositoryFixture portfolioRepositoryFixture)
         {
             this._portfolioRepositoryFixture = portfolioRepositoryFixture;

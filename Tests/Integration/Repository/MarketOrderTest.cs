@@ -37,13 +37,12 @@ namespace Tests.Integration.Repository
     public class MarketOrderRepositoryTest : IClassFixture<SqlKataMarketOrderRepositoryFixture>
     {
         private SqlKataMarketOrderRepositoryFixture _marketOrderRepositoryFixture;
-        private readonly ITestOutputHelper _testOutputHelper;
 
+        // TODO test Delete method
         public MarketOrderRepositoryTest(SqlKataMarketOrderRepositoryFixture marketOrderRepositoryFixture,
             ITestOutputHelper testOutputHelper)
         {
             this._marketOrderRepositoryFixture = marketOrderRepositoryFixture;
-            this._testOutputHelper = testOutputHelper;
         }
 
         [Fact]
