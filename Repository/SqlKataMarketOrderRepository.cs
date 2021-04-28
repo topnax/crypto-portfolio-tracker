@@ -12,27 +12,22 @@ namespace Repository
 
         protected override int _getEntryId(MarketOrder entry) => entry.Id;
 
-        public override object ToRow(MarketOrder entry) => new
+        public override object ToRow(MarketOrder entry)
         {
-            currency = entry.Currency.ToString(),
-            filled_price = (int) (entry.FilledPrice * 100),
-            fee = (int) (entry.Fee * 100),
-            size = (int) (entry.Size * 100),
-            date = entry.Date.ToBinary(),
-            buy = ((DateTimeOffset) entry.Date).ToUnixTimeSeconds(),
-            portfolio_entrY_id = entry.PortfolioEntryId,
-        };
-
-        public override MarketOrder FromRow(dynamic d)
-        {
-            bool parsed = Enum.TryParse(d.currency, out Currency currency);
-            if (!parsed)
+            return new
             {
-                throw new SqlKataRepositoryException($"Failed to parse currency {d.currency}");
-            }
-
-            return new(currency, d.filled_price, d.fee, d.size, Utils.DateUtils.UnixTimeStampToDateTime(d.date), d.buy > 0,
-                0, 0);
+                filled_price = (int) (entry.FilledPrice * 100),
+                fee = (int) (entry.Fee * 100),
+                size = (int) (entry.Size * 100),
+                date = ((DateTimeOffset) entry.Date).ToUnixTimeSeconds(),
+                buy = entry.Buy ? 1 : 0,
+                portfolio_entry_id = entry.PortfolioEntryId,
+            };
         }
+
+        public override MarketOrder FromRow(dynamic d) =>
+            new(Decimal.Divide(d.filled_price, 100), Decimal.Divide(d.fee, 100), Decimal.Divide(d.size, 100),
+                DateTimeOffset.FromUnixTimeSeconds((int) d.date).DateTime.ToLocalTime(), d.buy > 0,
+                (int) d.id, (int) d.portfolio_entry_id);
     }
 }

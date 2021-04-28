@@ -14,10 +14,11 @@ namespace Repository
         public override object ToRow(Portfolio entry) => new
         {
             name = entry.Name,
-            description = entry.Description
+            description = entry.Description,
+            currency_code = entry.CurrencyCode
         };
 
-        public override Portfolio FromRow(dynamic d) => new((string) d.name, (string) d.description, (int) d.id);
-
+        public override Portfolio FromRow(dynamic d) =>
+            new((string) d.name, (string) d.description, (int) d.currency_code, (int) d.id);
     }
 }

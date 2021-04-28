@@ -9,21 +9,21 @@ namespace Database
             db.Get().Statement(@"
 
                 CREATE TABLE IF NOT EXISTS portfolios (
-                   id           INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT,
-                   name         TEXT NOT NULL,
-                   description  TEXT NOT NULL
+                   id            INTEGER NOT NULL PRIMARY KEY  AUTOINCREMENT,
+                   name          TEXT NOT NULL,
+                   description   TEXT NOT NULL,
+                   currency_code INTEGER NOT NULL
                 );
 
                 CREATE TABLE IF NOT EXISTS portfolio_entries (
-                   id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                   symbol       TEXT NOT NULL,
-                   portfolio_id INTEGER NOT NULL,
-                   FOREIGN KEY(portfolio_id) REFERENCES portfolios(id)
+                   id                           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                   symbol                       TEXT NOT NULL,
+                   portfolio_id                 INTEGER NOT NULL,
+                   FOREIGN KEY(portfolio_id)    REFERENCES portfolios(id)
                 );
 
                 CREATE TABLE IF NOT EXISTS market_orders (
                    id           INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                   currency     TEXT NOT NULL,
                    filled_price INTEGER NOT NULL,
                    fee          INTEGER NOT NULL,
                    size         INTEGER NOT NULL,

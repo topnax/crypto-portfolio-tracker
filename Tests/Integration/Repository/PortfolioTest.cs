@@ -41,11 +41,10 @@ namespace Tests.Integration.Repository
         public void Add_ReturnsNonZeroId()
         {
             // arrange
-            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet");
+            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
 
             // act
-            int id = _portfolioFixture.PortfolioRepository.Add(new Portfolio("My new portfolio",
-                "Lorem ipsum dolor sit amet"));
+            int id = _portfolioFixture.PortfolioRepository.Add(portfolio);
 
             // assert
             Assert.True(id > 0);
@@ -55,7 +54,7 @@ namespace Tests.Integration.Repository
         public void Added_And_Get_AreEqual()
         {
             // arrange
-            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet");
+            var portfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
 
             // act
             int id = _portfolioFixture.PortfolioRepository.Add(portfolio);
@@ -74,7 +73,7 @@ namespace Tests.Integration.Repository
         public void AddUpdate_Updates()
         {
             // arrange
-            var template = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet");
+            var template = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", 101);
 
             // act
             int firstId = _portfolioFixture.PortfolioRepository.Add(template);

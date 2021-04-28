@@ -5,7 +5,6 @@ using Model;
 using Repository;
 using SqlKata.Compilers;
 using Xunit;
-using Utils;
 
 namespace Tests.Integration.Repository
 {
@@ -23,7 +22,7 @@ namespace Tests.Integration.Repository
             var db = new SqlKataDatabase(_dbConnection, new SqliteCompiler());
             this.PortfolioRepository = new(db);
             this.PortfolioEntryRepository = new(db);
-            DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar"));
+            DefaultPortfolioId = PortfolioRepository.Add(new("Foo", "Bar", 101));
         }
 
         public void Dispose()
