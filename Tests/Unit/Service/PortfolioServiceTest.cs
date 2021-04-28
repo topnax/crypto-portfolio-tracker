@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Tests.Unit.Service
 {
-    public class PortfolioRepositoryTest
+    public class PortfolioServiceTest
     {
         [Fact]
         public void Create_CallsRepository()
