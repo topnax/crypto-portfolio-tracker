@@ -7,29 +7,6 @@ using Xunit;
 
 namespace Tests.Unit.Service
 {
-    //public class SummaryServiceFixture : IDisposable
-    //{
-    //    public ISummaryService SummaryService;
-
-    //    public SummaryServiceFixture()
-    //    {
-    //        var marketOrderServiceMock = new Mock<IMarketOrderService>();
-    //        marketOrderServiceMock.Setup(x => x.GetPortfolioEntryOrders(It.IsAny<int>())).Returns(new List<MarketOrder>()
-    //        {
-    //           new (new decimal(10000), new decimal(2), 1, DateTime.Now, true)
-    //        })
-    //        
-    //        var repositoryMock = new Mock<IPortfolioRepository>();
-    //        repositoryMock.Setup(x => x.Add(It.Is<Portfolio>(portfolio => portfolio == portfolioToBeAdded))).Returns(1);
-    //        SummaryService = new ()
-    //    }
-    //    
-    //    public void Dispose()
-    //    {
-    //        
-    //    }
-    //}
-
     public class SummaryServiceTest
     {
         [Fact]
