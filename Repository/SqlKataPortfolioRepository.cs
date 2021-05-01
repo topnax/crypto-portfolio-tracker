@@ -3,7 +3,7 @@ using Model;
 
 namespace Repository
 {
-    public class SqlKataPortfolioRepository : SqlKataRepository<Portfolio>
+    public class SqlKataPortfolioRepository : SqlKataRepository<Portfolio>, IPortfolioRepository
     {
         public SqlKataPortfolioRepository(SqlKataDatabase db) : base(db, "portfolios")
         {

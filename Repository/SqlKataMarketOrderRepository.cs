@@ -6,7 +6,7 @@ using SqlKata.Execution;
 
 namespace Repository
 {
-    public class SqlKataMarketOrderRepository : SqlKataRepository<MarketOrder>
+    public class SqlKataMarketOrderRepository : SqlKataRepository<MarketOrder>, IMarketOrderRepository
     {
         public SqlKataMarketOrderRepository(SqlKataDatabase db) : base(db, "market_orders")
         {
