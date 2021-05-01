@@ -92,6 +92,8 @@ namespace Tests.Unit.Service
                 10001
             ), summary);
         }
+        
+        // PortfolioEntrySummary tests
 
         [Fact]
         public void GetPortfolioEntrySummary_InProfit_Returns_Correct_Summary()
@@ -122,7 +124,6 @@ namespace Tests.Unit.Service
                 new(10000m, 1m, 1m, DateTime.Now, true),
                 new(20000m, 5m, 1m, DateTime.Now, true)
             }, 40000);
-// currentTotalHoldingValue + totalSellValue - totalCost - totalFee
             Assert.Equal(new ISummaryService.Summary(
                 30000m + 20000m - 6,
                 ((80000m - 6m) / 30000m) - 1m,
