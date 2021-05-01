@@ -92,14 +92,13 @@ namespace Tests.Unit.Service
                 10001
             ), summary);
         }
-        
+
         // PortfolioEntrySummary tests
 
         [Fact]
         public void GetPortfolioEntrySummary_InProfit_Returns_Correct_Summary()
         {
             var service = new SummaryServiceImpl();
-            MarketOrder order = new(10000m, 1m, 1m, DateTime.Now, true);
             var summary = service.GetPortfolioEntrySummary(new()
             {
                 new(10000m, 0m, 1m, DateTime.Now, true),
@@ -118,7 +117,6 @@ namespace Tests.Unit.Service
         public void GetPortfolioEntrySummary_WithFee_InProfit_Returns_Correct_Summary()
         {
             var service = new SummaryServiceImpl();
-            MarketOrder order = new(10000m, 1m, 1m, DateTime.Now, true);
             var summary = service.GetPortfolioEntrySummary(new()
             {
                 new(10000m, 1m, 1m, DateTime.Now, true),
@@ -136,7 +134,6 @@ namespace Tests.Unit.Service
         public void GetPortfolioEntrySummary_InProfit_WithSell_Returns_Correct_Summary()
         {
             var service = new SummaryServiceImpl();
-            MarketOrder order = new(10000m, 1m, 1m, DateTime.Now, true);
             var summary = service.GetPortfolioEntrySummary(new()
             {
                 new(10000m, 0m, 1m, DateTime.Now, true),
@@ -146,7 +143,7 @@ namespace Tests.Unit.Service
 
             Assert.Equal(new ISummaryService.Summary(
                 1.5m * 40000m + 15000m - 30000m,
-                ((1.5m * 40000m  + 15000m - 30000m) / 30000m),
+                ((1.5m * 40000m + 15000m - 30000m) / 30000m),
                 1.5m * 40000m,
                 30000
             ), summary);
@@ -156,19 +153,34 @@ namespace Tests.Unit.Service
         public void GetPortfolioEntrySummary_WithFee_InProfit_WithSell_Returns_Correct_Summary()
         {
             var service = new SummaryServiceImpl();
-            MarketOrder order = new(10000m, 1m, 1m, DateTime.Now, true);
             var summary = service.GetPortfolioEntrySummary(new()
             {
                 new(10000m, 1m, 1m, DateTime.Now, true),
                 new(20000m, 5m, 1m, DateTime.Now, true)
             }, 40000);
-            // currentTotalHoldingValue + totalSellValue - totalCost - totalFee
             Assert.Equal(new ISummaryService.Summary(
                 30000m + 20000m - 6,
                 ((80000m - 6m) / 30000m) - 1m,
                 80000m,
                 30006
             ), summary);
+        }
+
+        // Portfolio summary tests
+
+        [Fact]
+        public void GetPortfolioSummary_Returns_Correct_Summary()
+        {
+            var service = new SummaryServiceImpl();
+            var summary = service.GetPortfolioSummary(new()
+            {
+                new(10000m, 1, 20000m, 10000),
+                new(2000m, 2, 3000m, 1000),
+            });
+            Assert.Equal(
+                new ISummaryService.Summary(12000m, (23000m / 11000m) - 1m, 23000m, 11000m),
+                summary
+            );
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Services
 
         public Summary GetPortfolioEntrySummary(List<MarketOrder> portfolioEntryOrders, decimal assetPrice);
 
-        public Summary GetPortfolioSummary(Portfolio portfolio, Dictionary<string, decimal> assetPriceMap);
+        public Summary GetPortfolioSummary(List<Summary> portfolioEntrySummaries);
     }
 
     public class SummaryServiceImpl : ISummaryService
@@ -42,7 +42,7 @@ namespace Services
                 totalAbsoluteChange += summary.AbsoluteChange;
             }
 
-            decimal totalRelativeChange = (totalMarketValue / totalCost) / -1;
+            decimal totalRelativeChange = (totalMarketValue / totalCost) -1m;
 
             return new(totalAbsoluteChange, totalRelativeChange, totalMarketValue, totalCost);
         }
@@ -79,21 +79,7 @@ namespace Services
                 totalCost + totalFee);
         }
 
-        public ISummaryService.Summary GetPortfolioSummary(Portfolio portfolio,
-            Dictionary<string, decimal> assetPriceMap)
-        {
-            return null;
-            // var portfolioEntrySumarries = PortfolioEntryService.GetPortfolioEntries(portfolio.Id).Select(entry =>
-            // {
-            //     if (!assetPriceMap.TryGetValue(entry.Symbol, out var assetPrice))
-            //     {
-            //         throw new AssetPriceNotFoundException();
-            //     }
-
-            //     return GetPortfolioEntrySummary(entry, assetPrice);
-            // });
-            // return GetAverageOfSummaries(portfolioEntrySumarries);
-        }
+        public ISummaryService.Summary GetPortfolioSummary(List<ISummaryService.Summary> portfolioEntrySummaries) => GetAverageOfSummaries(portfolioEntrySummaries);
 
         public class AssetPriceNotFoundException : Exception
         {
