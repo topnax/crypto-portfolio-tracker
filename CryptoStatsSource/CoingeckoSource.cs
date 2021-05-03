@@ -23,5 +23,8 @@ namespace CryptoStatsSource
         public async Task<List<MarketEntry>> GetMarketEntries(string currency, params string[] ids) => await _client
                 .GetRequest("coins/markets").AddQueryParameter("vs_currency", currency)
                 .AddQueryParameter("ids", String.Join(",", ids)).ExecuteAsync<List<MarketEntry>>();
+        
+        public async Task<List<Cryptocurrency>> GetAvailableCryptocurrencies() => await _client
+                .GetRequest("coins/list").ExecuteAsync<List<Cryptocurrency>>();
     }
 }
