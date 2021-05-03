@@ -7,4 +7,6 @@ namespace CryptoStatsSource.model
 
     public record PriceEntry(string Id, string Symbol, string Name, decimal CurrentPrice,
         float PriceChangePercentage24H);
+
+    public record Cryptocurrency(string Id, string Symbol, string Name);
 }
