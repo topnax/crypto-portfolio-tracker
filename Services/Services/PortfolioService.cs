@@ -18,10 +18,12 @@ namespace Services
     public class PortfolioServiceImpl : IPortfolioService
     {
         private IPortfolioRepository _portfolioRepository;
+        private IPortfolioEntryService _portfolioEntryService;
 
-        public PortfolioServiceImpl(IPortfolioRepository portfolioRepository)
+        public PortfolioServiceImpl(IPortfolioRepository portfolioRepository, IPortfolioEntryService portfolioEntryService)
         {
             this._portfolioRepository = portfolioRepository;
+            this._portfolioEntryService = portfolioEntryService;
         }
 
         public Portfolio CreatePortfolio(string name, string description, Currency currency)
@@ -36,6 +38,7 @@ namespace Services
 
         public bool DeletePortfolio(Portfolio portfolio)
         {
+            _portfolioEntryService.DeletePortfolioEntries(portfolio.Id);
             return _portfolioRepository.Delete(portfolio);
         }
 

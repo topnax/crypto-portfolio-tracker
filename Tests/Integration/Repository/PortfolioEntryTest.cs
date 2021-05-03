@@ -38,7 +38,6 @@ namespace Tests.Integration.Repository
     {
         private SqlKataPortfolioEntryRepositoryFixture _portfolioEntryRepositoryFixture;
 
-        // TODO test Delete method
         public PortfolioEntryRepositoryTest(SqlKataPortfolioEntryRepositoryFixture marketOrderRepositoryFixture)
         {
             this._portfolioEntryRepositoryFixture = marketOrderRepositoryFixture;
@@ -157,10 +156,10 @@ namespace Tests.Integration.Repository
             var loadedPortfolios =
                 portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
                     portfolioEntryRepositoryFixture.DefaultPortfolioId);
-            
+
             Assert.Empty(presumablyEmptyList);
             Assert.Empty(presumablyEmptyList2);
-            
+
             Assert.Equal(new List<PortfolioEntry> {portfolioEntry1, portfolioEntry2, portfolioEntry3},
                 loadedPortfolios);
 
@@ -175,13 +174,16 @@ namespace Tests.Integration.Repository
         [Fact]
         public void AddUpdate_Updates()
         {
+            // fixture unique to this test
+            var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
+            
             // arrange
-            var btcEntry = new PortfolioEntry("btc", _portfolioEntryRepositoryFixture.DefaultPortfolioId);
-            var ethEntry = new PortfolioEntry("eth", _portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var btcEntry = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var ethEntry = new PortfolioEntry("eth", portfolioEntryRepositoryFixture.DefaultPortfolioId);
 
             // act
-            int btcId = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(btcEntry);
-            int ethId = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(ethEntry);
+            int btcId = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(btcEntry);
+            int ethId = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(ethEntry);
             ethEntry = ethEntry with
             {
                 Id = ethId
@@ -193,10 +195,35 @@ namespace Tests.Integration.Repository
                 // change it's name
                 Symbol = "ltc"
             };
-            _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Update(btcEntry);
+            portfolioEntryRepositoryFixture.PortfolioEntryRepository.Update(btcEntry);
 
-            Assert.Equal(btcEntry, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(btcEntry.Id));
-            Assert.Equal(ethEntry, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(ethEntry.Id));
+            Assert.Equal(btcEntry, portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(btcEntry.Id));
+            Assert.Equal(ethEntry, portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(ethEntry.Id));
+        }
+
+        [Fact]
+        public void Delete_Deletes()
+        {
+            // arrange
+            var firstEntry = new PortfolioEntry("btc", _portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var secondEntry = new PortfolioEntry("ltc", _portfolioEntryRepositoryFixture.DefaultPortfolioId);
+
+            // act
+            firstEntry = firstEntry with
+            {
+                Id = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(firstEntry)
+            };
+            
+            secondEntry = secondEntry with
+            {
+                Id = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(secondEntry)
+            };
+            _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Delete(firstEntry);
+
+            // assert
+            Assert.Null(_portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(firstEntry.Id));
+            Assert.Equal(secondEntry, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(secondEntry.Id));
+            Assert.Equal(1, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAll().Count);
         }
     }
 }

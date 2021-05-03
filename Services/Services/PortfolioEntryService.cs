@@ -11,6 +11,8 @@ namespace Services
         PortfolioEntry CreatePortfolioEntry(string symbol, int portfolioId);
 
         bool DeletePortfolioEntry(PortfolioEntry entry);
+        
+        int DeletePortfolioEntries(int portfolioId);
 
         bool UpdatePortfolio(PortfolioEntry entry);
 
@@ -22,10 +24,12 @@ namespace Services
     public class PortfolioEntryServiceImpl : IPortfolioEntryService
     {
         private IPortfolioEntryRepository _portfolioEntryRepository;
+        private IMarketOrderService _marketOrderService;
 
-        public PortfolioEntryServiceImpl(IPortfolioEntryRepository portfolioEntryRepository)
+        public PortfolioEntryServiceImpl(IPortfolioEntryRepository portfolioEntryRepository, IMarketOrderService marketOrderService)
         {
             _portfolioEntryRepository = portfolioEntryRepository;
+            _marketOrderService = marketOrderService;
         }
 
 
@@ -38,22 +42,24 @@ namespace Services
 
         public bool DeletePortfolioEntry(PortfolioEntry entry)
         {
+            _marketOrderService.DeletePortfolioEntryOrders(entry.Id);
             return _portfolioEntryRepository.Delete(entry);
         }
 
-        public bool UpdatePortfolio(PortfolioEntry entry)
-        {
-            return _portfolioEntryRepository.Update(entry);
-        }
+        public bool UpdatePortfolio(PortfolioEntry entry) => _portfolioEntryRepository.Update(entry);
 
-        public PortfolioEntry GetPortfolioEntry(int id)
-        {
-            return _portfolioEntryRepository.Get(id);
-        }
+        public PortfolioEntry GetPortfolioEntry(int id) => _portfolioEntryRepository.Get(id);
 
-        public List<PortfolioEntry> GetPortfolioEntries(int portfolioId)
+        public List<PortfolioEntry> GetPortfolioEntries(int portfolioId) => _portfolioEntryRepository.GetAllByPortfolioId(portfolioId);
+
+        public int DeletePortfolioEntries(int portfolioId)
         {
-            return _portfolioEntryRepository.GetAllByPortfolioId(portfolioId);
+            foreach (var portfolioEntry in GetPortfolioEntries(portfolioId))
+            {
+                _marketOrderService.DeletePortfolioEntryOrders(portfolioEntry.Id);
+            }
+
+            return _portfolioEntryRepository.DeletePortfolioEntries(portfolioId);
         }
     }
 }

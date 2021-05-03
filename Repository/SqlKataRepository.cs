@@ -39,13 +39,12 @@ namespace Repository
         public bool Delete(T entry)
         {
             Db.Get().Query(tableName).Where("id", _getEntryId(entry)).Delete();
-            // TODO add tests 
             return true;
         }
 
         public T Get(int id)
         {
-            var result = Db.Get().Query(tableName).Where("id", id).First();
+            var result = Db.Get().Query(tableName).Where("id", id).FirstOrDefault();
             if (result == null)
             {
                 return default;

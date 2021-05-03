@@ -23,5 +23,8 @@ namespace Repository
 
         public List<PortfolioEntry> GetAllByPortfolioId(int portfolioId) =>
             RowsToObjects(Db.Get().Query(tableName).Where("portfolio_id", portfolioId).Get());
+
+        public int DeletePortfolioEntries(int portfolioId) =>
+            Db.Get().Query(tableName).Where("portfolio_id", portfolioId).Delete();
     }
 }

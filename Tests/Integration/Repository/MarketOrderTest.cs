@@ -39,7 +39,6 @@ namespace Tests.Integration.Repository
     {
         private SqlKataMarketOrderRepositoryFixture _marketOrderRepositoryFixture;
 
-        // TODO test Delete method
         public MarketOrderRepositoryTest(SqlKataMarketOrderRepositoryFixture marketOrderRepositoryFixture)
         {
             this._marketOrderRepositoryFixture = marketOrderRepositoryFixture;
@@ -200,7 +199,7 @@ namespace Tests.Integration.Repository
                     .DefaultPortfolioEntryId);
             Assert.Empty(presumablyEmptyList);
             Assert.Empty(presumablyEmptyList2);
-            
+
             Assert.Equal(3, loadedPortfolios.Count);
             Assert.Equal(new List<MarketOrder> {marketOrder1, marketOrder2, marketOrder3}, loadedPortfolios);
 
@@ -209,6 +208,38 @@ namespace Tests.Integration.Repository
                     .SecondaryPortfolioEntryId);
             Assert.Equal(2, loadedPortfoliosSecondary.Count);
             Assert.Equal(new List<MarketOrder> {marketOrder4, marketOrder5}, loadedPortfoliosSecondary);
+        }
+
+        [Fact]
+        public void Delete_Deletes()
+        {
+            // fixture unique to this test
+            var marketOrderRepositoryFixture = new SqlKataMarketOrderRepositoryFixture();
+
+            // arrange
+            var marketOrder1 = new MarketOrder(new Decimal(10000.39), 10, new Decimal(1.1), DateTime.Now, true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+            var marketOrder2 = new MarketOrder(new Decimal(11000.39), 11, new Decimal(1.2),
+                DateTime.Now.Subtract(TimeSpan.FromSeconds(3600)), true,
+                PortfolioEntryId: marketOrderRepositoryFixture.DefaultPortfolioEntryId);
+
+
+            // act
+            marketOrder1 = marketOrder1 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder1)
+            };
+            marketOrder2 = marketOrder2 with
+            {
+                Id = marketOrderRepositoryFixture.MarketOrderRepository.Add(marketOrder2)
+            };
+
+            marketOrderRepositoryFixture.MarketOrderRepository.Delete(marketOrder1);
+
+            // assert
+            Assert.Null(marketOrderRepositoryFixture.MarketOrderRepository.Get(marketOrder1.Id));
+            Assert.Equal(marketOrder2, marketOrderRepositoryFixture.MarketOrderRepository.Get(marketOrder2.Id));
+            Assert.Equal(1, marketOrderRepositoryFixture.MarketOrderRepository.GetAll().Count);
         }
     }
 }

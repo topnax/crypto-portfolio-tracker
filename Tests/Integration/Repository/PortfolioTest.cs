@@ -33,7 +33,6 @@ namespace Tests.Integration.Repository
     {
         private SqlKataPortfolioRepositoryFixture _portfolioRepositoryFixture;
 
-        // TODO test Delete method
         public PortfolioTest(SqlKataPortfolioRepositoryFixture portfolioRepositoryFixture)
         {
             this._portfolioRepositoryFixture = portfolioRepositoryFixture;
@@ -70,13 +69,13 @@ namespace Tests.Integration.Repository
             Assert.True(id > 0);
             Assert.Equal(portfolio, loaded);
         }
-        
+
         [Fact]
         public void Added_And_GetAll_AreEqual()
         {
             // fixture unique to this test
             var portfolioRepositoryFixture = new SqlKataPortfolioRepositoryFixture();
-            
+
             // arrange
             var portfolio1 = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Czk);
             var portfolio2 = new Portfolio("My second portfolio", "Lorem ipsum dolor sit amet", Currency.Eur);
@@ -86,13 +85,13 @@ namespace Tests.Integration.Repository
             portfolio1 = portfolio1 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio1)};
             portfolio2 = portfolio2 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio2)};
             portfolio3 = portfolio3 with {Id = portfolioRepositoryFixture.PortfolioRepository.Add(portfolio3)};
-            
+
             // assert
             var loadedPortfolios = portfolioRepositoryFixture.PortfolioRepository.GetAll();
             Assert.Equal(3, loadedPortfolios.Count);
-            Assert.Equal(new List<Portfolio>{portfolio1, portfolio2, portfolio3}, loadedPortfolios);
+            Assert.Equal(new List<Portfolio> {portfolio1, portfolio2, portfolio3}, loadedPortfolios);
         }
-        
+
         [Fact]
         public void AddUpdate_Updates()
         {
@@ -115,10 +114,36 @@ namespace Tests.Integration.Repository
                 Currency = Currency.Eur
             };
             _portfolioRepositoryFixture.PortfolioRepository.Update(firstPortfolio);
-            
+
             Assert.Equal(firstPortfolio, _portfolioRepositoryFixture.PortfolioRepository.Get(firstPortfolio.Id));
             Assert.Equal(secondPortfolio, _portfolioRepositoryFixture.PortfolioRepository.Get(secondPortfolio.Id));
         }
 
+        [Fact]
+        public void Delete_Deletes()
+        {
+            // fixture unique to this test
+            var portfolioRepositoryFixture = new SqlKataPortfolioRepositoryFixture();
+            
+            // arrange
+            var firstPortfolio = new Portfolio("My new portfolio", "Lorem ipsum dolor sit amet", Currency.Usd);
+            var secondPortfolio = new Portfolio("My second new portfolio", "Lorem ipsum dolor sit amet", Currency.Eur);
+
+            // act
+            firstPortfolio = firstPortfolio with
+            {
+                Id = portfolioRepositoryFixture.PortfolioRepository.Add(firstPortfolio)
+            };
+            secondPortfolio = secondPortfolio with
+            {
+                Id = portfolioRepositoryFixture.PortfolioRepository.Add(secondPortfolio)
+            };
+            portfolioRepositoryFixture.PortfolioRepository.Delete(firstPortfolio);
+
+            // assert
+            Assert.Null(portfolioRepositoryFixture.PortfolioRepository.Get(firstPortfolio.Id));
+            Assert.Equal(secondPortfolio, portfolioRepositoryFixture.PortfolioRepository.Get(secondPortfolio.Id));
+            Assert.Equal(1, portfolioRepositoryFixture.PortfolioRepository.GetAll().Count);
+        }
     }
 }

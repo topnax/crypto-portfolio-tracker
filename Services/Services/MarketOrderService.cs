@@ -18,6 +18,8 @@ namespace Services
         MarketOrder GetMarketOrder(int id);
 
         List<MarketOrder> GetPortfolioEntryOrders(int portfolioEntryId);
+
+        int DeletePortfolioEntryOrders(int portfolioEntryId);
     }
 
     public class MarketOrderServiceImpl : IMarketOrderService
@@ -45,5 +47,8 @@ namespace Services
 
         public List<MarketOrder> GetPortfolioEntryOrders(int portfolioEntryId) =>
             _marketOrderRepository.GetAllByPortfolioEntryId(portfolioEntryId);
+
+        public int DeletePortfolioEntryOrders(int portfolioEntryId) =>
+            _marketOrderRepository.DeletePortfolioEntryOrders(portfolioEntryId);
     }
 }

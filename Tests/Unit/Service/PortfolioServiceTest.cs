@@ -15,8 +15,9 @@ namespace Tests.Unit.Service
             // arrange
             var portfolioToBeAdded = new Portfolio("Foo", "Bar", Currency.Eur, -1);
             var repositoryMock = new Mock<IPortfolioRepository>();
+            var portfolioEntryServiceMock = new Mock<IPortfolioEntryService>();
             repositoryMock.Setup(x => x.Add(It.Is<Portfolio>(portfolio => portfolio == portfolioToBeAdded))).Returns(1);
-            var service = new PortfolioServiceImpl(repositoryMock.Object);
+            var service = new PortfolioServiceImpl(repositoryMock.Object, portfolioEntryServiceMock.Object);
 
             // act
             var portfolio = service.CreatePortfolio("Foo", "Bar", Currency.Eur);
@@ -32,7 +33,8 @@ namespace Tests.Unit.Service
             var portfolioToBeAdded = new Portfolio("Foo", "Bar", Currency.Eur, 1);
             var repositoryMock = new Mock<IPortfolioRepository>();
             repositoryMock.Setup(x => x.Get(It.IsAny<int>())).Returns(portfolioToBeAdded);
-            var service = new PortfolioServiceImpl(repositoryMock.Object);
+            var portfolioEntryServiceMock = new Mock<IPortfolioEntryService>();
+            var service = new PortfolioServiceImpl(repositoryMock.Object, portfolioEntryServiceMock.Object);
 
             // act
             var portfolio = service.GetPortfolio(1);
@@ -53,8 +55,9 @@ namespace Tests.Unit.Service
             };
 
             var repositoryMock = new Mock<IPortfolioRepository>();
+            var portfolioEntryServiceMock = new Mock<IPortfolioEntryService>();
             repositoryMock.Setup(x => x.GetAll()).Returns(portfolioList);
-            var service = new PortfolioServiceImpl(repositoryMock.Object);
+            var service = new PortfolioServiceImpl(repositoryMock.Object, portfolioEntryServiceMock.Object);
 
             // act
             var portfolioListFetched = service.GetPortfolios();
@@ -69,8 +72,9 @@ namespace Tests.Unit.Service
             // arrange
             var portfolioToBeUpdated = new Portfolio("Foo", "Bar", Currency.Eur, 1);
             var repositoryMock = new Mock<IPortfolioRepository>();
+            var portfolioEntryServiceMock = new Mock<IPortfolioEntryService>();
             repositoryMock.Setup(x => x.Update(It.IsAny<Portfolio>())).Returns(true);
-            var service = new PortfolioServiceImpl(repositoryMock.Object);
+            var service = new PortfolioServiceImpl(repositoryMock.Object, portfolioEntryServiceMock.Object);
 
             // act
             var updated = service.UpdatePortfolio(portfolioToBeUpdated);
@@ -80,18 +84,20 @@ namespace Tests.Unit.Service
         }
 
         [Fact]
-        public void Delete_CallsRepository()
+        public void Delete_CallsRepository_And_EntryService()
         {
             // arrange
-            var entryToBeDeleted = new Portfolio("Foo", "Bar", Currency.Eur, 1);
+            var portfolioToBeDeleted = new Portfolio("Foo", "Bar", Currency.Eur, 1);
             var repositoryMock = new Mock<IPortfolioRepository>();
             repositoryMock.Setup(x => x.Delete(It.IsAny<Portfolio>())).Returns(true);
-            var service = new PortfolioServiceImpl(repositoryMock.Object);
+            var portfolioEntryServiceMock = new Mock<IPortfolioEntryService>();
+            var service = new PortfolioServiceImpl(repositoryMock.Object, portfolioEntryServiceMock.Object);
 
             // act
-            var delete = service.DeletePortfolio(entryToBeDeleted);
+            var delete = service.DeletePortfolio(portfolioToBeDeleted);
 
             // assert
+            portfolioEntryServiceMock.Verify(x => x.DeletePortfolioEntries(It.Is<int>(id => id == portfolioToBeDeleted.Id)));
             Assert.True(delete);
         }
     }

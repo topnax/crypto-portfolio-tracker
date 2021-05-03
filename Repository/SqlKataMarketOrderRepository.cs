@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Database;
 using Model;
 using SqlKata.Execution;
@@ -34,5 +35,8 @@ namespace Repository
 
         public List<MarketOrder> GetAllByPortfolioEntryId(int portfolioEntryId) =>
             RowsToObjects(Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryId).Get());
+
+        public int DeletePortfolioEntryOrders(int portfolioEntryOrder) =>
+            Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryOrder).Delete();
     }
 }
