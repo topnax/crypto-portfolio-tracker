@@ -1,0 +1,167 @@
+﻿@page "/newportfolio"
+@using Model
+@using Services
+@using Utils
+@using System.ComponentModel.DataAnnotations
+@inject IPortfolioService PortfolioService
+@inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
+
+
+<style>
+    .demo-mat-card {
+        max-width: 400px;
+        margin-bottom: 2em;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .demo-mat-card-clean-margin {
+        margin: 0px;
+    }
+</style>
+
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell">
+            <h2>Create a new portfolio</h2>
+            <EditForm Model="FormModel" OnValidSubmit="SaveButtonClicked">
+                <DataAnnotationsValidator/>
+                <p>
+                    <MatTextField @bind-Value="@FormModel.Name" Label="Portfolio name"></MatTextField>
+                    <ValidationMessage For="@(() => FormModel.Name)"/>
+                </p>
+
+                <p>
+                    <MatTextField @bind-Value="@FormModel.Description" Label="Description"></MatTextField>
+                    <ValidationMessage For="@(() => FormModel.Description)"/>
+                </p>
+                <MatRadioGroup @bind-Value="@FormModel.SelectedCurrency" Items="@AvailableCurrencies">
+                    <ItemTemplate Context="currencyContext">
+                        <div>
+                            <MatRadioButton Value="@currencyContext">@GetCurrencyLabel(@currencyContext)</MatRadioButton>
+                        </div>
+                    </ItemTemplate>
+                </MatRadioGroup>
+                <ValidationMessage For="@(() => FormModel.SelectedCurrency)"/>
+                <p>
+                    <MatButton Raised="true" Type="submit">Create</MatButton>
+                </p>
+            </EditForm>
+        </div>
+        <div class="mat-layout-grid-cell">
+            <h2>Existing portfolios</h2>
+            @if (_existingPortfolios == null)
+            {
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            }
+            else if (_existingPortfolios.Count > 0)
+            {
+                @foreach (var portfolio in _existingPortfolios)
+                {
+                    <MatCard class="demo-mat-card">
+                        <MatCardContent>
+                            <div class="demo-mat-card-content">
+                                <MatHeadline6 class="demo-mat-card-clean-margin">
+                                    <MatChipSet>
+                                        @portfolio.Name
+                                        <MatChip Label="@GetCurrencyLabel(portfolio.Currency)"/>
+                                    </MatChipSet>
+                                </MatHeadline6>
+                            </div>
+
+                            <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
+                                @portfolio.Description
+                            </MatBody2>
+                        </MatCardContent>
+                        <MatCardActions>
+                            <MatCardActionButtons>
+                                <MatButton>View</MatButton>
+                            </MatCardActionButtons>
+
+                            <MatCardActionIcons>
+                                <MatIconButton Icon="@MatIconNames.Delete" OnClick="(_) => DeletePortfolio(portfolio)"></MatIconButton>
+                            </MatCardActionIcons>
+                        </MatCardActions>
+                    </MatCard>
+                }
+            }
+            else
+            {
+                <MatSubtitle2>No portfolios found</MatSubtitle2> 
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@code
+{
+    protected Currency[] AvailableCurrencies = EnumUtils.GetEnumList<Currency>().ToArray();
+        protected const Currency DefaultCurerncy = Currency.Usd;
+
+    protected CreateFormModel FormModel = new();
+    List<Portfolio> _existingPortfolios;
+
+    public class CreateFormModel
+    {
+        [Required]
+        [MinLength(1)]
+        public string Name { get; set; }
+
+        [Required]
+        [MinLength(1)]
+        public string Description { get; set; }
+
+        [Required] public Currency SelectedCurrency = DefaultCurerncy;
+
+        public void Reset()
+        {
+            Name = "";
+            Description = "";
+            SelectedCurrency = DefaultCurerncy;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _existingPortfolios = PortfolioService.GetPortfolios();
+    }
+
+    protected string GetCurrencyLabel(Currency currency)
+    {
+        switch (currency)
+        {
+            case Currency.Czk:
+                return "CZK";
+            case Currency.Eur:
+                return "EUR";
+            case Currency.Usd:
+                return "USD";
+        }
+        return "UNDEFINED";
+    }
+
+    void SaveButtonClicked()
+    {
+        PortfolioService.CreatePortfolio(FormModel.Name, FormModel.Description, FormModel.SelectedCurrency);
+        FormModel.Reset();
+        _existingPortfolios = PortfolioService.GetPortfolios();
+        Toaster.Add("New portfolio successfully added", MatToastType.Success, "", "");
+    }
+
+    async void DeletePortfolio(Portfolio portfolio)
+    {
+        var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this portfolio including all of it's portfolio entries and market orders?");
+        if (result)
+        {
+            PortfolioService.DeletePortfolio(portfolio);
+            _existingPortfolios = PortfolioService.GetPortfolios();
+            StateHasChanged();
+            Toaster.Add($"Portfolio \"{portfolio.Name}\" sucessfully deleted", MatToastType.Info, "", "");
+        }
+    }
+}

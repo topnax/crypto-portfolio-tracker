@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CryptoStatsSource\CryptoStatsSource.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Services\Services\Services.csproj" />
   </ItemGroup>
 
 </Project>

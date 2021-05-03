@@ -38,8 +38,8 @@ namespace Repository
 
         public bool Delete(T entry)
         {
-            Db.Get().Query(tableName).Where("id", _getEntryId(entry)).AsDelete();
-            // TODO
+            Db.Get().Query(tableName).Where("id", _getEntryId(entry)).Delete();
+            // TODO add tests 
             return true;
         }
 

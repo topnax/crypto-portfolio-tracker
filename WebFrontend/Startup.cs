@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using CryptoStatsSource;
 using Database;
+using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.Sqlite;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Model;
 using Repository;
 using ServerSideBlazor.Data;
+using Services;
 using SqlKata.Compilers;
 
 namespace WebFrontend
@@ -32,21 +34,33 @@ namespace WebFrontend
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
-
+            services.AddMatBlazor();
+            
+            services.AddMatToaster(config =>
+            {
+                config.Position = MatToastPosition.BottomCenter;
+                config.PreventDuplicates = true;
+                config.NewestOnTop = true;
+                config.ShowCloseButton = true;
+                config.MaximumOpacity = 95;
+                config.VisibleStateDuration = 3000;
+            });
 
             services.AddScoped<ICryptoStatsSource, CoingeckoSource>();
 
             // TODO ensure that SqlKataDatabase gets disposed
             var dbConnection = new SqliteConnection("Data Source=data.db");
             var db = new SqlKataDatabase(dbConnection, new SqliteCompiler());
-            var portfolioRepository = new SqlKataPortfolioRepository(db);
-            portfolioRepository.Add(new Portfolio("My portfolio", "ADA holdings"));
-            foreach (var portfolio in portfolioRepository.All())
-            {
-                Console.WriteLine($"{portfolio.Name} - {portfolio.Description}"); 
-            }
-            dbConnection.Close();
             services.AddSingleton(ctx => db);
+            
+            services.AddSingleton<IPortfolioRepository, SqlKataPortfolioRepository>();
+            services.AddSingleton<IMarketOrderRepository, SqlKataMarketOrderRepository>();
+            services.AddSingleton<IPortfolioEntryRepository, SqlKataPortfolioEntryRepository>();
+
+            services.AddSingleton<IPortfolioService, PortfolioServiceImpl>();
+            services.AddSingleton<IMarketOrderService, MarketOrderServiceImpl>();
+            services.AddSingleton<IPortfolioEntryService, PortfolioEntryServiceImpl>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
