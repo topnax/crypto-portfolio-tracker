@@ -6,6 +6,7 @@
 @inject IPortfolioService PortfolioService
 @inject IMatDialogService MatDialogService
 @inject IMatToaster Toaster
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 
 
 <style>
@@ -78,7 +79,7 @@
                         </MatCardContent>
                         <MatCardActions>
                             <MatCardActionButtons>
-                                <MatButton>View</MatButton>
+                                <MatButton OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{portfolio.Id}");}'>View</MatButton>
                             </MatCardActionButtons>
 
                             <MatCardActionIcons>
@@ -92,7 +93,6 @@
             {
                 <MatSubtitle2>No portfolios found</MatSubtitle2> 
             }
-
         </div>
     </div>
 </div>
