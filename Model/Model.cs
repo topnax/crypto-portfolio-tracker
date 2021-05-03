@@ -27,4 +27,5 @@ namespace Model
         Eur = 978,
         Usd = 849
     }
+    
 }

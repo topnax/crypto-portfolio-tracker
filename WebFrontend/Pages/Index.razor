@@ -1,5 +1,108 @@
 ﻿@page "/"
+@using Model
+@using Services
+@using Utils
+<style>
+    .demo-mat-card {
+        margin-bottom: 2em;
+    }
 
-<h1>Hello, world!</h1>
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
 
-Welcome to KIV/NET app.
+    .clear-margin {
+        margin: 0px;
+    }
+</style>
+<div class="mat-layout-grid mat-layout-grid-align-center">
+    <div class="mat-layout-grid-inner center">
+
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+            <MatCard class="demo-mat-card">
+                <MatCardContent>
+                    <div class="demo-mat-card-content">
+                        <MatHeadline6 class="clear-margin">
+                            <MatChipSet Style="align-items: center">
+                                <MatH5 Class="clear-margin">@activePortfolio.Name</MatH5>
+                                <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency)"/>
+                            </MatChipSet>
+                        </MatHeadline6>
+                    </div>
+
+                    <MatBody2 class="demo-mat-card-content clear-margin">
+                        <div class="mat-layout-grid">
+                            <div class="mat-layout-grid-inner" style="align-items: center">
+                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                    <MatH4 Class="clear-margin">@(CurrencyUtils.Format(portfolioSummary.MarketValue, activePortfolio.Currency))</MatH4>
+                                </div>
+                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                    @(portfolioSummary.RelativeChange * 100m) %
+                                </div>
+                            </div>
+                        </div>
+                    </MatBody2>
+                </MatCardContent>
+            </MatCard>
+            <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
+                <MatTableHeader>
+                    <th>Coin</th>
+                    <th>Price</th>
+                    <th>Change (1h)</th>
+                    <th>Holdings</th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>@context.symbol.ToUpper()</td>
+                    <td>@(CurrencyUtils.Format(context.currentPrice, activePortfolio.Currency))</td>
+                    <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@context.relativeChange%</td>
+                    <td>@context.percentage%</td>
+                </MatTableRow>
+            </MatTable>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
+    </div>
+</div>
+
+
+@code
+{
+    protected Portfolio activePortfolio = new Portfolio("Main Portfolio", "My main portfolio to be used", Currency.Usd);
+
+    protected ISummaryService.Summary portfolioSummary = new(1341m, 1.8m, 9982.489m, 1000m);
+
+    protected List<PortfolioEntry> activePortfolioEntries = new List<PortfolioEntry>()
+    {
+        new("btc", 1, 1),
+        new("ada", 1, 2),
+        new("eth", 1, 3),
+        new("ltc", 1, 4),
+        new("link", 1, 5),
+    };
+
+    protected List<decimal> portfolioHoldings = new()
+    {
+        44.8886m,
+        28.18m,
+        10.116m,
+        9.38m,
+        2.70m,
+    };
+
+    protected List<PortfolioEntryRow> portfolioEntryRows = new()
+    {
+        new("btc", 57644.42m, 1.35m, 44.76m),
+        new("ada", 1.36m, 0.58m, 28.18m),
+        new("eth", 3279.64m, 10.95m, 27.11m),
+        new("ltc", 291.55m, 7.20m, 9.38m),
+        new("link", 42.20m, -5.19m, 2.70m)
+    };
+
+    protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
+
+    protected override async Task OnInitializedAsync()
+    {
+    //_existingPortfolios = PortfolioService.GetPortfolios();
+    }
+
+}
