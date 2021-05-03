@@ -1,0 +1,100 @@
+﻿@page "/newportfolioentry/{portfolioId:int}"
+@using Model
+@using Services
+@using Utils
+@using System.ComponentModel.DataAnnotations
+@using CryptoStatsSource
+@using CryptoStatsSource.model
+@inject IPortfolioService PortfolioService
+@inject IPortfolioEntryService PortfolioEntryService
+@inject ICryptoStatsSource CryptoStatsSource;
+@inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
+
+
+<style>
+    .demo-mat-card {
+        max-width: 400px;
+        margin-bottom: 2em;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .demo-mat-card-clean-margin {
+        margin: 0px;
+    }
+</style>
+
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell">
+            <MatH5>Add a new portfolio entry for @Portfolio.Name</MatH5>
+            <MatTable Items="@AvailableCryptocurrencies" Striped="true" RowClass="tester" PageSize="10" 
+                      FilterByColumnName="Symbol" DebounceMilliseconds="150" class="mat-elevation-z5" OnRowDbClick="(w) => { OnAvailableCurrencyClicked((Cryptocurrency) w); }">
+                
+                <MatTableHeader>
+                    <th>Name</th>
+                    <th>Symbol</th>
+                    <th></th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>@context.Name</td>
+                    <td>@context.Symbol</td>
+                    <td><MatButton Icon="add" Alignment OnClick="() => { OnAvailableCurrencyClicked(context);}" Style="float: right"></MatButton></td>
+                </MatTableRow>
+            </MatTable>
+        </div>
+         <div class="mat-layout-grid-cell">
+             <MatH5>Current portfolio entries</MatH5>
+             <MatTable Items="@PortfolioEntries" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
+                 <MatTableHeader>
+                     <th>Name</th>
+                     <th>Symbol</th>
+                 </MatTableHeader>
+                 <MatTableRow>
+                     <td>@context.Symbol</td>
+                     <td>@context.Symbol</td>
+                 </MatTableRow>
+             </MatTable>
+         </div>       
+
+    </div>
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int PortfolioId { get; set; }
+
+    protected Portfolio Portfolio;
+    protected List<PortfolioEntry> PortfolioEntries;
+
+    protected List<Cryptocurrency> AvailableCryptocurrencies;
+
+    protected override void OnInitialized()
+    {
+        Portfolio = PortfolioService.GetPortfolio(PortfolioId);
+        PortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var entriesSymbols = PortfolioEntries.Select(e => e.Symbol);
+        AvailableCryptocurrencies = (await CryptoStatsSource.GetAvailableCryptocurrencies()).FindAll(
+            c => !entriesSymbols.Contains(c.Symbol)
+            ).OrderBy(c => c.Symbol.Length).ToList();
+        
+        
+    }
+
+    private void OnAvailableCurrencyClicked(Cryptocurrency cryptocurrency)
+    {
+        Console.WriteLine("OnAvailableCurrencyClicked");
+        PortfolioEntryService.CreatePortfolioEntry(cryptocurrency.Symbol, PortfolioId);
+        AvailableCryptocurrencies.Remove(cryptocurrency);
+        PortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+    }
+}
