@@ -5,12 +5,13 @@
 @using System.ComponentModel.DataAnnotations
 @using CryptoStatsSource
 @using CryptoStatsSource.model
+@using Repository
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject ICryptoStatsSource CryptoStatsSource;
 @inject IMatDialogService MatDialogService
 @inject IMatToaster Toaster
-
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 
 <style>
     .demo-mat-card {
@@ -29,43 +30,76 @@
 
 <div class="mat-layout-grid">
     <div class="mat-layout-grid-inner">
-        <div class="mat-layout-grid-cell">
-            <MatH5>Add a new portfolio entry for @Portfolio.Name</MatH5>
-            <MatTable Items="@AvailableCryptocurrencies" Striped="true" RowClass="tester" PageSize="10" 
-                      FilterByColumnName="Symbol" DebounceMilliseconds="150" class="mat-elevation-z5" OnRowDbClick="(w) => { OnAvailableCurrencyClicked((Cryptocurrency) w); }">
-                
-                <MatTableHeader>
-                    <th>Name</th>
-                    <th>Symbol</th>
-                    <th></th>
-                </MatTableHeader>
-                <MatTableRow>
-                    <td>@context.Name</td>
-                    <td>@context.Symbol</td>
-                    <td><MatButton Icon="add" Alignment OnClick="() => { OnAvailableCurrencyClicked(context);}" Style="float: right"></MatButton></td>
-                </MatTableRow>
-            </MatTable>
-        </div>
-         <div class="mat-layout-grid-cell">
-             <MatH5>Current portfolio entries</MatH5>
-             <MatTable Items="@PortfolioEntries" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
-                 <MatTableHeader>
-                     <th>Name</th>
-                     <th>Symbol</th>
-                 </MatTableHeader>
-                 <MatTableRow>
-                     <td>@context.Symbol</td>
-                     <td>@context.Symbol</td>
-                 </MatTableRow>
-             </MatTable>
-         </div>       
+        <div class="mat-layout-grid-cell-span-6">
+            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolio/{Portfolio.Id}"); }'>Back</MatButton>Manage entries of <b>@Portfolio.Name</b></MatH5>
+            <MatTextField Label="Filter by symbol" Style="margin-bottom: 2rem;" Icon="filter_list" FullWidth="true" @bind-Value="@CryptocurrencyFilter"></MatTextField>
+            @if (AvailableCryptocurrenciesWithUsage == null)
+            {
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            }
+            else
+            {
+                @if (AvailableCryptocurrenciesWithUsage.Count > 0)
+                {
+                    <MatTable Items="@AvailableCryptocurrenciesWithUsage" Striped="true" RowClass="tester" PageSize="10"
+                              DebounceMilliseconds="150" class="mat-elevation-z5">
 
+                        <MatTableHeader>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th></th>
+                        </MatTableHeader>
+                        <MatTableRow>
+                            <td>@context.Item1.Symbol</td>
+                            <td>
+                                <div style="min-width: 12em">@context.Item1.Name</div>
+                            </td>
+                            @if (context.Item2)
+                            {
+                                <td>
+                                    <MatIconButton Icon="add" Alignment OnClick="() => { OnAddCurrencyClicked(context.Item1); }" Style="float: right"></MatIconButton>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    <MatIconButton Icon="delete" Alignment OnClick="() => { OnDeleteCurrencyClicked(context.Item1); }" Style="float: right"></MatIconButton>
+                                </td>
+                            }
+                        </MatTableRow>
+                    </MatTable>
+                }
+                else
+                {
+                    <MatH6>No cryptocurrencies match the symbol \"@CryptocurrencyFilter\"</MatH6>
+                }
+            }
+        </div>
     </div>
 </div>
 
 
 @code
 {
+    public string CryptocurrencyFilter
+    {
+        get => _cryptocurrencyFilter;
+        set
+        {
+            _cryptocurrencyFilter = value;
+            FilterCurrenciesBySymbol(value);
+            this.StateHasChanged();
+        }
+    }
+
+    private void FilterCurrenciesBySymbol(string value)
+    {
+        FilteredCryptocurrencies = AvailableCryptocurrencies.FindAll(c => c.Symbol.Contains(value));
+        UpdateAvailableCryptocurrencies(FilteredCryptocurrencies);
+    }
+
+    private string _cryptocurrencyFilter;
+
     [Parameter]
     public int PortfolioId { get; set; }
 
@@ -73,6 +107,8 @@
     protected List<PortfolioEntry> PortfolioEntries;
 
     protected List<Cryptocurrency> AvailableCryptocurrencies;
+    protected List<Cryptocurrency> FilteredCryptocurrencies;
+    protected List<Tuple<Cryptocurrency, bool>> AvailableCryptocurrenciesWithUsage;
 
     protected override void OnInitialized()
     {
@@ -82,19 +118,42 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var entriesSymbols = PortfolioEntries.Select(e => e.Symbol);
-        AvailableCryptocurrencies = (await CryptoStatsSource.GetAvailableCryptocurrencies()).FindAll(
-            c => !entriesSymbols.Contains(c.Symbol)
-            ).OrderBy(c => c.Symbol.Length).ToList();
-        
-        
+        AvailableCryptocurrencies = await CryptoStatsSource.GetAvailableCryptocurrencies();
+        FilteredCryptocurrencies = AvailableCryptocurrencies;
+        UpdateAvailableCryptocurrencies(AvailableCryptocurrencies);
     }
 
-    private void OnAvailableCurrencyClicked(Cryptocurrency cryptocurrency)
+    private void UpdateAvailableCryptocurrencies(List<Cryptocurrency> availableCryptocurrencies)
     {
-        Console.WriteLine("OnAvailableCurrencyClicked");
-        PortfolioEntryService.CreatePortfolioEntry(cryptocurrency.Symbol, PortfolioId);
-        AvailableCryptocurrencies.Remove(cryptocurrency);
-        PortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+        var entriesSymbols = PortfolioEntries.Select(e => e.Symbol.ToLower());
+        AvailableCryptocurrenciesWithUsage = availableCryptocurrencies.Select(
+            c => new Tuple<Cryptocurrency, bool>(c, !entriesSymbols.Contains(c.Symbol.ToLower()))
+            ).OrderBy(c => c.Item1.Symbol.Length).ToList();
+    }
+
+    private void OnAddCurrencyClicked(Cryptocurrency cryptocurrency)
+    {
+        Console.WriteLine("OnAddCurrencyClicked");
+        var entry = PortfolioEntryService.CreatePortfolioEntry(cryptocurrency.Symbol, PortfolioId);
+        PortfolioEntries.Add(entry);
+        UpdateAvailableCryptocurrencies(FilteredCryptocurrencies);
+        StateHasChanged();
+        Toaster.Add($"{cryptocurrency.Symbol.ToUpper()} entry successfully added to {Portfolio.Name}.", MatToastType.Success, "", "");
+    }
+
+    private async void OnDeleteCurrencyClicked(Cryptocurrency cryptocurrency)
+    {
+        Console.WriteLine("OnDeleteCurrencyClicked");
+        // TODO display confirmation dialog only when entry orders  exist
+        var result = await MatDialogService.ConfirmAsync($"Do you really wish to delete {cryptocurrency.Symbol.ToUpper()} entry including all of it's market entries?");
+        if (result)
+        {
+            var entry = PortfolioEntries.Find(entry => entry.Symbol == cryptocurrency.Symbol);
+            PortfolioEntryService.DeletePortfolioEntry(entry);
+            PortfolioEntries.Remove(entry);
+            UpdateAvailableCryptocurrencies(FilteredCryptocurrencies);
+            StateHasChanged();
+            Toaster.Add($"{cryptocurrency.Symbol.ToUpper()} entry successfully deleted from {Portfolio.Name}.", MatToastType.Success, "", "");
+        }
     }
 }
