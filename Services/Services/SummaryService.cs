@@ -41,6 +41,11 @@ namespace Services
                 totalCost += summary.Cost;
                 totalAbsoluteChange += summary.AbsoluteChange;
             }
+            
+            if (totalCost == 0)
+            {
+                return new ISummaryService.Summary(0,0,0,0);
+            }            
 
             decimal totalRelativeChange = (totalMarketValue / totalCost) -1m;
 
@@ -69,6 +74,11 @@ namespace Services
 
                     totalFee += order.Fee;
                 });
+
+            if (totalCost == 0)
+            {
+                return new ISummaryService.Summary(0,0,0,0);
+            }            
 
             decimal currentTotalHoldingValue = totalHoldingSize * assetPrice;
 

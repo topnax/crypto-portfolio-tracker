@@ -31,9 +31,9 @@
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
-
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
+            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{activePortfolio.Id}"); }'>Back</MatButton>
             <MatCard class="demo-mat-card">
                 <MatCardContent>
                     <div class="demo-mat-card-content">

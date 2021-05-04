@@ -46,12 +46,15 @@ namespace WebFrontend
                 config.VisibleStateDuration = 3000;
             });
 
-            services.AddScoped<ICryptoStatsSource, CoingeckoSource>();
+            services.AddSingleton<ICryptoStatsSource, CoingeckoSource>();
 
             // TODO ensure that SqlKataDatabase gets disposed
             var dbConnection = new SqliteConnection("Data Source=data.db");
             var db = new SqlKataDatabase(dbConnection, new SqliteCompiler());
             services.AddSingleton(ctx => db);
+
+            services.AddSingleton<ICryptoNameResolver, CryptoNameResolverImpl>();
+            services.AddSingleton<ISummaryService, SummaryServiceImpl>();
             
             services.AddSingleton<IPortfolioRepository, SqlKataPortfolioRepository>();
             services.AddSingleton<IMarketOrderRepository, SqlKataMarketOrderRepository>();

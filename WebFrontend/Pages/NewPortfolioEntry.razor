@@ -31,7 +31,7 @@
 <div class="mat-layout-grid">
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell-span-6">
-            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolio/{Portfolio.Id}"); }'>Back</MatButton>Manage entries of <b>@Portfolio.Name</b></MatH5>
+            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{Portfolio.Id}"); }'>Back</MatButton>Manage entries of <b>@Portfolio.Name</b></MatH5>
             <MatTextField Label="Filter by symbol" Style="margin-bottom: 2rem;" Icon="filter_list" FullWidth="true" @bind-Value="@CryptocurrencyFilter"></MatTextField>
             @if (AvailableCryptocurrenciesWithUsage == null)
             {
@@ -128,7 +128,7 @@
         var entriesSymbols = PortfolioEntries.Select(e => e.Symbol.ToLower());
         AvailableCryptocurrenciesWithUsage = availableCryptocurrencies.Select(
             c => new Tuple<Cryptocurrency, bool>(c, !entriesSymbols.Contains(c.Symbol.ToLower()))
-            ).OrderBy(c => c.Item1.Symbol.Length).ToList();
+            ).OrderBy(c => c.Item2).ThenBy(c => c.Item1.Symbol.Length).ToList();
     }
 
     private void OnAddCurrencyClicked(Cryptocurrency cryptocurrency)

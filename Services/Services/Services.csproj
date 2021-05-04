@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\CryptoStatsSource\CryptoStatsSource.csproj" />
       <ProjectReference Include="..\..\Model\Model.csproj" />
       <ProjectReference Include="..\..\Repository\Repository.csproj" />
     </ItemGroup>
