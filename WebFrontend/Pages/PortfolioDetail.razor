@@ -38,15 +38,15 @@
 
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-            @if (activePortfolio != null)
+            @if (ActivePortfolio != null)
             {
                 <MatCard class="demo-mat-card">
                     <MatCardContent>
                         <div class="demo-mat-card-content">
                             <MatHeadline6 class="clear-margin">
                                 <MatChipSet Style="align-items: center">
-                                    <MatH5 Class="clear-margin">@activePortfolio.Name</MatH5>
-                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency)"/>
+                                    <MatH5 Class="clear-margin">@ActivePortfolio.Name</MatH5>
+                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency)"/>
                                 </MatChipSet>
                             </MatHeadline6>
                         </div>
@@ -54,31 +54,46 @@
                         <MatBody2 class="demo-mat-card-content clear-margin">
                             <div class="mat-layout-grid">
                                 <div class="mat-layout-grid-inner" style="align-items: center">
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                        <MatH4 Class="clear-margin">@(CurrencyUtils.Format(portfolioSummary.MarketValue, activePortfolio.Currency))</MatH4>
-                                    </div>
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                        @(portfolioSummary.RelativeChange * 100m) %
-                                    </div>
+                                    @if (PortfolioSummary != null)
+                                    {
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+
+                                            <MatH4 Class="clear-margin">@(CurrencyUtils.Format(PortfolioSummary.MarketValue, ActivePortfolio.Currency))</MatH4>
+                                        </div>
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                            @(PortfolioSummary.RelativeChange * 100m) %
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <MatProgressCircle Indeterminate="true"></MatProgressCircle>
+                                    }
                                 </div>
                             </div>
                         </MatBody2>
                     </MatCardContent>
                 </MatCard>
-                <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
-                    <MatTableHeader>
-                        <th>Coin</th>
-                        <th>Price</th>
-                        <th>Change (1h)</th>
-                        <th>Holdings</th>
-                    </MatTableHeader>
-                    <MatTableRow>
-                        <td>@context.symbol.ToUpper()</td>
-                        <td>@(CurrencyUtils.Format(context.currentPrice, activePortfolio.Currency))</td>
-                        <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@context.relativeChange%</td>
-                        <td>@context.percentage%</td>
-                    </MatTableRow>
-                </MatTable>
+                @if (PortfolioEntryRows != null)
+                {
+                    <MatTable Items="@PortfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
+                        <MatTableHeader>
+                            <th>Coin</th>
+                            <th>Price</th>
+                            <th>Change (1h)</th>
+                            <th>Holdings</th>
+                        </MatTableHeader>
+                        <MatTableRow>
+                            <td>@context.symbol.ToUpper()</td>
+                            <td>@(CurrencyUtils.Format(context.currentPrice, ActivePortfolio.Currency))</td>
+                            <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@DecimalUtils.FormatTwoDecimalPlaces(context.relativeChange)%</td>
+                            <td>@context.percentage%</td>
+                        </MatTableRow>
+                    </MatTable>
+                }
+                else
+                {
+                    <MatProgressBar Indeterminate="true"></MatProgressBar>
+                }
             }
             else
             {
@@ -88,7 +103,7 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{activePortfolio.Id}"); }'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}"); }'></MatFAB>
 
 
 @code
@@ -96,86 +111,90 @@
     [Parameter]
     public int PortfolioId { get; set; }
 
-    protected Portfolio activePortfolio;
+    protected Portfolio ActivePortfolio;
 
-    protected ISummaryService.Summary portfolioSummary = new(1341m, 1.8m, 9982.489m, 1000m);
+    protected ISummaryService.Summary PortfolioSummary = null;
 
-    protected List<PortfolioEntry> activePortfolioEntries = new List<PortfolioEntry>()
-    {
-        new("btc", 1, 1),
-        new("ada", 1, 2),
-        new("eth", 1, 3),
-        new("ltc", 1, 4),
-        new("link", 1, 5),
-    };
+    protected List<PortfolioEntry> ActivePortfolioEntries;
 
-    protected List<decimal> portfolioHoldings = new()
-    {
-        44.8886m,
-        28.18m,
-        10.116m,
-        9.38m,
-        2.70m,
-    };
-
-    protected List<PortfolioEntryRow> portfolioEntryRows = new()
-    {
-        new("btc", 57644.42m, 1.35m, 44.76m),
-        new("ada", 1.36m, 0.58m, 28.18m),
-        new("eth", 3279.64m, 10.95m, 27.11m),
-        new("ltc", 291.55m, 7.20m, 9.38m),
-        new("link", 42.20m, -5.19m, 2.70m)
-    };
+    protected List<PortfolioEntryRow> PortfolioEntryRows;
 
     protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
 
     protected override void OnInitialized()
     {
-        activePortfolio = PortfolioService.GetPortfolio(PortfolioId);
-        activePortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+        ActivePortfolio = PortfolioService.GetPortfolio(PortfolioId);
+        ActivePortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+        _loadEntryInfo();
     }
 
-    protected override async Task OnInitializedAsync()
+
+    private async void _loadEntryInfo()
     {
-        var marketEntries = (await CryptoStatsSource.GetMarketEntries(
-            CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency).ToLower(),
-            await Task.WhenAll(activePortfolioEntries.Select(async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower()))
-            )).ToDictionary(entry => entry.Symbol, entry => entry);
+        // resolve names of all portfolio entries 
+        var portfolioEntriesNames = await Task.WhenAll(ActivePortfolioEntries.Select(async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower()));
 
+        // fetch market entries of all entries of the portfolio 
+        var marketEntries = await CryptoStatsSource.GetMarketEntries(
+            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(), portfolioEntriesNames
+            );
 
-        List<ISummaryService.Summary> summaries = new List<ISummaryService.Summary>();
-        foreach (var portfolioEntry in activePortfolioEntries)
-        {
-            var marketEntry = marketEntries.GetValueOrDefault(portfolioEntry.Symbol);
+        // create a dictionary where a symbol is mapped to a market entry
+        var symbolsToMarketEntries = marketEntries.ToDictionary(entry => entry.Symbol, entry => entry);
 
-            if (marketEntry == null)
+        // compute portfolio entry summaries 
+        var entrySummaries = ActivePortfolioEntries.Select(
+            portfolioEntry =>
             {
-    // TODO market entry is null
+                // find the evaluation of the entry's asset
+                var marketEntry = symbolsToMarketEntries.GetValueOrDefault(portfolioEntry.Symbol);
+
+                if (marketEntry == null)
+                {
+                    // TODO market entry is null
+                }
+                
+                // fetch all orders of the currently iterated portfolio entry
+                var entryMarketOrders = MarketOrderService.GetPortfolioEntryOrders(portfolioEntry.Id);
+                
+                // compute the summary of the entry based on market orders
+                return SummaryService.GetPortfolioEntrySummary(entryMarketOrders, marketEntry.CurrentPrice);
             }
-            var entryOrders = MarketOrderService.GetPortfolioEntryOrders(portfolioEntry.Id);
-            summaries.Add(SummaryService.GetPortfolioEntrySummary(entryOrders, marketEntry.CurrentPrice));
-        }
-        portfolioSummary = SummaryService.GetPortfolioSummary(summaries);
+            ).ToList();
 
-        if (portfolioSummary.Cost == 0)
+        // compute portfolio's summary based on summaries of it's entries
+        PortfolioSummary = SummaryService.GetPortfolioSummary(entrySummaries);
+
+        // if the cost of the summary is zero, set the relative change to zero
+        if (PortfolioSummary.Cost == 0)
         {
-            portfolioSummary = portfolioSummary with{
+            PortfolioSummary = PortfolioSummary with {
                 RelativeChange = 0
-                };
+           };
         }
 
-        var totalMarketValue = summaries.Sum(summary => summary.MarketValue);
+        // compute the total value of the portfolio by summing market values of all entries
+        var portfolioTotalMarketValue = entrySummaries.Sum(summary => summary.MarketValue);
 
-
-        portfolioEntryRows = summaries.Zip(activePortfolioEntries).Select((summary) => new PortfolioEntryRow(summary.Second.Symbol, marketEntries[summary.Second.Symbol].CurrentPrice, new decimal(marketEntries[summary.Second.Symbol].PriceChangePercentage24H), totalMarketValue > 0 ? (summary.First.MarketValue / totalMarketValue) * 100 : 0)).ToList();
+        // create portfolio entry table rows
+        PortfolioEntryRows = entrySummaries.Zip(ActivePortfolioEntries).Select(
+            (tuple) => new PortfolioEntryRow(
+                // symbol of the portfolio entry
+                tuple.Second.Symbol,
+                // current price of the entry's asset 
+                symbolsToMarketEntries[tuple.Second.Symbol].CurrentPrice,
+                // asset's price change since the last 24h 
+                new decimal(symbolsToMarketEntries[tuple.Second.Symbol].PriceChangePercentage24H),
+                // percentage within the portfolio
+                portfolioTotalMarketValue > 0 ? (tuple.First.MarketValue / portfolioTotalMarketValue) * 100 : 0)
+            ).ToList();
+        
+        StateHasChanged();
     }
 
     public void SelectionChangedEvent(object row)
     {
-        if (row == null)
-        {
-        }
-        else
+        if (row != null)
         {
             NavigationManager.NavigateTo($"entrydetail");
         }

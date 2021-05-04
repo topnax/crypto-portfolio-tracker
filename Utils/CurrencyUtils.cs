@@ -24,7 +24,7 @@ namespace Utils
 
         public static string Format(decimal value, Currency currency)
         {
-            var valueStr = String.Format("{0:.00}", Math.Abs(value));
+            var valueStr = String.Format("{0:0.00}", Math.Abs(value));
             var output = "";
             switch (currency)
             {
