@@ -27,72 +27,40 @@
 <div class="mat-layout-grid">
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell">
-            <h2>Create a new portfolio</h2>
-            <EditForm Model="FormModel" OnValidSubmit="SaveButtonClicked">
-                <DataAnnotationsValidator/>
-                <p>
-                    <MatTextField @bind-Value="@FormModel.Name" Label="Portfolio name"></MatTextField>
-                    <ValidationMessage For="@(() => FormModel.Name)"/>
-                </p>
+            <MatCard>
+                <MatCardContent class="demo-mat-card-content">
+                    <h2>New portfolio</h2>
+                    <EditForm Model="FormModel" OnValidSubmit="SaveButtonClicked">
+                        <DataAnnotationsValidator/>
+                        <p>
+                            <MatTextField FullWidth="true" @bind-Value="@FormModel.Name" Label="Portfolio name"></MatTextField>
+                            <ValidationMessage For="@(() => FormModel.Name)"/>
+                        </p>
 
-                <p>
-                    <MatTextField @bind-Value="@FormModel.Description" Label="Description"></MatTextField>
-                    <ValidationMessage For="@(() => FormModel.Description)"/>
-                </p>
-                <MatRadioGroup @bind-Value="@FormModel.SelectedCurrency" Items="@AvailableCurrencies">
-                    <ItemTemplate Context="currencyContext">
-                        <div>
-                            <MatRadioButton Value="@currencyContext">@GetCurrencyLabel(@currencyContext)</MatRadioButton>
-                        </div>
-                    </ItemTemplate>
-                </MatRadioGroup>
-                <ValidationMessage For="@(() => FormModel.SelectedCurrency)"/>
-                <p>
-                    <MatButton Raised="true" Type="submit">Create</MatButton>
-                </p>
-            </EditForm>
-        </div>
-        <div class="mat-layout-grid-cell">
-            <h2>Existing portfolios</h2>
-            @if (_existingPortfolios == null)
-            {
-                <MatProgressBar Indeterminate="true"></MatProgressBar>
-            }
-            else if (_existingPortfolios.Count > 0)
-            {
-                @foreach (var portfolio in _existingPortfolios)
-                {
-                    <MatCard class="demo-mat-card">
-                        <MatCardContent>
-                            <div class="demo-mat-card-content">
-                                <MatHeadline6 class="demo-mat-card-clean-margin">
-                                    <MatChipSet>
-                                        @portfolio.Name
-                                        <MatChip Label="@GetCurrencyLabel(portfolio.Currency)"/>
-                                    </MatChipSet>
-                                </MatHeadline6>
-                            </div>
-
-                            <MatBody2 class="demo-mat-card-content demo-mat-card-clean-margin">
-                                @portfolio.Description
-                            </MatBody2>
-                        </MatCardContent>
+                        <p>
+                            <MatTextField FullWidth="true" @bind-Value="@FormModel.Description" Label="Description"></MatTextField>
+                            <ValidationMessage For="@(() => FormModel.Description)"/>
+                        </p>
+                        <MatRadioGroup @bind-Value="@FormModel.SelectedCurrency" Items="@AvailableCurrencies">
+                            <ItemTemplate Context="currencyContext">
+                                <div>
+                                    <MatRadioButton Value="@currencyContext">@GetCurrencyLabel(@currencyContext)</MatRadioButton>
+                                </div>
+                            </ItemTemplate>
+                        </MatRadioGroup>
+                        <ValidationMessage For="@(() => FormModel.SelectedCurrency)"/>
                         <MatCardActions>
                             <MatCardActionButtons>
-                                <MatButton OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{portfolio.Id}");}'>View</MatButton>
+                                <MatButton Type="submit">Create</MatButton>
                             </MatCardActionButtons>
 
                             <MatCardActionIcons>
-                                <MatIconButton Icon="@MatIconNames.Delete" OnClick="(_) => DeletePortfolio(portfolio)"></MatIconButton>
+                                <MatIconButton Icon="@MatIconNames.Refresh" OnClick="(_) => FormModel.Reset()"></MatIconButton>
                             </MatCardActionIcons>
                         </MatCardActions>
-                    </MatCard>
-                }
-            }
-            else
-            {
-                <MatSubtitle2>No portfolios found</MatSubtitle2> 
-            }
+                    </EditForm>
+                </MatCardContent>
+            </MatCard>
         </div>
     </div>
 </div>

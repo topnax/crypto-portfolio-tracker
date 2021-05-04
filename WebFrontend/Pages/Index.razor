@@ -3,6 +3,7 @@
 @using Services
 @using Utils
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject IPortfolioService PortfolioService
 
 <style>
     .demo-mat-card {
@@ -29,55 +30,62 @@
 
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-            <MatCard class="demo-mat-card">
-                <MatCardContent>
-                    <div class="demo-mat-card-content">
-                        <MatHeadline6 class="clear-margin">
-                            <MatChipSet Style="align-items: center">
-                                <MatH5 Class="clear-margin">@activePortfolio.Name</MatH5>
-                                <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency)"/>
-                            </MatChipSet>
-                        </MatHeadline6>
-                    </div>
+            @if (activePortfolio != null)
+            {
+                <MatCard class="demo-mat-card">
+                    <MatCardContent>
+                        <div class="demo-mat-card-content">
+                            <MatHeadline6 class="clear-margin">
+                                <MatChipSet Style="align-items: center">
+                                    <MatH5 Class="clear-margin">@activePortfolio.Name</MatH5>
+                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency)"/>
+                                </MatChipSet>
+                            </MatHeadline6>
+                        </div>
 
-                    <MatBody2 class="demo-mat-card-content clear-margin">
-                        <div class="mat-layout-grid">
-                            <div class="mat-layout-grid-inner" style="align-items: center">
-                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                    <MatH4 Class="clear-margin">@(CurrencyUtils.Format(portfolioSummary.MarketValue, activePortfolio.Currency))</MatH4>
-                                </div>
-                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                    @(portfolioSummary.RelativeChange * 100m) %
+                        <MatBody2 class="demo-mat-card-content clear-margin">
+                            <div class="mat-layout-grid">
+                                <div class="mat-layout-grid-inner" style="align-items: center">
+                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                        <MatH4 Class="clear-margin">@(CurrencyUtils.Format(portfolioSummary.MarketValue, activePortfolio.Currency))</MatH4>
+                                    </div>
+                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                        @(portfolioSummary.RelativeChange * 100m) %
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </MatBody2>
-                </MatCardContent>
-            </MatCard>
-            <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
-                <MatTableHeader>
-                    <th>Coin</th>
-                    <th>Price</th>
-                    <th>Change (1h)</th>
-                    <th>Holdings</th>
-                </MatTableHeader>
-                <MatTableRow>
-                    <td>@context.symbol.ToUpper()</td>
-                    <td>@(CurrencyUtils.Format(context.currentPrice, activePortfolio.Currency))</td>
-                    <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@context.relativeChange%</td>
-                    <td>@context.percentage%</td>
-                </MatTableRow>
-            </MatTable>
+                        </MatBody2>
+                    </MatCardContent>
+                </MatCard>
+                <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
+                    <MatTableHeader>
+                        <th>Coin</th>
+                        <th>Price</th>
+                        <th>Change (1h)</th>
+                        <th>Holdings</th>
+                    </MatTableHeader>
+                    <MatTableRow>
+                        <td>@context.symbol.ToUpper()</td>
+                        <td>@(CurrencyUtils.Format(context.currentPrice, activePortfolio.Currency))</td>
+                        <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@context.relativeChange%</td>
+                        <td>@context.percentage%</td>
+                    </MatTableRow>
+                </MatTable>
+            }
+            else
+            {
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            }
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry"></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{activePortfolio.Id}"); }'></MatFAB>
 
 
 @code
 {
-    protected Portfolio activePortfolio = new Portfolio("Main Portfolio", "My main portfolio to be used", Currency.Usd);
+    protected Portfolio activePortfolio;
 
     protected ISummaryService.Summary portfolioSummary = new(1341m, 1.8m, 9982.489m, 1000m);
 
@@ -109,6 +117,11 @@
     };
 
     protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
+
+    protected override void OnInitialized()
+    {
+        activePortfolio = PortfolioService.GetPortfolios()[0];
+    }
 
     protected override async Task OnInitializedAsync()
     {
