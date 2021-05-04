@@ -1,0 +1,133 @@
+﻿@page "/entrydetail"
+@using Model
+@using Services
+@using Utils
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject IMatDialogService MatDialogService
+
+<style>
+    .demo-mat-card {
+        margin-bottom: 2em;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .clear-margin {
+        margin: 0px;
+    }
+    
+    .clear-margin-vertical {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }    
+    .app-fab--absolute {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+</style>
+<div class="mat-layout-grid mat-layout-grid-align-center">
+    <div class="mat-layout-grid-inner center">
+
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
+            <MatCard class="demo-mat-card">
+                <MatCardContent>
+                    <div class="demo-mat-card-content">
+                        <MatHeadline6 class="clear-margin">
+                            <MatChipSet Style="align-items: center">
+                                <MatH5 Class="clear-margin-vertical">@portfolioEntryName</MatH5>
+                                <MatChip Style="vertical-align: center" Label="@(activePortfolioEntry.Symbol.ToUpper())"/>
+                                <MatH6 Class="clear-margin-vertical" Style="text-align: end;float: end;">1 BTC = $30 000</MatH6>
+                            </MatChipSet>
+                        </MatHeadline6>
+                    </div>
+
+                    <MatBody2 class="demo-mat-card-content clear-margin">
+                        <div class="mat-layout-grid">
+                            <div class="mat-layout-grid-inner" style="align-items: center">
+                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                    <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, activePortfolio.Currency))</MatH4>
+                                </div>
+                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                    @(entrySummary.RelativeChange * 100m) %
+                                </div>
+                            </div>
+                        </div>
+                    </MatBody2>
+                </MatCardContent>
+            </MatCard>
+            <MatTable Items="@tableRowsItems" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
+                <MatTableHeader>
+                    <th>Date</th>
+                    <th>Size</th>
+                    <th>Market Value</th>
+                    <th>Change</th>
+                    <th>Cost</th>
+                    <th>Fee</th>
+                    <th>Actions</th>
+                </MatTableHeader>
+                <MatTableRow>
+                    <td>
+                        <div style="min-width: 9rem">@(String.Format("{0:d.M.yyyy HH:mm:ss}", context.Item1.Date))</div>
+                    </td>
+                    <td>
+                        <div style="min-width: 9rem">@context.Item1.Size @activePortfolioEntry.Symbol.ToUpper()</div>
+                    </td>
+                    <td>@CurrencyUtils.Format(context.Item2.MarketValue, activePortfolio.Currency)</td>
+                    <td style='color: @(context.Item2.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>
+                        <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, activePortfolio.Currency) (@(context.Item2.RelativeChange * 100)%)</div>
+                    </td>
+                    <td>@CurrencyUtils.Format(context.Item2.Cost, activePortfolio.Currency)</td>
+                    <td>@CurrencyUtils.Format(context.Item1.Fee, activePortfolio.Currency)</td>
+                    <td>
+                        <MatIconButton Icon="edit" OnClick="EditMarketOrder"></MatIconButton>
+                        <MatIconButton Icon="delete" OnClick="DeletePortfolio"></MatIconButton>
+                    </td>
+                </MatTableRow>
+            </MatTable>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+    </div>
+</div>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new order"></MatFAB>
+
+
+@code
+{
+    protected Portfolio activePortfolio = new Portfolio("Main Portfolio", "My main portfolio to be used", Currency.Usd);
+    protected PortfolioEntry activePortfolioEntry = new("btc");
+    protected string portfolioEntryName = "Bitcoin";
+    protected ISummaryService.Summary entrySummary = new(523m, 0.719m, 1268.89m, 745.58m);
+
+    protected List<Tuple<MarketOrder, ISummaryService.Summary>> tableRowsItems = new()
+    {
+        new Tuple<MarketOrder, ISummaryService.Summary>(new(18300m, 0.1m, 0.003266m, DateTime.Now.AddMonths(-6), false), new(120m, 2m, 183.00m, 60m)),
+        new Tuple<MarketOrder, ISummaryService.Summary>(new(21200, 0.3m, 0.002866m, DateTime.Now.AddDays(91), false), new(101m, 2m, 123.00m, 45m)),
+        new Tuple<MarketOrder, ISummaryService.Summary>(new(18300m, 0.1m, 0.003266m, DateTime.Now.AddMonths(-6), false), new(180m - 30m, 2.3m, 113.00m, 23m)),
+        new Tuple<MarketOrder, ISummaryService.Summary>(new(18300m, 0.1m, 0.003266m, DateTime.Now.AddMonths(-6), false), new(-60m, -0.6m, 40.00m, 100m)),
+    };
+
+    protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
+
+    protected override async Task OnInitializedAsync()
+    {
+    //_existingPortfolios = PortfolioService.GetPortfolios();
+    }
+
+    public void EditMarketOrder(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo($"editorder");
+    }
+
+    async void DeletePortfolio(MouseEventArgs e)
+    {
+        var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this market order?");
+        if (result)
+        {
+        }
+    }
+}

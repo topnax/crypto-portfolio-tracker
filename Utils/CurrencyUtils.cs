@@ -24,18 +24,30 @@ namespace Utils
 
         public static string Format(decimal value, Currency currency)
         {
-            var valueStr = String.Format("{0:.00}", value);
+            var valueStr = String.Format("{0:.00}", Math.Abs(value));
+            var output = "";
             switch (currency)
             {
                 case Currency.Czk:
-                    return $"{valueStr},- Kč";
+                    output =  $"{valueStr},- Kč";
+                    break;
                 case Currency.Eur:
-                    return $"{valueStr} €";
+                    output =  $"€{valueStr}";
+                    break;
                 case Currency.Usd:
-                    return $"${valueStr}";
+                    output = $"${valueStr}";
+                    break;
+                default:
+                    output = "UNDEFINED_CURRENCY";
+                    break;
             }
 
-            return "UNDEFINED";
+            if (value < 0)
+            {
+                output = "-" + output;
+            }
+
+            return output;
         }
     }
 }

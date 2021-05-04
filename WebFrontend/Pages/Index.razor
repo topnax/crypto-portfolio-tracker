@@ -2,6 +2,8 @@
 @using Model
 @using Services
 @using Utils
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+
 <style>
     .demo-mat-card {
         margin-bottom: 2em;
@@ -52,7 +54,7 @@
                     </MatBody2>
                 </MatCardContent>
             </MatCard>
-            <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
+            <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
                 <MatTableHeader>
                     <th>Coin</th>
                     <th>Price</th>
@@ -111,6 +113,17 @@
     protected override async Task OnInitializedAsync()
     {
     //_existingPortfolios = PortfolioService.GetPortfolios();
+    }
+
+    public void SelectionChangedEvent(object row)
+    {
+        if (row == null)
+        {
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"entrydetail");
+        }
     }
 
 }
