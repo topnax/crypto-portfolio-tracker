@@ -14,6 +14,13 @@
     .clear-margin {
         margin: 0px;
     }
+    
+    .app-fab--absolute {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
@@ -63,6 +70,7 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
     </div>
 </div>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry"></MatFAB>
 
 
 @code
