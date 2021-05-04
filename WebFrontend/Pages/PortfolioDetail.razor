@@ -83,10 +83,10 @@
                             <th>Holdings</th>
                         </MatTableHeader>
                         <MatTableRow>
-                            <td>@context.symbol.ToUpper()</td>
-                            <td>@(CurrencyUtils.Format(context.currentPrice, ActivePortfolio.Currency))</td>
-                            <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@DecimalUtils.FormatTwoDecimalPlaces(context.relativeChange)%</td>
-                            <td>@context.percentage%</td>
+                            <td>@context.Symbol.ToUpper()</td>
+                            <td>@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</td>
+                            <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</td>
+                            <td>@context.Percentage%</td>
                         </MatTableRow>
                     </MatTable>
                 }
@@ -119,7 +119,7 @@
 
     protected List<PortfolioEntryRow> PortfolioEntryRows;
 
-    protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
+    protected record PortfolioEntryRow(string Symbol, decimal CurrentPrice, decimal RelativeChange, decimal Percentage, int EntryId);
 
     protected override void OnInitialized()
     {
@@ -132,7 +132,10 @@
     private async void _loadEntryInfo()
     {
         // resolve names of all portfolio entries 
-        var portfolioEntriesNames = await Task.WhenAll(ActivePortfolioEntries.Select(async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower()));
+        var portfolioEntriesNames = await Task.WhenAll(
+            ActivePortfolioEntries.Select(
+                async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower())
+            );
 
         // fetch market entries of all entries of the portfolio 
         var marketEntries = await CryptoStatsSource.GetMarketEntries(
@@ -186,7 +189,10 @@
                 // asset's price change since the last 24h 
                 new decimal(symbolsToMarketEntries[tuple.Second.Symbol].PriceChangePercentage24H),
                 // percentage within the portfolio
-                portfolioTotalMarketValue > 0 ? (tuple.First.MarketValue / portfolioTotalMarketValue) * 100 : 0)
+                portfolioTotalMarketValue > 0 ? (tuple.First.MarketValue / portfolioTotalMarketValue) * 100 : 0,
+                // pass the entry id
+                tuple.Second.Id
+                )
             ).ToList();
         
         StateHasChanged();
@@ -196,7 +202,7 @@
     {
         if (row != null)
         {
-            NavigationManager.NavigateTo($"entrydetail");
+            NavigationManager.NavigateTo($"entrydetail/{((PortfolioEntryRow) row).EntryId}");
         }
     }
 

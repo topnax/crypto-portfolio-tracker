@@ -1,9 +1,17 @@
-﻿@page "/entrydetail"
+﻿@page "/entrydetail/{entryId:int}"
 @using Model
 @using Services
 @using Utils
+@using CryptoStatsSource
+@using CryptoStatsSource.model
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject IMatDialogService MatDialogService
+@inject IPortfolioService PortfolioService
+@inject IPortfolioEntryService PortfolioEntryService
+@inject IMarketOrderService MarketOrderService
+@inject ICryptoNameResolver CryptoNameResolver
+@inject ICryptoStatsSource CryptoStatsSource
+@inject ISummaryService SummaryService
 
 <style>
     .demo-mat-card {
@@ -33,62 +41,94 @@
     <div class="mat-layout-grid-inner center">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{activePortfolio.Id}"); }'>Back</MatButton>
+            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{ActivePortfolio.Id}"); }'>Back</MatButton>
             <MatCard class="demo-mat-card">
                 <MatCardContent>
-                    <div class="demo-mat-card-content">
-                        <MatHeadline6 class="clear-margin">
-                            <MatChipSet Style="align-items: center">
-                                <MatH5 Class="clear-margin-vertical">@portfolioEntryName</MatH5>
-                                <MatChip Style="vertical-align: center" Label="@(activePortfolioEntry.Symbol.ToUpper())"/>
-                                <MatH6 Class="clear-margin-vertical" Style="text-align: end;float: end;">1 BTC = $30 000</MatH6>
-                            </MatChipSet>
-                        </MatHeadline6>
-                    </div>
+                    @if(ActivePortfolioEntry != null)
+                    {
+                        <div class="demo-mat-card-content">
+                            <MatHeadline6 class="clear-margin">
+                                <MatChipSet Style="align-items: center">
+                                    @if (portfolioEntryName != null)
+                                    {
+                                        <MatH5 Class="clear-margin-vertical">@portfolioEntryName</MatH5>
+                                    }
+                                    else
+                                    {
+                                        <MatProgressCircle Indeterminate="true"/>
+                                    }
+                                    <MatChip Style="vertical-align: center" Label="@(CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency))"/>
+                                    @if (CurrentEntryAssetMarketEntry != null)
+                                    {
+                                        <MatH6 Class="clear-margin-vertical" Style="text-align: end;float: end;">1 @ActivePortfolioEntry.Symbol.ToUpper() = @CurrencyUtils.Format(CurrentEntryAssetMarketEntry.CurrentPrice, ActivePortfolio.Currency)</MatH6>
+                                    }
+                                    else
+                                    {
+                                        <MatProgressCircle Indeterminate="true"></MatProgressCircle>
+                                    }
+                                </MatChipSet>
+                            </MatHeadline6>
+                        </div>
 
-                    <MatBody2 class="demo-mat-card-content clear-margin">
-                        <div class="mat-layout-grid">
-                            <div class="mat-layout-grid-inner" style="align-items: center">
-                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                    <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, activePortfolio.Currency))</MatH4>
-                                </div>
-                                <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                    @(entrySummary.RelativeChange * 100m) %
+                        <MatBody2 class="demo-mat-card-content clear-margin">
+                            <div class="mat-layout-grid">
+                                <div class="mat-layout-grid-inner" style="align-items: center">
+                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                        <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, ActivePortfolio.Currency))</MatH4>
+                                    </div>
+                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                        @(entrySummary.RelativeChange * 100m) %
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </MatBody2>
+                        </MatBody2>
+                    }
+                    else
+                    {
+                        <MatProgressBar Indeterminate="true"/>
+                    }
                 </MatCardContent>
             </MatCard>
-            <MatTable Items="@tableRowsItems" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
-                <MatTableHeader>
-                    <th>Date</th>
-                    <th>Size</th>
-                    <th>Market Value</th>
-                    <th>Change</th>
-                    <th>Cost</th>
-                    <th>Fee</th>
-                    <th>Actions</th>
-                </MatTableHeader>
-                <MatTableRow>
-                    <td>
-                        <div style="min-width: 9rem">@(String.Format("{0:d.M.yyyy HH:mm:ss}", context.Item1.Date))</div>
-                    </td>
-                    <td>
-                        <div style="min-width: 9rem">@context.Item1.Size @activePortfolioEntry.Symbol.ToUpper()</div>
-                    </td>
-                    <td>@CurrencyUtils.Format(context.Item2.MarketValue, activePortfolio.Currency)</td>
-                    <td style='color: @(context.Item2.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>
-                        <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, activePortfolio.Currency) (@(context.Item2.RelativeChange * 100)%)</div>
-                    </td>
-                    <td>@CurrencyUtils.Format(context.Item2.Cost, activePortfolio.Currency)</td>
-                    <td>@CurrencyUtils.Format(context.Item1.Fee, activePortfolio.Currency)</td>
-                    <td>
-                        <MatIconButton Icon="edit" OnClick="EditMarketOrder"></MatIconButton>
-                        <MatIconButton Icon="delete" OnClick="DeletePortfolio"></MatIconButton>
-                    </td>
-                </MatTableRow>
-            </MatTable>
+            @if (tableRowsItems == null)
+            {
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            }
+            else if (tableRowsItems.Count == 0)
+            {
+                <MatH6>No entries found...</MatH6> 
+            }
+            else
+            {
+                                <MatTable Items="@tableRowsItems" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999">
+                                    <MatTableHeader>
+                                        <th>Date</th>
+                                        <th>Size</th>
+                                        <th>Market Value</th>
+                                        <th>Change</th>
+                                        <th>Cost</th>
+                                        <th>Fee</th>
+                                        <th>Actions</th>
+                                    </MatTableHeader>
+                                    <MatTableRow>
+                                        <td>
+                                            <div style="min-width: 9rem">@(String.Format("{0:d.M.yyyy HH:mm:ss}", context.Item1.Date))</div>
+                                        </td>
+                                        <td>
+                                            <div style="min-width: 9rem">@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                                        </td>
+                                        <td>@CurrencyUtils.Format(context.Item2.MarketValue, ActivePortfolio.Currency)</td>
+                                        <td style='color: @(context.Item2.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>
+                                            <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, ActivePortfolio.Currency) (@(context.Item2.RelativeChange * 100)%)</div>
+                                        </td>
+                                        <td>@CurrencyUtils.Format(context.Item2.Cost, ActivePortfolio.Currency)</td>
+                                        <td>@CurrencyUtils.Format(context.Item1.Fee, ActivePortfolio.Currency)</td>
+                                        <td>
+                                            <MatIconButton Icon="edit" OnClick="EditMarketOrder"></MatIconButton>
+                                            <MatIconButton Icon="delete" OnClick="DeletePortfolio"></MatIconButton>
+                                        </td>
+                                    </MatTableRow>
+                                </MatTable>
+            }
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
@@ -98,8 +138,12 @@
 
 @code
 {
-    protected Portfolio activePortfolio = new Portfolio("Main Portfolio", "My main portfolio to be used", Currency.Usd);
-    protected PortfolioEntry activePortfolioEntry = new("btc");
+    [Parameter]
+    public int EntryId { get; set; }
+    
+    protected Portfolio ActivePortfolio;
+    protected PortfolioEntry ActivePortfolioEntry; 
+    protected MarketEntry CurrentEntryAssetMarketEntry; 
     protected string portfolioEntryName = "Bitcoin";
     protected ISummaryService.Summary entrySummary = new(523m, 0.719m, 1268.89m, 745.58m);
 
@@ -111,11 +155,39 @@
         new Tuple<MarketOrder, ISummaryService.Summary>(new(18300m, 0.1m, 0.003266m, DateTime.Now.AddMonths(-6), false), new(-60m, -0.6m, 40.00m, 100m)),
     };
 
-    protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
+
+    protected override void OnInitialized()
+    {
+        // get the portfolio entry
+        ActivePortfolioEntry = PortfolioEntryService.GetPortfolioEntry(EntryId);
+        
+        // get the entry's portfolio
+        ActivePortfolio = PortfolioService.GetPortfolio(ActivePortfolioEntry.PortfolioId);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-    //_existingPortfolios = PortfolioService.GetPortfolios();
+         // resolve the name of the cryptocurrency (using the symbol)
+         portfolioEntryName = await CryptoNameResolver.Resolve(ActivePortfolioEntry.Symbol);
+        
+        // fetch the price of the entry's asset
+        // TODO null?
+        CurrentEntryAssetMarketEntry = (await CryptoStatsSource.GetMarketEntries(
+            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(),
+            portfolioEntryName.ToLower()
+            ))[0];
+
+        // get all orders of the portfolio entry
+        var entryOrders = MarketOrderService.GetPortfolioEntryOrders(ActivePortfolioEntry.Id);
+        
+        // compute summaries of all orders in the entry
+        var entrySummaries = entryOrders.Select(order => SummaryService.GetMarketOrderSummary(order, CurrentEntryAssetMarketEntry.CurrentPrice));
+
+        // zip entry orders and summaries into a table rows
+        tableRowsItems = entryOrders.Zip(entrySummaries).Select(tuple => new Tuple<MarketOrder, ISummaryService.Summary>(tuple.First, tuple.Second)).ToList();
+
+        // compute suummary of this entry
+        entrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
     }
 
     public void EditMarketOrder(MouseEventArgs e)
