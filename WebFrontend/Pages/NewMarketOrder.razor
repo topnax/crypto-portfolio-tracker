@@ -47,7 +47,7 @@
     private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
     {
         Console.WriteLine("OnCreateOrderFormSubmit " + formModel);
-        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, true, ActiveEntry.Id);
+        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, !formModel.SellOrder, ActiveEntry.Id);
         formModel.Reset();
         Toaster.Add("New order successfully added", MatToastType.Success, "", "");
     }

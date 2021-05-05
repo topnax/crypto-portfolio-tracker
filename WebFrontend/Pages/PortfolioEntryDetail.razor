@@ -138,7 +138,14 @@
                             <div style="min-width: 9rem">@(String.Format("{0:d.M.yyyy HH:mm:ss}", context.Item1.Date))</div>
                         </td>
                         <td>
-                            <div style="min-width: 8rem">@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                            @if (@context.Item1.Buy)
+                            {
+                                <div style="min-width: 8rem">@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div style="min-width: 8rem; color: #FF0000;">-@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                            }
                         </td>
                         <td>
                             <div style="min-width: 8rem">@(CurrencyUtils.Format(context.Item1.FilledPrice, ActivePortfolio.Currency))</div>

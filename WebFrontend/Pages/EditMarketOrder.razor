@@ -50,6 +50,7 @@
         InitialOrderModel.Size = ActiveMarketOrder.Size;
         InitialOrderModel.FilledPrice = ActiveMarketOrder.FilledPrice;
         InitialOrderModel.OrderDate = ActiveMarketOrder.Date;
+        InitialOrderModel.SellOrder = !ActiveMarketOrder.Buy;
     }
 
     private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
@@ -60,7 +61,7 @@
             Fee = formModel.Fee, 
             Size = formModel.Size, 
             Date = formModel.OrderDate,
-            Buy = true
+            Buy = !formModel.SellOrder
             });
         Toaster.Add("Order successfully edited", MatToastType.Success, "", "");
         NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}");

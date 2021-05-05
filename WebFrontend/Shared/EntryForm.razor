@@ -32,6 +32,9 @@
         <MatDatePicker FullWidth="true" @bind-Value="@FormModel.OrderDate" Enable24hours="true" Required="true" Format="MM.dd.yy H:mm:ss" EnableTime="true"></MatDatePicker>
         <ValidationMessage For="@(() => FormModel.OrderDate)"/>
     </p>
+    <p>
+        <MatCheckbox @bind-Value="@FormModel.SellOrder" Label="Sell Order"></MatCheckbox>
+    </p>
     <MatCardActions>
         <MatCardActionButtons>
             <MatButton Type="submit">
@@ -80,6 +83,8 @@
         public decimal Fee { get; set; }
 
         [Required] public DateTime OrderDate = DateTime.Now;
+        
+        [Required] public bool SellOrder;
 
         public void Reset()
         {
@@ -87,6 +92,7 @@
             Size = 0m;
             Fee = 0m;
             OrderDate = DateTime.Now;
+            SellOrder = false;
         }
 
         public static ValidationResult NonZeroValue(decimal value, ValidationContext vc)
