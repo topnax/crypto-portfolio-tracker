@@ -1,4 +1,4 @@
-﻿@page "/entrydetail/{entryId:int}"
+﻿@page "/entries/{entryId:int}"
 @using Model
 @using Services
 @using Utils
@@ -124,7 +124,7 @@
                                         <td>@CurrencyUtils.Format(context.Item1.Fee, ActivePortfolio.Currency)</td>
                                         <td>
                                             <MatIconButton Icon="edit" OnClick="EditMarketOrder"></MatIconButton>
-                                            <MatIconButton Icon="delete" OnClick="DeletePortfolio"></MatIconButton>
+                                            <MatIconButton Icon="delete" OnClick="() => DeletePortfolio(context.Item1)"></MatIconButton>
                                         </td>
                                     </MatTableRow>
                                 </MatTable>
@@ -133,7 +133,7 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new order"></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{ActivePortfolioEntry.Id}");}'></MatFAB>
 
 
 @code
@@ -195,11 +195,13 @@
         NavigationManager.NavigateTo($"editorder");
     }
 
-    async void DeletePortfolio(MouseEventArgs e)
+    async void DeletePortfolio(MarketOrder order)
     {
         var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this market order?");
         if (result)
         {
+            // TODO update summary
+            MarketOrderService.DeleteMarketOrder(order);
         }
     }
 }

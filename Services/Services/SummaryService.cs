@@ -23,6 +23,11 @@ namespace Services
         {
             var marketValue = order.Size * assetPrice;
             var cost = (order.Size * order.FilledPrice) + order.Fee;
+            if (cost == 0)
+            {
+                return new(0, 0, 0, 0);
+            }
+
             var relativeChange = (marketValue / cost) - new decimal(1);
             var absoluteChange = marketValue - cost;
             return new(absoluteChange, relativeChange, marketValue, cost);
@@ -41,18 +46,19 @@ namespace Services
                 totalCost += summary.Cost;
                 totalAbsoluteChange += summary.AbsoluteChange;
             }
-            
+
             if (totalCost == 0)
             {
-                return new ISummaryService.Summary(0,0,0,0);
-            }            
+                return new ISummaryService.Summary(0, 0, 0, 0);
+            }
 
-            decimal totalRelativeChange = (totalMarketValue / totalCost) -1m;
+            decimal totalRelativeChange = (totalMarketValue / totalCost) - 1m;
 
             return new(totalAbsoluteChange, totalRelativeChange, totalMarketValue, totalCost);
         }
 
-        public ISummaryService.Summary GetPortfolioEntrySummary(List<MarketOrder> portfolioEntryOrders, decimal assetPrice)
+        public ISummaryService.Summary GetPortfolioEntrySummary(List<MarketOrder> portfolioEntryOrders,
+            decimal assetPrice)
         {
             decimal totalHoldingSize = 0;
             decimal totalSellValue = 0;
@@ -77,8 +83,8 @@ namespace Services
 
             if (totalCost == 0)
             {
-                return new ISummaryService.Summary(0,0,0,0);
-            }            
+                return new ISummaryService.Summary(0, 0, 0, 0);
+            }
 
             decimal currentTotalHoldingValue = totalHoldingSize * assetPrice;
 
@@ -89,10 +95,8 @@ namespace Services
                 totalCost + totalFee);
         }
 
-        public ISummaryService.Summary GetPortfolioSummary(List<ISummaryService.Summary> portfolioEntrySummaries) => GetAverageOfSummaries(portfolioEntrySummaries);
+        public ISummaryService.Summary GetPortfolioSummary(List<ISummaryService.Summary> portfolioEntrySummaries) =>
+            GetAverageOfSummaries(portfolioEntrySummaries);
 
-        public class AssetPriceNotFoundException : Exception
-        {
-        }
     }
 }

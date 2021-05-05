@@ -132,6 +132,7 @@
     private async void _loadEntryInfo()
     {
         // resolve names of all portfolio entries 
+        await CryptoNameResolver.Refresh();
         var portfolioEntriesNames = await Task.WhenAll(
             ActivePortfolioEntries.Select(
                 async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower())
@@ -202,7 +203,7 @@
     {
         if (row != null)
         {
-            NavigationManager.NavigateTo($"entrydetail/{((PortfolioEntryRow) row).EntryId}");
+            NavigationManager.NavigateTo($"entries/{((PortfolioEntryRow) row).EntryId}");
         }
     }
 
