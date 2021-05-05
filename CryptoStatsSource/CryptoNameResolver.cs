@@ -23,11 +23,11 @@ namespace CryptoStatsSource
 
         public async Task Refresh()
         {
+            // TODO improve this
             _symbolToNameMap = new();
             (await _cryptoStatsSource.GetAvailableCryptocurrencies()).ForEach(c =>
                 _symbolToNameMap.TryAdd(c.Symbol, c.Name));
         }
-
 
         public async Task<string> Resolve(string symbol)
         {
