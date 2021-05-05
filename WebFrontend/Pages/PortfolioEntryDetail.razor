@@ -150,7 +150,7 @@
                             <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, ActivePortfolio.Currency) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Item2.RelativeChange * 100))%)</div>
                         </td>
                         <td>
-                            <MatIconButton Icon="edit" OnClick="EditMarketOrder"></MatIconButton>
+                            <MatIconButton Icon="edit" OnClick="() => EditMarketOrder(context.Item1)"></MatIconButton>
                             <MatIconButton Icon="delete" OnClick="() => DeletePortfolio(context.Item1)"></MatIconButton>
                         </td>
                     </MatTableRow>
@@ -181,7 +181,7 @@
                         <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item1.Fee, ActivePortfolio.Currency))" Label="Fee"></LabelDecimalValue>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right">
-                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item2.Cost + OrderToBeShown.Item1.Fee, ActivePortfolio.Currency))" Label="Cost (fees included)"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item2.Cost, ActivePortfolio.Currency))" Label="Cost (fees included)"></LabelDecimalValue>
                     </div>
                 </div>
                 <div class="mat-layout-grid-inner" style="align-items: center;margin-top: 2rem; ">
@@ -273,9 +273,9 @@
         EntrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
     }
 
-    public void EditMarketOrder(MouseEventArgs e)
+    public void EditMarketOrder(MarketOrder order)
     {
-        NavigationManager.NavigateTo($"editorder");
+        NavigationManager.NavigateTo($"/editmarketorder/{order.Id}");
     }
 
     async void DeletePortfolio(MarketOrder order)

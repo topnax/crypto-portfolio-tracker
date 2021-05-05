@@ -1,8 +1,6 @@
 ﻿@page "/newmarketorder/{entryId:int}"
 @using Model
 @using Services
-@using Utils
-@using System.ComponentModel.DataAnnotations
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntrySerivce
 @inject IMarketOrderService MarketOrderService
@@ -12,16 +10,8 @@
 
 
 <style>
-    .demo-mat-card {
-        margin-bottom: 2em;
-    }
-
     .demo-mat-card-content {
         padding: 1rem;
-    }
-
-    .clear-margin {
-        margin: 0px;
     }
 </style>
 
@@ -32,47 +22,7 @@
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Create a new market order</h2>
-                    <EditForm Model="FormModel" OnValidSubmit="OnCreateOrderFormSubmit">
-                        <DataAnnotationsValidator/>
-                        <p>
-                            <MatTextField FullWidth="true" Label="@("Price per coin (" + CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency) + ")")"
-                                          @bind-Value=@FormModel.FilledPrice>
-                            </MatTextField>
-                            <ValidationMessage For="@(() => FormModel.FilledPrice)"/>
-                        </p>
-
-                        <p>
-                            <MatTextField FullWidth="true" Label="@("Traded size (" + ActiveEntry.Symbol.ToUpper() + ")")"
-                                          @bind-Value=@FormModel.Size>
-                            </MatTextField>
-                            <ValidationMessage For="@(() => FormModel.Size)"/>
-                        </p>
-
-                        <p>
-                            <MatTextField FullWidth="true" Label="@("Fee (" + CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency) + ")")"
-                                          @bind-Value=@FormModel.Fee>
-                            </MatTextField>
-                            <ValidationMessage For="@(() => FormModel.Fee)"/>
-                        </p>
-
-                        <p>
-                            <br>
-                            <b>Order date</b>
-                        </p>
-                        <p>
-                            <MatDatePicker FullWidth="true" @bind-Value="@FormModel.OrderDate" Enable24hours="true" Required="true" Format="MM.dd.yy H:mm:ss" EnableTime="true"></MatDatePicker>
-                            <ValidationMessage For="@(() => FormModel.OrderDate)"/>
-                        </p>
-                        <MatCardActions>
-                            <MatCardActionButtons>
-                                <MatButton Type="submit">Create</MatButton>
-                            </MatCardActionButtons>
-
-                            <MatCardActionIcons>
-                                <MatIconButton Icon="@MatIconNames.Refresh" OnClick="(_) => FormModel.Reset()"></MatIconButton>
-                            </MatCardActionIcons>
-                        </MatCardActions>
-                    </EditForm>
+                    <EntryForm Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit" ></EntryForm> 
                 </MatCardContent>
             </MatCard>
         </div>
@@ -87,46 +37,6 @@
     
     protected Portfolio ActivePortfolio = new("", "", Currency.Usd);
     protected PortfolioEntry ActiveEntry = new("btc", 1);
-    protected NewOrderModel FormModel = new();
-
-    public class NewOrderModel
-    {
-        [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
-        public decimal FilledPrice { get; set; }
-
-        [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
-        public decimal Size { get; set; }
-
-        [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonNegativeValue))]
-        public decimal Fee { get; set; }
-
-        [Required] public DateTime OrderDate = DateTime.Now;
-
-        public void Reset()
-        {
-            FilledPrice = 0m;
-            Size = 0m;
-            Fee = 0m;
-            OrderDate = DateTime.Now;
-        }
-
-        public static ValidationResult NonZeroValue(decimal value, ValidationContext vc)
-        {
-            return value > 0
-                ? ValidationResult.Success
-                : new ValidationResult("Value must be non-zero", new[] {vc.MemberName});
-        }
-
-        public static ValidationResult NonNegativeValue(decimal value, ValidationContext vc)
-        {
-            return value >= 0
-                ? ValidationResult.Success
-                : new ValidationResult("Value must be positive", new[] {vc.MemberName});
-        }
-    }
 
     protected override void OnInitialized()
     {
@@ -134,24 +44,11 @@
         ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
     }
 
-    protected override async Task OnInitializedAsync()
+    private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
     {
-    }
-
-    private void onCreateOrderClicked()
-    {
-        Toaster.Add("New order successfully added", MatToastType.Success, "", "");
-    }
-
-    private void onCreateAndContinueOrderClicked()
-    {
-        Toaster.Add("New order successfully added", MatToastType.Danger, "", "");
-    }
-
-    private void OnCreateOrderFormSubmit()
-    {
-        MarketOrderService.CreateMarketOrder(FormModel.FilledPrice, FormModel.Fee, FormModel.Size, FormModel.OrderDate, true, ActiveEntry.Id);
-        FormModel.Reset();
+        Console.WriteLine("OnCreateOrderFormSubmit " + formModel);
+        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, true, ActiveEntry.Id);
+        formModel.Reset();
         Toaster.Add("New order successfully added", MatToastType.Success, "", "");
     }
 }

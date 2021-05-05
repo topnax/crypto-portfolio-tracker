@@ -1,0 +1,112 @@
+@using Utils
+@using System.ComponentModel.DataAnnotations
+@using Model
+<EditForm Model="FormModel" OnValidSubmit="OnCreateOrderFormSubmit">
+    <DataAnnotationsValidator/>
+    <p>
+        <MatTextField FullWidth="true" Label="@("Price per coin (" + CurrencyUtils.GetCurrencyLabel(Currency) + ")")"
+                      @bind-Value=@FormModel.FilledPrice>
+        </MatTextField>
+        <ValidationMessage For="@(() => FormModel.FilledPrice)"/>
+    </p>
+
+    <p>
+        <MatTextField FullWidth="true" Label="@("Traded size (" + Symbol.ToUpper() + ")")"
+                      @bind-Value=@FormModel.Size>
+        </MatTextField>
+        <ValidationMessage For="@(() => FormModel.Size)"/>
+    </p>
+
+    <p>
+        <MatTextField FullWidth="true" Label="@("Fee (" + CurrencyUtils.GetCurrencyLabel(Currency) + ")")"
+                      @bind-Value=@FormModel.Fee>
+        </MatTextField>
+        <ValidationMessage For="@(() => FormModel.Fee)"/>
+    </p>
+
+    <p>
+        <br>
+        <b>Order date</b>
+    </p>
+    <p>
+        <MatDatePicker FullWidth="true" @bind-Value="@FormModel.OrderDate" Enable24hours="true" Required="true" Format="MM.dd.yy H:mm:ss" EnableTime="true"></MatDatePicker>
+        <ValidationMessage For="@(() => FormModel.OrderDate)"/>
+    </p>
+    <MatCardActions>
+        <MatCardActionButtons>
+            <MatButton Type="submit">
+                @if (Edit)
+                {
+                    <span>Save</span>
+                }
+                else
+                {
+                    <span>Create</span>
+                }
+            </MatButton>
+        </MatCardActionButtons>
+
+        <MatCardActionIcons>
+            <MatIconButton Icon="@MatIconNames.Refresh" OnClick="(_) => FormModel.Reset()"></MatIconButton>
+        </MatCardActionIcons>
+    </MatCardActions>
+</EditForm>
+
+@code {
+    [Parameter]
+    public NewOrderModel FormModel { get; set; } = new ();
+    
+    [Parameter] public EventCallback<NewOrderModel> OnSubmitEventHandler { get; set; }
+
+    [Parameter] public Currency Currency { get; set; }
+    
+    [Parameter] public string Symbol { get; set; }
+    
+    [Parameter] public bool Edit { get; set; }
+    
+    
+    public class NewOrderModel
+    {
+        [Required]
+        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
+        public decimal FilledPrice { get; set; }
+
+        [Required]
+        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
+        public decimal Size { get; set; }
+
+        [Required]
+        [CustomValidation(typeof(NewOrderModel), nameof(NonNegativeValue))]
+        public decimal Fee { get; set; }
+
+        [Required] public DateTime OrderDate = DateTime.Now;
+
+        public void Reset()
+        {
+            FilledPrice = 0m;
+            Size = 0m;
+            Fee = 0m;
+            OrderDate = DateTime.Now;
+        }
+
+        public static ValidationResult NonZeroValue(decimal value, ValidationContext vc)
+        {
+            return value > 0
+                ? ValidationResult.Success
+                : new ValidationResult("Value must be non-zero", new[] {vc.MemberName});
+        }
+
+        public static ValidationResult NonNegativeValue(decimal value, ValidationContext vc)
+        {
+            return value >= 0
+                ? ValidationResult.Success
+                : new ValidationResult("Value must be positive", new[] {vc.MemberName});
+        }
+    }
+    
+    private async void OnCreateOrderFormSubmit()
+    {
+        await OnSubmitEventHandler.InvokeAsync(FormModel);
+        FormModel.Reset();
+    }
+}

@@ -1,0 +1,68 @@
+﻿@page "/editmarketorder/{orderId:int}"
+@using Model
+@using Services
+@inject IPortfolioService PortfolioService
+@inject IPortfolioEntryService PortfolioEntrySerivce
+@inject IMarketOrderService MarketOrderService
+@inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
+@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+
+
+<style>
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+</style>
+
+<div class="mat-layout-grid">
+    <div class="mat-layout-grid-inner">
+        <div class="mat-layout-grid-cell">
+            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}"); }'>Back</MatButton>
+            <MatCard>
+                <MatCardContent class="demo-mat-card-content">
+                    <h2>Edit a market order</h2>
+                    <EntryForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit" ></EntryForm> 
+                </MatCardContent>
+            </MatCard>
+        </div>
+    </div>
+</div>
+
+
+@code
+{
+    [Parameter]
+    public int OrderId { get; set; }
+    
+    protected EntryForm.NewOrderModel InitialOrderModel;
+    protected Portfolio ActivePortfolio;
+    protected PortfolioEntry ActiveEntry;
+    protected MarketOrder ActiveMarketOrder;
+
+    protected override void OnInitialized()
+    {
+        ActiveMarketOrder = MarketOrderService.GetMarketOrder(OrderId); 
+        ActiveEntry = PortfolioEntrySerivce.GetPortfolioEntry(ActiveMarketOrder.PortfolioEntryId);
+        ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
+        InitialOrderModel = new();
+        InitialOrderModel.Fee = ActiveMarketOrder.Fee;
+        InitialOrderModel.Size = ActiveMarketOrder.Size;
+        InitialOrderModel.FilledPrice = ActiveMarketOrder.FilledPrice;
+        InitialOrderModel.OrderDate = ActiveMarketOrder.Date;
+    }
+
+    private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
+    {
+        // TODO enable adding sells
+        MarketOrderService.UpdateMarketOrder(ActiveMarketOrder with {
+            FilledPrice = formModel.FilledPrice, 
+            Fee = formModel.Fee, 
+            Size = formModel.Size, 
+            Date = formModel.OrderDate,
+            Buy = true
+            });
+        Toaster.Add("Order successfully edited", MatToastType.Success, "", "");
+        NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}");
+    }
+}
