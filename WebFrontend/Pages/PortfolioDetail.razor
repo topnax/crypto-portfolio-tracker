@@ -61,7 +61,7 @@
                                             <MatH4 Class="clear-margin">@(CurrencyUtils.Format(PortfolioSummary.MarketValue, ActivePortfolio.Currency))</MatH4>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                            @(PortfolioSummary.RelativeChange * 100m) %
+                                            @(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(PortfolioSummary.RelativeChange * 100m)) %
                                         </div>
                                     }
                                     else
