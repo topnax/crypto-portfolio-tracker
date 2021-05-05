@@ -101,7 +101,7 @@ namespace Tests.Unit.Service
             }, 40000);
             Assert.Equal(new ISummaryService.Summary(
                 30000m + 20000m - 6,
-                ((80000m - 6m) / 30000m) - 1m,
+                ((80000m) / (30000m + 6m)) - 1m,
                 80000m,
                 30006
             ), summary);
@@ -137,7 +137,7 @@ namespace Tests.Unit.Service
             }, 40000);
             Assert.Equal(new ISummaryService.Summary(
                 30000m + 20000m - 6,
-                ((80000m - 6m) / 30000m) - 1m,
+                (80000m / (30000m + 6m)) - 1m,
                 80000m,
                 30006
             ), summary);

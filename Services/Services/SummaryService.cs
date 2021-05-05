@@ -89,7 +89,7 @@ namespace Services
             decimal currentTotalHoldingValue = totalHoldingSize * assetPrice;
 
             decimal totalAbsoluteChange = currentTotalHoldingValue + totalSellValue - totalCost - totalFee;
-            decimal totalRelativeChange = totalAbsoluteChange / totalCost;
+            decimal totalRelativeChange = totalAbsoluteChange / (totalCost + totalFee);
 
             return new ISummaryService.Summary(totalAbsoluteChange, totalRelativeChange, currentTotalHoldingValue,
                 totalCost + totalFee);
