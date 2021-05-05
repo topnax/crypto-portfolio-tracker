@@ -9,6 +9,8 @@ namespace Repository
 {
     public class SqlKataMarketOrderRepository : SqlKataRepository<MarketOrder>, IMarketOrderRepository
     {
+        private const int DecimalPrecision = 100000000;
+        
         public SqlKataMarketOrderRepository(SqlKataDatabase db) : base(db, "market_orders")
         {
         }
@@ -19,9 +21,9 @@ namespace Repository
         {
             return new
             {
-                filled_price = (int) (entry.FilledPrice * 100),
-                fee = (int) (entry.Fee * 100),
-                size = (int) (entry.Size * 100),
+                filled_price = (long) (entry.FilledPrice * DecimalPrecision),
+                fee = (long) (entry.Fee * DecimalPrecision),
+                size = (long) (entry.Size * DecimalPrecision),
                 date = ((DateTimeOffset) entry.Date).ToUnixTimeSeconds(),
                 buy = entry.Buy ? 1 : 0,
                 portfolio_entry_id = entry.PortfolioEntryId,
@@ -29,7 +31,7 @@ namespace Repository
         }
 
         public override MarketOrder FromRow(dynamic d) =>
-            new(Decimal.Divide(d.filled_price, 100), Decimal.Divide(d.fee, 100), Decimal.Divide(d.size, 100),
+            new(Decimal.Divide(d.filled_price, DecimalPrecision), Decimal.Divide(d.fee, DecimalPrecision), Decimal.Divide(d.size, DecimalPrecision),
                 DateTimeOffset.FromUnixTimeSeconds((int) d.date).DateTime.ToLocalTime(), d.buy > 0,
                 (int) d.id, (int) d.portfolio_entry_id);
 
