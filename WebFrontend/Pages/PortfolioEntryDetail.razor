@@ -73,12 +73,19 @@
                         <MatBody2 class="demo-mat-card-content clear-margin">
                             <div class="mat-layout-grid">
                                 <div class="mat-layout-grid-inner" style="align-items: center">
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                        <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, ActivePortfolio.Currency))</MatH4>
-                                    </div>
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                        @(entrySummary.RelativeChange * 100m) %
-                                    </div>
+                                    @if (entrySummary != null)
+                                    {
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                            <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, ActivePortfolio.Currency))</MatH4>
+                                        </div>
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
+                                            @(entrySummary.RelativeChange * 100m) %
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <MatProgressCircle Indeterminate="true"/>
+                                    }
                                 </div>
                             </div>
                         </MatBody2>
@@ -167,8 +174,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-         // resolve the name of the cryptocurrency (using the symbol)
+        // resolve the name of the cryptocurrency (using the symbol)
          portfolioEntryName = await CryptoNameResolver.Resolve(ActivePortfolioEntry.Symbol);
+
+        await UpdateEntrySummary();
+    }
+
+    private void SetEntryLoading()
+    {
+        CurrentEntryAssetMarketEntry = null;
+        tableRowsItems = null;
+        entrySummary = null;
+        StateHasChanged();
+    }
+
+    private async Task UpdateEntrySummary()
+    {
         
         // fetch the price of the entry's asset
         // TODO null?
@@ -179,12 +200,14 @@
 
         // get all orders of the portfolio entry
         var entryOrders = MarketOrderService.GetPortfolioEntryOrders(ActivePortfolioEntry.Id);
-        
+
         // compute summaries of all orders in the entry
-        var entrySummaries = entryOrders.Select(order => SummaryService.GetMarketOrderSummary(order, CurrentEntryAssetMarketEntry.CurrentPrice));
+        var entrySummaries = entryOrders.Select(order =>
+            SummaryService.GetMarketOrderSummary(order, CurrentEntryAssetMarketEntry.CurrentPrice));
 
         // zip entry orders and summaries into a table rows
-        tableRowsItems = entryOrders.Zip(entrySummaries).Select(tuple => new Tuple<MarketOrder, ISummaryService.Summary>(tuple.First, tuple.Second)).ToList();
+        tableRowsItems = entryOrders.Zip(entrySummaries)
+            .Select(tuple => new Tuple<MarketOrder, ISummaryService.Summary>(tuple.First, tuple.Second)).ToList();
 
         // compute suummary of this entry
         entrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
@@ -200,8 +223,10 @@
         var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this market order?");
         if (result)
         {
-            // TODO update summary
             MarketOrderService.DeleteMarketOrder(order);
+            SetEntryLoading();
+            await UpdateEntrySummary();
+            StateHasChanged();
         }
     }
 }
