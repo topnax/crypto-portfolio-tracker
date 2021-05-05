@@ -49,19 +49,18 @@
                                     <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency)"/>
                                 </MatChipSet>
                             </MatHeadline6>
+                            <span style="padding-left: 4px;">@ActivePortfolio.Description</span>
                         </div>
-
                         <MatBody2 class="demo-mat-card-content clear-margin">
                             <div class="mat-layout-grid">
                                 <div class="mat-layout-grid-inner" style="align-items: center">
                                     @if (PortfolioSummary != null)
                                     {
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-
-                                            <MatH4 Class="clear-margin">@(CurrencyUtils.Format(PortfolioSummary.MarketValue, ActivePortfolio.Currency))</MatH4>
+                                            <LabelDecimalValue Label="Market Value" Value="@(CurrencyUtils.Format(PortfolioSummary.MarketValue, ActivePortfolio.Currency))"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                            @(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(PortfolioSummary.RelativeChange * 100m)) %
+                                            <LabelDecimalValue Positive="PortfolioSummary.RelativeChange >= 0" ValueColorBasedOnValue="true" Label="Total Change" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(PortfolioSummary.RelativeChange * 100m) + "%")"></LabelDecimalValue>
                                         </div>
                                     }
                                     else
@@ -79,14 +78,14 @@
                         <MatTableHeader>
                             <th>Coin</th>
                             <th>Price</th>
-                            <th>Change (1h)</th>
+                            <th>Price change (1h)</th>
                             <th>Holdings</th>
                         </MatTableHeader>
                         <MatTableRow>
                             <td>@context.Symbol.ToUpper()</td>
-                            <td>@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</td>
-                            <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</td>
-                            <td>@context.Percentage%</td>
+                            <td><div style="min-width: 8rem">@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</div></td>
+                            <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000"); min-width: 7rem;'><div style="min-width: 6rem">@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</div></td>
+                            <td>@(CurrencyUtils.Format(context.MarketValue, ActivePortfolio.Currency)) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Percentage))%)</td>
                         </MatTableRow>
                     </MatTable>
                 }
@@ -119,7 +118,7 @@
 
     protected List<PortfolioEntryRow> PortfolioEntryRows;
 
-    protected record PortfolioEntryRow(string Symbol, decimal CurrentPrice, decimal RelativeChange, decimal Percentage, int EntryId);
+    protected record PortfolioEntryRow(string Symbol, decimal CurrentPrice, decimal RelativeChange, decimal Percentage, decimal AbsoluteChange, decimal MarketValue, int EntryId);
 
     protected override void OnInitialized()
     {
@@ -189,8 +188,12 @@
                 symbolsToMarketEntries[tuple.Second.Symbol].CurrentPrice,
                 // asset's price change since the last 24h 
                 new decimal(symbolsToMarketEntries[tuple.Second.Symbol].PriceChangePercentage24H),
-                // percentage within the portfolio
+                // percentage within the portfolio entry
                 portfolioTotalMarketValue > 0 ? (tuple.First.MarketValue / portfolioTotalMarketValue) * 100 : 0,
+                // absolute change within the portfolio entry
+                tuple.First.AbsoluteChange,
+                // market value
+                tuple.First.MarketValue,
                 // pass the entry id
                 tuple.Second.Id
                 )

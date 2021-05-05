@@ -293,7 +293,6 @@
 
     void ShowOrderDetail(Tuple<MarketOrder, ISummaryService.Summary> order)
     {
-        Console.WriteLine("here");
         OrderToBeShown = order;
         OrderDetailDialogIsOpen = true;
         StateHasChanged();
@@ -308,10 +307,8 @@
 
     private void SelectionChangedEvent(object obj)
     {
-        Console.WriteLine("show dialog");
         if (obj != null)
         {   
-            Console.WriteLine("showing dialog");
             ShowOrderDetail((Tuple<MarketOrder, ISummaryService.Summary>) obj) ;
         }
     }
