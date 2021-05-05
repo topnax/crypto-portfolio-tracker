@@ -1,0 +1,34 @@
+<style>
+    .no-margin {
+        margin:  0;
+    }
+  
+   .label {
+       color: #6f6f6f;
+       letter-spacing: 0.1rem;
+       font-size: 1.1em;
+      text-transform: uppercase;
+   } 
+   
+   .value {
+        margin-top: 1rem; 
+    }  
+</style>
+<span Class="no-margin label">@Label</span>
+<MatH4 Class="no-margin value" style="@(ValueColorBasedOnValue ? !Positive ? "color:red" : "color: #17a104" : "")">@Value</MatH4>
+
+@code {
+
+    [Parameter]
+    public String Value { get; set; }
+
+    [Parameter]
+    public String Label { get; set; }
+
+    [Parameter]
+    public bool ValueColorBasedOnValue { get; set; } = false;
+
+    [Parameter]
+    public bool Positive { get; set; } = true;
+
+}

@@ -24,7 +24,7 @@ namespace Utils
 
         public static string Format(decimal value, Currency currency)
         {
-            var valueStr = String.Format("{0:0.00}", Math.Abs(value));
+            var valueStr = DecimalUtils.FormatTwoDecimalPlaces(Math.Abs(value));
             var output = "";
             switch (currency)
             {
@@ -49,5 +49,8 @@ namespace Utils
 
             return output;
         }
+
+        public static string FormatWithPlusSign(decimal value, Currency currency) =>
+            (value > 0 ? "+" : "") + Format(value, currency);
     }
 }

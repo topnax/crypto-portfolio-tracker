@@ -6,6 +6,7 @@
 @using CryptoStatsSource.model
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject IMarketOrderService MarketOrderService
@@ -71,23 +72,40 @@
                         </div>
 
                         <MatBody2 class="demo-mat-card-content clear-margin">
-                            <div class="mat-layout-grid">
-                                <div class="mat-layout-grid-inner" style="align-items: center">
-                                    @if (entrySummary != null)
-                                    {
-                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                            <MatH4 Class="clear-margin">@(CurrencyUtils.Format(entrySummary.MarketValue, ActivePortfolio.Currency))</MatH4>
+                            @if (EntrySummary != null)
+                            {
+                                <div class="mat-layout-grid">
+                                    <div class="mat-layout-grid-inner" style="align-items: center">
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(EntrySummary.MarketValue, ActivePortfolio.Currency))" Label="Market Value"></LabelDecimalValue>
                                         </div>
-                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                            @(entrySummary.RelativeChange * 100m) %
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+                                            <LabelDecimalValue Value="@(DecimalUtils.FormatTrimZeros(TotalHoldings))" Label="Holdings"></LabelDecimalValue>
                                         </div>
-                                    }
-                                    else
-                                    {
-                                        <MatProgressCircle Indeterminate="true"/>
-                                    }
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="text-align: end">
+                                            <LabelDecimalValue Positive="@(EntrySummary.AbsoluteChange >= 0)" ValueColorBasedOnValue="true" Value="@(CurrencyUtils.FormatWithPlusSign(EntrySummary.AbsoluteChange, ActivePortfolio.Currency))" Label="Profit/Loss"></LabelDecimalValue>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                                <div class="mat-layout-grid">
+                                    <div class="mat-layout-grid-inner" style="align-items: center">
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(EntrySummary.Cost, ActivePortfolio.Currency))" Label="Net Cost"></LabelDecimalValue>
+                                        </div>
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(TotalHoldings > 0 ? (EntrySummary.Cost / TotalHoldings) : 0, ActivePortfolio.Currency))" Label="Avg Net Cost"></LabelDecimalValue>
+                                        </div>
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="text-align: end">
+                                            <LabelDecimalValue Positive="@(EntrySummary.RelativeChange >= 0)" ValueColorBasedOnValue="true" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(EntrySummary.RelativeChange * 100) + "%")" Label="Percent Change"></LabelDecimalValue>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <MatProgressCircle Indeterminate="true"/>
+                            }
+
                         </MatBody2>
                     }
                     else
@@ -125,7 +143,7 @@
                                         </td>
                                         <td>@CurrencyUtils.Format(context.Item2.MarketValue, ActivePortfolio.Currency)</td>
                                         <td style='color: @(context.Item2.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>
-                                            <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, ActivePortfolio.Currency) (@(context.Item2.RelativeChange * 100)%)</div>
+                                            <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, ActivePortfolio.Currency) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Item2.RelativeChange * 100))%)</div>
                                         </td>
                                         <td>@CurrencyUtils.Format(context.Item2.Cost, ActivePortfolio.Currency)</td>
                                         <td>@CurrencyUtils.Format(context.Item1.Fee, ActivePortfolio.Currency)</td>
@@ -152,7 +170,8 @@
     protected PortfolioEntry ActivePortfolioEntry; 
     protected MarketEntry CurrentEntryAssetMarketEntry; 
     protected string portfolioEntryName = "Bitcoin";
-    protected ISummaryService.Summary entrySummary = new(523m, 0.719m, 1268.89m, 745.58m);
+    protected ISummaryService.Summary EntrySummary = new(523m, 0.719m, 1268.89m, 745.58m);
+    protected decimal TotalHoldings = 0;
 
     protected List<Tuple<MarketOrder, ISummaryService.Summary>> tableRowsItems = new()
     {
@@ -184,7 +203,7 @@
     {
         CurrentEntryAssetMarketEntry = null;
         tableRowsItems = null;
-        entrySummary = null;
+        EntrySummary = null;
         StateHasChanged();
     }
 
@@ -205,12 +224,14 @@
         var entrySummaries = entryOrders.Select(order =>
             SummaryService.GetMarketOrderSummary(order, CurrentEntryAssetMarketEntry.CurrentPrice));
 
+        TotalHoldings = entryOrders.Sum(order => order.Size * (order.Buy ? 1 : -1));
+
         // zip entry orders and summaries into a table rows
         tableRowsItems = entryOrders.Zip(entrySummaries)
             .Select(tuple => new Tuple<MarketOrder, ISummaryService.Summary>(tuple.First, tuple.Second)).ToList();
 
         // compute suummary of this entry
-        entrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
+        EntrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
     }
 
     public void EditMarketOrder(MouseEventArgs e)
@@ -227,6 +248,7 @@
             SetEntryLoading();
             await UpdateEntrySummary();
             StateHasChanged();
+            Toaster.Add("Order successfully deleted", MatToastType.Success, "", "");
         }
     }
 }
