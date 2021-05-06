@@ -6,6 +6,7 @@
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
 
 <style>
     .demo-mat-card {
@@ -33,9 +34,9 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
             <MatH5>Portfolios</MatH5>
-            @if (Portfolios != null)
+            @if (PortfoliosWithEntries != null)
             {
-                @foreach (var activePortfolio in Portfolios)
+                @foreach (var portfolioWithEntries in PortfoliosWithEntries)
                 {
                     <MatCard class="demo-mat-card" OnCli>
                         <MatCardContent>
@@ -45,30 +46,30 @@
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
                                             <MatHeadline6 class="clear-margin">
                                                 <MatChipSet Style="align-items: center">
-                                                    <MatH5 Class="clear-margin">@activePortfolio.Item1.Name</MatH5>
-                                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Item1.Currency)"/>
+                                                    <MatH5 Class="clear-margin">@portfolioWithEntries.Item1.Name</MatH5>
+                                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(portfolioWithEntries.Item1.Currency)"/>
                                                 </MatChipSet>
                                             </MatHeadline6>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right;">
-                                            <MatIconButton Icon="edit" OnClick="() => EditPortfolio(activePortfolio.Item1)"></MatIconButton>
-                                            <MatIconButton Icon="delete" OnClick="() => DeletePortfolio(activePortfolio.Item1)"></MatIconButton>
+                                            <MatIconButton Icon="edit" OnClick="() => EditPortfolio(portfolioWithEntries.Item1)"></MatIconButton>
+                                            <MatIconButton Icon="delete" OnClick="() => DeletePortfolio(portfolioWithEntries.Item1)"></MatIconButton>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div style="padding: 1rem">
-                                <MatButton Label="View" Style="margin-right: 1rem;" OnClick="() => ViewPortfolio(activePortfolio.Item1)"></MatButton>
-                                @if (activePortfolio.Item2.Count > 0)
+                                <MatButton Label="View" Style="margin-right: 1rem;" OnClick="() => ViewPortfolio(portfolioWithEntries.Item1)"></MatButton>
+                                @if (portfolioWithEntries.Item2.Count > 0)
                                 {
-                                    @foreach (var entry in activePortfolio.Item2)
+                                    @foreach (var entry in portfolioWithEntries.Item2)
                                     {
                                         <MatButton Outlined="true" Style="margin-right: 1em;" Label="@entry.Symbol.ToUpper()" OnClick='() => NavigationManager.NavigateTo($"/entries/{entry.Id}")'></MatButton>
                                     }
                                 }
                                 else
                                 {
-                                    <MatButton Icon="add" Outlined="true" OnClick="() => AddNewEntryToPortfolio(activePortfolio.Item1)" Label="Add entry"></MatButton>
+                                    <MatButton Icon="add" Outlined="true" OnClick="() => AddNewEntryToPortfolio(portfolioWithEntries.Item1)" Label="Add entry"></MatButton>
                                 }
                             </div>
                         </MatCardContent>
@@ -88,36 +89,7 @@
 
 @code
 {
-    protected List<Tuple<Portfolio, List<PortfolioEntry>>> Portfolios;
-
-    protected ISummaryService.Summary portfolioSummary = new(1341m, 1.8m, 9982.489m, 1000m);
-
-    protected List<PortfolioEntry> activePortfolioEntries = new List<PortfolioEntry>()
-    {
-        new("btc", 1, 1),
-        new("ada", 1, 2),
-        new("eth", 1, 3),
-        new("ltc", 1, 4),
-        new("link", 1, 5),
-    };
-
-    protected List<decimal> portfolioHoldings = new()
-    {
-        44.8886m,
-        28.18m,
-        10.116m,
-        9.38m,
-        2.70m,
-    };
-
-    protected List<PortfolioEntryRow> portfolioEntryRows = new()
-    {
-        new("btc", 57644.42m, 1.35m, 44.76m),
-        new("ada", 1.36m, 0.58m, 28.18m),
-        new("eth", 3279.64m, 10.95m, 27.11m),
-        new("ltc", 291.55m, 7.20m, 9.38m),
-        new("link", 42.20m, -5.19m, 2.70m)
-    };
+    protected List<Tuple<Portfolio, List<PortfolioEntry>>> PortfoliosWithEntries;
 
     protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
 
@@ -128,7 +100,7 @@
 
     private void LoadPortfolios()
     {
-        Portfolios = PortfolioService.GetPortfolios().Select(
+        PortfoliosWithEntries = PortfolioService.GetPortfolios().Select(
             portfolio => new Tuple<Portfolio, List<PortfolioEntry>>(
                 portfolio,
                 PortfolioEntryService.GetPortfolioEntries(portfolio.Id)
@@ -136,26 +108,9 @@
             ).ToList();
     }
 
-
-    protected override async Task OnInitializedAsync()
-    {
-    //_existingPortfolios = PortfolioService.GetPortfolios();
-    }
-
-    public void SelectionChangedEvent(object row)
-    {
-        if (row == null)
-        {
-        }
-        else
-        {
-            NavigationManager.NavigateTo($"entries");
-        }
-    }
-
     private void EditPortfolio(Portfolio activePortfolioItem1)
     {
-        Console.WriteLine($"About to edit {activePortfolioItem1.Name}"); 
+        NavigationManager.NavigateTo($"/editportfolio/{activePortfolioItem1.Id}");
     }
 
     private async void DeletePortfolio(Portfolio portfolio)
@@ -166,6 +121,7 @@
             PortfolioService.DeletePortfolio(portfolio);
             LoadPortfolios();
             StateHasChanged();
+            Toaster.Add($"Portfolio \"{portfolio.Name}\" sucessfully deleted", MatToastType.Info, "", "");
         }
     }
 

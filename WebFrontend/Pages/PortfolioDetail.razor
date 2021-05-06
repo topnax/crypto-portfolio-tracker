@@ -31,7 +31,6 @@
         bottom: 1rem;
         right: 1rem;
     }
-    
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
@@ -73,7 +72,12 @@
                         </MatBody2>
                     </MatCardContent>
                 </MatCard>
-                @if (PortfolioEntryRows != null)
+
+                @if (PortfolioEntryRows == null)
+                {
+                    <MatProgressBar Indeterminate="true"></MatProgressBar>
+                }
+                else if (PortfolioEntryRows.Count > 0)
                 {
                     <MatTable Items="@PortfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
                         <MatTableHeader>
@@ -84,15 +88,19 @@
                         </MatTableHeader>
                         <MatTableRow>
                             <td>@context.Symbol.ToUpper()</td>
-                            <td><div style="min-width: 8rem">@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</div></td>
-                            <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000"); min-width: 7rem;'><div style="min-width: 6rem">@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</div></td>
+                            <td>
+                                <div style="min-width: 8rem">@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</div>
+                            </td>
+                            <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000"); min-width: 7rem;'>
+                                <div style="min-width: 6rem">@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</div>
+                            </td>
                             <td>@(CurrencyUtils.Format(context.MarketValue, ActivePortfolio.Currency)) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Percentage))%)</td>
                         </MatTableRow>
                     </MatTable>
                 }
                 else
                 {
-                    <MatProgressBar Indeterminate="true"></MatProgressBar>
+                    <MatH6>No portfolio entries found...</MatH6>
                 }
             }
             else
@@ -146,6 +154,7 @@
         // create a dictionary where a symbol is mapped to a market entry
         var symbolsToMarketEntries = marketEntries.ToDictionary(entry => entry.Symbol, entry => entry);
 
+        // TODO fix low low low market cap non existing altcoins 
         // compute portfolio entry summaries 
         var entrySummaries = ActivePortfolioEntries.Select(
             portfolioEntry =>

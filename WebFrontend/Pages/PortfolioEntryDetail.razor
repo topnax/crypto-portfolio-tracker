@@ -120,7 +120,7 @@
             }
             else if (TableRowsItems.Count == 0)
             {
-                <MatH6>No entries found...</MatH6> 
+                <MatH6>No orders found...</MatH6> 
             }
             else
             {
@@ -220,11 +220,8 @@
     protected ISummaryService.Summary EntrySummary;
     protected decimal TotalHoldings = 0;
     
-    
     protected bool OrderDetailDialogIsOpen;
     protected Tuple<MarketOrder, ISummaryService.Summary> OrderToBeShown;
-    
-    
 
     protected List<Tuple<MarketOrder, ISummaryService.Summary>> TableRowsItems;
 

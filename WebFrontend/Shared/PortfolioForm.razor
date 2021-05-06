@@ -1,0 +1,96 @@
+@using Utils
+@using System.ComponentModel.DataAnnotations
+@using Model
+
+
+<EditForm Model="FormModel" OnValidSubmit="OnFormSubmitted">
+    <DataAnnotationsValidator/>
+    <p>
+        <MatTextField FullWidth="true" @bind-Value="@FormModel.Name" Label="Portfolio name"></MatTextField>
+        <ValidationMessage For="@(() => FormModel.Name)"/>
+    </p>
+
+    <p>
+        <MatTextField FullWidth="true" @bind-Value="@FormModel.Description" Label="Description"></MatTextField>
+        <ValidationMessage For="@(() => FormModel.Description)"/>
+    </p>
+    @if (!Edit)
+    {
+        <MatRadioGroup @bind-Value="@FormModel.SelectedCurrency" Items="@AvailableCurrencies">
+            <ItemTemplate Context="currencyContext">
+                <div>
+                    <MatRadioButton Value="@currencyContext">@CurrencyUtils.GetCurrencyLabel(currencyContext)</MatRadioButton>
+                </div>
+            </ItemTemplate>
+        </MatRadioGroup>
+        <ValidationMessage For="@(() => FormModel.SelectedCurrency)"/>
+    }
+    <MatCardActions>
+        <MatCardActionButtons>
+            <MatButton Type="submit">
+                @if (Edit)
+                {
+                    <span>Save</span>
+                }
+                else
+                {
+                    <span>Create</span>
+                }
+            </MatButton>
+        </MatCardActionButtons>
+
+        <MatCardActionIcons>
+            <MatIconButton Icon="@MatIconNames.Refresh" OnClick="(_) => FormModel.Reset()"></MatIconButton>
+        </MatCardActionIcons>
+    </MatCardActions>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public NewPortfolioModel FormModel { get; set; } = new (Currency.Usd);
+    
+    [Parameter] public EventCallback<NewPortfolioModel> OnSubmitEventHandler { get; set; }
+    
+    [Parameter]
+    public List<Currency> AvailableCurrencies { get; set; }
+    
+    [Parameter]
+    public Currency DefaultCurrency { get; set; } = Currency.Usd;
+    
+    [Parameter] public bool Edit { get; set; }
+    
+    public class NewPortfolioModel
+    {
+        private Currency _defaultCurrency;
+
+        public NewPortfolioModel(Currency defaultCurrency)
+        {
+            _defaultCurrency = defaultCurrency;
+            SelectedCurrency = defaultCurrency;
+        }
+
+        [Required]
+        [MinLength(1)]
+        public string Name { get; set; }
+
+        [Required]
+        [MinLength(1)]
+        public string Description { get; set; }
+
+        [Required] public Currency SelectedCurrency { get; set; }
+
+        public void Reset()
+        {
+            Name = "";
+            Description = "";
+            SelectedCurrency = _defaultCurrency;
+        }
+    }
+    
+    private async void OnFormSubmitted()
+    {
+        await OnSubmitEventHandler.InvokeAsync(FormModel);
+        FormModel.Reset();
+    }
+}

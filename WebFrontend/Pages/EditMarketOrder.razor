@@ -55,7 +55,6 @@
 
     private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
     {
-        // TODO enable adding sells
         MarketOrderService.UpdateMarketOrder(ActiveMarketOrder with {
             FilledPrice = formModel.FilledPrice, 
             Fee = formModel.Fee, 

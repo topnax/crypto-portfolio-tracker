@@ -1,4 +1,4 @@
-﻿@page "/newportfolio"
+﻿@page "/editportfolio/{portfolioId:int}"
 @using Model
 @using Services
 @using Utils
@@ -9,8 +9,17 @@
 
 
 <style>
+    .demo-mat-card {
+        max-width: 400px;
+        margin-bottom: 2em;
+    }
+
     .demo-mat-card-content {
         padding: 1rem;
+    }
+
+    .clear-margin {
+        margin: 0px;
     }
 </style>
 
@@ -20,10 +29,12 @@
             <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom:1em; margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton>
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
-                    <h2>New portfolio</h2>
+                    <h2>Edit portfolio</h2>
                     <PortfolioForm
                         DefaultCurrency="@Currency.Usd"
                         AvailableCurrencies="@(EnumUtils.GetEnumList<Currency>())"
+                        FormModel="FormModel"
+                        Edit="true"
                         OnSubmitEventHandler="@OnCreateFormSubmitted">
                     </PortfolioForm>
                 </MatCardContent>
@@ -35,10 +46,27 @@
 
 @code
 {
+    [Parameter] public int PortfolioId { get; set; }
+
+    public PortfolioForm.NewPortfolioModel FormModel = new(Currency.Usd);
+    
+    public Portfolio ActivePortfolio;
+
+    protected override void OnInitialized()
+    {
+        ActivePortfolio = PortfolioService.GetPortfolio(PortfolioId);
+        FormModel.Name = ActivePortfolio.Name;
+        FormModel.Description = ActivePortfolio.Description;
+    }
+
     private void OnCreateFormSubmitted(PortfolioForm.NewPortfolioModel formModel)
     {
-        PortfolioService.CreatePortfolio(formModel.Name, formModel.Description, formModel.SelectedCurrency);
+        PortfolioService.UpdatePortfolio(ActivePortfolio with {
+            Name = formModel.Name,
+            Description = formModel.Description
+            });
         formModel.Reset();
-        Toaster.Add("New portfolio successfully added", MatToastType.Success, "", "");
+        Toaster.Add("Portfolio successfully edited", MatToastType.Success, "", "");
+        NavigationManager.NavigateTo($"/portfolios/{ActivePortfolio.Id}");
     }
 }

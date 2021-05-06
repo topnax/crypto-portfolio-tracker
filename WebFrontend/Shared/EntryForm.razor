@@ -1,7 +1,7 @@
 @using Utils
 @using System.ComponentModel.DataAnnotations
 @using Model
-<EditForm Model="FormModel" OnValidSubmit="OnCreateOrderFormSubmit">
+<EditForm Model="FormModel" OnValidSubmit="OnFormSubmitted">
     <DataAnnotationsValidator/>
     <p>
         <MatTextField FullWidth="true" Label="@("Price per coin (" + CurrencyUtils.GetCurrencyLabel(Currency) + ")")"
@@ -110,7 +110,7 @@
         }
     }
     
-    private async void OnCreateOrderFormSubmit()
+    private async void OnFormSubmitted()
     {
         await OnSubmitEventHandler.InvokeAsync(FormModel);
         FormModel.Reset();
