@@ -4,6 +4,8 @@
 @using Utils
 @inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
 @inject IPortfolioService PortfolioService
+@inject IPortfolioEntryService PortfolioEntryService
+@inject IMatDialogService MatDialogService
 
 <style>
     .demo-mat-card {
@@ -30,47 +32,48 @@
 
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-            @if (activePortfolio != null)
+            <MatH5>Portfolios</MatH5>
+            @if (Portfolios != null)
             {
-                <MatCard class="demo-mat-card">
-                    <MatCardContent>
-                        <div class="demo-mat-card-content">
-                            <MatHeadline6 class="clear-margin">
-                                <MatChipSet Style="align-items: center">
-                                    <MatH5 Class="clear-margin">@activePortfolio.Name</MatH5>
-                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Currency)"/>
-                                </MatChipSet>
-                            </MatHeadline6>
-                        </div>
-
-                        <MatBody2 class="demo-mat-card-content clear-margin">
-                            <div class="mat-layout-grid">
-                                <div class="mat-layout-grid-inner" style="align-items: center">
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                        <MatH4 Class="clear-margin">@(CurrencyUtils.Format(portfolioSummary.MarketValue, activePortfolio.Currency))</MatH4>
-                                    </div>
-                                    <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                        @(portfolioSummary.RelativeChange * 100m) %
+                @foreach (var activePortfolio in Portfolios)
+                {
+                    <MatCard class="demo-mat-card" OnCli>
+                        <MatCardContent>
+                            <div class="demo-mat-card-content">
+                                <div class="mat-layout-grid mat-layout-grid-align-center" style="padding:0px;">
+                                    <div class="mat-layout-grid-inner center">
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+                                            <MatHeadline6 class="clear-margin">
+                                                <MatChipSet Style="align-items: center">
+                                                    <MatH5 Class="clear-margin">@activePortfolio.Item1.Name</MatH5>
+                                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(activePortfolio.Item1.Currency)"/>
+                                                </MatChipSet>
+                                            </MatHeadline6>
+                                        </div>
+                                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right;">
+                                            <MatIconButton Icon="edit" OnClick="() => EditPortfolio(activePortfolio.Item1)"></MatIconButton>
+                                            <MatIconButton Icon="delete" OnClick="() => DeletePortfolio(activePortfolio.Item1)"></MatIconButton>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </MatBody2>
-                    </MatCardContent>
-                </MatCard>
-                <MatTable Items="@portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
-                    <MatTableHeader>
-                        <th>Coin</th>
-                        <th>Price</th>
-                        <th>Change (1h)</th>
-                        <th>Holdings</th>
-                    </MatTableHeader>
-                    <MatTableRow>
-                        <td>@context.symbol.ToUpper()</td>
-                        <td>@(CurrencyUtils.Format(context.currentPrice, activePortfolio.Currency))</td>
-                        <td style='color: @(context.relativeChange >= 0 ? "#17a104" : "#FF0000")'>@context.relativeChange%</td>
-                        <td>@context.percentage%</td>
-                    </MatTableRow>
-                </MatTable>
+                            <div style="padding: 1rem">
+                                <MatButton Label="View" Style="margin-right: 1rem;" OnClick="() => ViewPortfolio(activePortfolio.Item1)"></MatButton>
+                                @if (activePortfolio.Item2.Count > 0)
+                                {
+                                    @foreach (var entry in activePortfolio.Item2)
+                                    {
+                                        <MatButton Outlined="true" Style="margin-right: 1em;" Label="@entry.Symbol.ToUpper()" OnClick='() => NavigationManager.NavigateTo($"/entries/{entry.Id}")'></MatButton>
+                                    }
+                                }
+                                else
+                                {
+                                    <MatButton Icon="add" Outlined="true" OnClick="() => AddNewEntryToPortfolio(activePortfolio.Item1)" Label="Add entry"></MatButton>
+                                }
+                            </div>
+                        </MatCardContent>
+                    </MatCard>
+                }
             }
             else
             {
@@ -80,12 +83,12 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{activePortfolio.Id}"); }'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio");}'></MatFAB>
 
 
 @code
 {
-    protected Portfolio activePortfolio;
+    protected List<Tuple<Portfolio, List<PortfolioEntry>>> Portfolios;
 
     protected ISummaryService.Summary portfolioSummary = new(1341m, 1.8m, 9982.489m, 1000m);
 
@@ -120,8 +123,19 @@
 
     protected override void OnInitialized()
     {
-        activePortfolio = PortfolioService.GetPortfolios()[0];
+        LoadPortfolios();
     }
+
+    private void LoadPortfolios()
+    {
+        Portfolios = PortfolioService.GetPortfolios().Select(
+            portfolio => new Tuple<Portfolio, List<PortfolioEntry>>(
+                portfolio,
+                PortfolioEntryService.GetPortfolioEntries(portfolio.Id)
+                )
+            ).ToList();
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,8 +149,33 @@
         }
         else
         {
-            NavigationManager.NavigateTo($"entrydetail");
+            NavigationManager.NavigateTo($"entries");
         }
     }
 
+    private void EditPortfolio(Portfolio activePortfolioItem1)
+    {
+        Console.WriteLine($"About to edit {activePortfolioItem1.Name}"); 
+    }
+
+    private async void DeletePortfolio(Portfolio portfolio)
+    {
+        var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this portfolio including all of it's portfolio entries and market orders?");
+        if (result)
+        {
+            PortfolioService.DeletePortfolio(portfolio);
+            LoadPortfolios();
+            StateHasChanged();
+        }
+    }
+
+    private void AddNewEntryToPortfolio(Portfolio portfolio)
+    {
+        NavigationManager.NavigateTo($"/newportfolioentry/{portfolio.Id}");
+    }
+    
+    private void ViewPortfolio(Portfolio portfolio)
+    {
+        NavigationManager.NavigateTo($"/portfolios/{portfolio.Id}");
+    }
 }

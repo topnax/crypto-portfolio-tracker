@@ -38,6 +38,7 @@
 
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton>Portfolio Detail</MatH5>
             @if (ActivePortfolio != null)
             {
                 <MatCard class="demo-mat-card">
