@@ -212,9 +212,11 @@ Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny
 
 Pro ověření kvality vytvořeného software pro sledování obchodního portfólia s kryptoměnami byly vytvořeny desítky jednotkových a integračních testů ověřující funkčnost základních modulů. Tyto testy se nachází v projektu \texttt{Tests}. Jako testovací framework byl zvolen framework \texttt{XUnit}\footnote{\url{https://github.com/xunit/xunit}}.
 
-Knihovna \texttt{moq}\footnote{\url{https://github.com/moq/moq4}} byla použita pro vytvoření \textbf{mock} objektů datové vrstvy při testování kódu služeb \texttt{PortfolioService}, \texttt{PortfolioEntryService} a \texttt{MarketOrderService}.
+Knihovna \texttt{moq}\footnote{\url{https://github.com/moq/moq4}} byla použita pro vytvoření \textbf{mock} objektů datové vrstvy při testování kódu služeb \texttt{PortfolioService}, \texttt{PortfolioEntryService} a \texttt{MarketOrderService} (jednotkové testy).
 
-Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}.
+Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}. 
+
+Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového zdroje pro získvání informací o aktuálním stavu trhu s kryptoměnami.
 
 \begin{lstlisting}[caption={Struktura projektu \texttt{Tests} obsahující integrační a jednotkové testy}, captionpos=b]
             |-- Integration
