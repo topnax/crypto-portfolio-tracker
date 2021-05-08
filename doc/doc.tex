@@ -208,6 +208,31 @@ Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny
 \section{Framework pro grafické rozhraní}
 \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
 
+\section{Oveření kvality vytvořeného software}
+
+Pro ověření kvality vytvořeného software pro sledování obchodního portfólia s kryptoměnami byly vytvořeny desítky jednotkových a integračních testů ověřující funkčnost základních modulů. Tyto testy se nachází v projektu \texttt{Tests}. Jako testovací framework byl zvolen framework \texttt{XUnit}\footnote{\url{https://github.com/xunit/xunit}}.
+
+Knihovna \texttt{moq}\footnote{\url{https://github.com/moq/moq4}} byla použita pro vytvoření \textbf{mock} objektů datové vrstvy při testování kódu služeb \texttt{PortfolioService}, \texttt{PortfolioEntryService} a \texttt{MarketOrderService}.
+
+Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}.
+
+\begin{lstlisting}[caption={Struktura projektu \texttt{Tests} obsahující integrační a jednotkové testy}, captionpos=b]
+            |-- Integration
+            |   |-- CryptoStatsSource
+            |   |   |-- CryptoNameResolverTest.cs
+            |   |   `-- CryptoStatsSourceTest.cs
+            |   `-- Repository
+            |       |-- MarketOrderTest.cs
+            |       |-- PortfolioEntryTest.cs
+            |       `-- PortfolioTest.cs
+            `-- Unit
+                `-- Service
+                    |-- MarketOrderServiceTest.cs
+                    |-- PortfolioEntryServiceTest.cs
+                    |-- PortfolioServiceTest.cs
+                    `-- SummaryServiceTest.cs
+\end{lstlisting}
+
 
 
 \printbibliography
