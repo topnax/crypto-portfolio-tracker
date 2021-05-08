@@ -29,6 +29,8 @@
 \usepackage[sorting=nyt,style=ieee]{biblatex}
 \addbibresource{literatura.bib}
 
+\lstdefinestyle{sharpc}{language=[Sharp]C, frame=lr, rulecolor=\color{blue!80!black}}
+
 \lstdefinestyle{flex}{
     frame=tb,
     aboveskip=3mm,
@@ -45,7 +47,7 @@
     breakatwhitespace=true,
     tabsize=3
 }
-
+\lstset{style=sharpc}
 \lstset{
     frame=tb,
     language=XML,
@@ -149,8 +151,7 @@ Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměna
 Aktuální i historický kurz drtivé většiny všech existujících kryptoměn bez nutnosti registrace nabízí pomocí REST rozhraní webová služba CoinGecko\cite{coingecko2021}. Jediným omezením tohoto API je počet provedených požadavků za minutu, který je stanoven na 100, což je pro aplikaci určenou ke sledování kryptoměnového portfólia více než dostačující.
 
 \begin{lstlisting}
-$ curl -X GET "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_cur
-rencies=usd" -H  "accept: application/json"
+\$ curl -X GET "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd" -H  "accept: application/json"
 
 {
   "bitcoin": {
@@ -159,14 +160,54 @@ rencies=usd" -H  "accept: application/json"
 }
 \end{lstlisting}
 
-\section{Výběr databáze pro implementaci datové vrstvy aplikace}
+\subsection{Výběr databáze pro implementaci datové vrstvy aplikace}
 
 Jelikož vytvářená aplikace není určená pro použití vícero uživateli najednou, ale pouze pro jednoho uživatele na jednom zařízení, tak pro ukládání dat aplikace je vhodná lokální databáze. 
 
 V úvahu připadá ukládat portfólia a transakce ve formátu JSON či XML přímo na souborový systém, ale z důvodu relace M:N mezi portfólii a kryptoměnami nejsou tyto typy databází příliš vhodné. Jako lepší volba tedy jeví nějaká relační databáze, např. SQLite, která je často používána při tvorbě desktopových aplikací a ukládá se ve formě jednoho souboru na souborový systém zařízení.
 
+
+
+\section{Popis architektury vytvořené aplikace}
+\subsection{Databázová vrstva}
+Ve vytvořené aplikaci je datová vrstva implementována pomocí tzv. \textit{repozitářů}, kdy každý repozitář představuje perzistentní úložiště dané entity, do kterého lze zapisovat a následně z něj číst.
+
+Kontrakt generického rozhraní repozitáře se skládá z následujících definic metod:
+\begin{itemize}
+    \item \texttt{public int Add(T entry)} -- přidá daný objekt do perzistentního úložiště a vrátí vygenerované ID
+    \item \texttt{public T Get(int id)} -- vyhledá a případně vrátí objekt z perzistentního úložiště dle předaného identifikátoru \texttt{id}
+    \item \texttt{List<T> GetAll()} -- vyhledá a případně vrátí seznam všech objektů z perzistentního úložiště
+    \item \texttt{public bool Update(T entry)} -- nahraje do perzistentního úložiště aktualizovanou verzi objektu, který se zde již nachází. Vrátí \texttt{true}, pokud aktualizace proběhla úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
+    \item \texttt{public bool Delete(T entry)} -- smaže předaný objekt z úložiště a vrátí \texttt{true}, pokud smazání proběhlo úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
+
+\end{itemize}
+
+Ve vytvořené aplikaci jsou definovány následující repozitáře:
+\begin{itemize} 
+    \item \texttt{IPortfolioRepository} -- úložiště objektů představujících jednotlivá portfólia spravované v aplikaci
+    \item \texttt{IPortfolioEntryRepository} -- úložiště objektů představujících položky existujících portfólií 
+    \item \texttt{IMarketOrderRepository} -- úložiště objektů představujících uskutečněné obchody dané položky portfólia
+\end{itemize}
+
+\subsection{Generování SQL dotazů}
+K jednoduchému a intuitivnímu generování SQL dotazů je použita knihovna \textbf{SqlKata Query Builder}\footnote{\url{https://github.com/sqlkata/querybuilder}}, kdy lze SQL dotazy vytvářet pomocí řetězení volání metod poskytovaných touto knihovnou.
+
+\begin{lstlisting}[language=Java, caption={Příklad generování SQL dotazu pro výběr všech transakcí dané položky portfólia pomocí knihovny SqlKata Query Builder.},captionpos=b, label={lst:sm-showcase}]
+Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryId).Get()
+\end{lstlisting}
+
+Tato knihovna přímo umožňuje nad předaným databázovým spojením vygenerovaný SQL dotaz přímo vykonat, kdy k této činnosti využívá knihovnu \textbf{Dapper}\footnote{\url{https://github.com/DapperLib/Dapper}}. Výsledkem metod pro vykonání generovaných dotazů jsou objekty typu \texttt{dynamic}, které je třeba mapovat na instance tříd dle modelu entity se kterou pracujeme.
+
+\begin{lstlisting}[language=Java,caption={Příklad mapování objektu typu \texttt{dynamic} na instanci třídy \texttt{Portfolio}.},captionpos=b, label={lst:sm-mapping}]
+public override Portfolio FromRow(dynamic d) =>
+            new Portfolio((string) d.name, (string) d.description, (Currency) d.currency_code, (int) d.id);
+\end{lstlisting}
+
+Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny možné typy stejná, tak je tato část kódu sdílena pomocí abstraktní třídy \texttt{SqlKataRepository}. Implementace pro konkrétní třídy modelu musí akorát implementovat kód pro vytvoření instance dané třídy z objektu typu \texttt{dynamic} a naopak. V aplikaci se nachází implementace \texttt{SqlKataPortfolioRepository}, \texttt{SqlKataPortfolioEntryRepository} a \texttt{SqlKataMarketOrderRepository}.
+
 \section{Framework pro grafické rozhraní}
 \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
+
 
 
 \printbibliography
