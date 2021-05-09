@@ -182,14 +182,14 @@ Kontrakt generického rozhraní repozitáře se skládá z následujících defi
 
 \end{itemize}
 
-Ve vytvořené aplikaci jsou definovány následující repozitáře:
+\noindent Ve vytvořené aplikaci jsou definovány následující repozitáře:
 \begin{itemize} 
     \item \texttt{IPortfolioRepository} -- úložiště objektů představujících jednotlivá portfólia spravované v aplikaci
     \item \texttt{IPortfolioEntryRepository} -- úložiště objektů představujících položky existujících portfólií 
     \item \texttt{IMarketOrderRepository} -- úložiště objektů představujících uskutečněné obchody dané položky portfólia
 \end{itemize}
 
-\subsection{Generování SQL dotazů}
+\subsubsection{Generování SQL dotazů}
 K jednoduchému a intuitivnímu generování SQL dotazů je použita knihovna \textbf{SqlKata Query Builder}\footnote{\url{https://github.com/sqlkata/querybuilder}}, kdy lze SQL dotazy vytvářet pomocí řetězení volání metod poskytovaných touto knihovnou.
 
 \begin{lstlisting}[language=Java, caption={Příklad generování SQL dotazu pro výběr všech transakcí dané položky portfólia pomocí knihovny SqlKata Query Builder.},captionpos=b, label={lst:sm-showcase}]
@@ -204,6 +204,9 @@ public override Portfolio FromRow(dynamic d) =>
 \end{lstlisting}
 
 Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny možné typy stejná, tak je tato část kódu sdílena pomocí abstraktní třídy \texttt{SqlKataRepository}. Implementace pro konkrétní třídy modelu musí akorát implementovat kód pro vytvoření instance dané třídy z objektu typu \texttt{dynamic} a naopak. V aplikaci se nachází implementace \texttt{SqlKataPortfolioRepository}, \texttt{SqlKataPortfolioEntryRepository} a \texttt{SqlKataMarketOrderRepository}.
+
+\subsection{Služba pro výpočet výkonu jednotlivých entit}
+Aby bylo možné vypočítat výkon (výdělek či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), byla vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
 
 \section{Framework pro grafické rozhraní}
 \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
