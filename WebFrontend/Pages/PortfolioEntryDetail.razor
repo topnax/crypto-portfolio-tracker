@@ -10,7 +10,7 @@
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject IMarketOrderService MarketOrderService
-@inject ICryptoNameResolver CryptoNameResolver
+@inject ICryptocurrencyResolver CryptocurrencyResolver
 @inject ICryptoStatsSource CryptoStatsSource
 @inject ISummaryService SummaryService
 
@@ -50,9 +50,9 @@
                         <div class="demo-mat-card-content">
                             <MatHeadline6 class="clear-margin">
                                 <MatChipSet Style="align-items: center">
-                                    @if (PortfolioEntryName != null)
+                                    @if (PortfolioCryptocurrencyEntry != null)
                                     {
-                                        <MatH5 Class="clear-margin-vertical">@PortfolioEntryName</MatH5>
+                                        <MatH5 Class="clear-margin-vertical">@PortfolioCryptocurrencyEntry.Name</MatH5>
                                     }
                                     else
                                     {
@@ -216,7 +216,7 @@
     protected Portfolio ActivePortfolio;
     protected PortfolioEntry ActivePortfolioEntry; 
     protected MarketEntry CurrentEntryAssetMarketEntry; 
-    protected string PortfolioEntryName = "Bitcoin";
+    protected Cryptocurrency PortfolioCryptocurrencyEntry;
     protected ISummaryService.Summary EntrySummary;
     protected decimal TotalHoldings = 0;
     
@@ -237,7 +237,7 @@
     protected override async Task OnInitializedAsync()
     {
         // resolve the name of the cryptocurrency (using the symbol)
-         PortfolioEntryName = await CryptoNameResolver.Resolve(ActivePortfolioEntry.Symbol);
+         PortfolioCryptocurrencyEntry = await CryptocurrencyResolver.Resolve(ActivePortfolioEntry.Symbol);
 
         await UpdateEntrySummary();
     }
@@ -257,7 +257,7 @@
         // TODO null?
         CurrentEntryAssetMarketEntry = (await CryptoStatsSource.GetMarketEntries(
             CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(),
-            PortfolioEntryName.ToLower()
+            PortfolioCryptocurrencyEntry.Id
             ))[0];
 
         // get all orders of the portfolio entry

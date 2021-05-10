@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CryptoStatsSource.model;
 
 namespace CryptoStatsSource
 {
-    public interface ICryptoNameResolver
+    public interface ICryptocurrencyResolver
     {
-        public Task<string> Resolve(string symbol);
+        public Task<Cryptocurrency> Resolve(string symbol);
 
         public Task Refresh();
     }
 
-    public class CryptoNameResolverImpl : ICryptoNameResolver
+    public class CryptocurrencyResolverImpl : ICryptocurrencyResolver
     {
         private ICryptoStatsSource _cryptoStatsSource;
-        private Dictionary<String, String> _symbolToNameMap;
+        private Dictionary<String, Cryptocurrency> _nameToCryptocurrencyDictionary;
 
-        public CryptoNameResolverImpl(ICryptoStatsSource cryptoStatsSource)
+        public CryptocurrencyResolverImpl(ICryptoStatsSource cryptoStatsSource)
         {
             _cryptoStatsSource = cryptoStatsSource;
         }
@@ -24,16 +25,16 @@ namespace CryptoStatsSource
         public async Task Refresh()
         {
             // TODO improve this
-            _symbolToNameMap = new();
+            _nameToCryptocurrencyDictionary = new();
             (await _cryptoStatsSource.GetAvailableCryptocurrencies()).ForEach(c =>
-                _symbolToNameMap.TryAdd(c.Symbol, c.Name));
+                _nameToCryptocurrencyDictionary.TryAdd(c.Symbol, c));
         }
 
-        public async Task<string> Resolve(string symbol)
+        public async Task<Cryptocurrency> Resolve(string symbol)
         {
-            if (_symbolToNameMap?.GetValueOrDefault(symbol) == null) await Refresh();
+            if (_nameToCryptocurrencyDictionary?.GetValueOrDefault(symbol) == null) await Refresh();
 
-            return _symbolToNameMap.GetValueOrDefault(symbol, null);
+            return _nameToCryptocurrencyDictionary.GetValueOrDefault(symbol, null);
         }
     }
 }

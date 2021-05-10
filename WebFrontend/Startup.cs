@@ -53,7 +53,7 @@ namespace WebFrontend
             var db = new SqlKataDatabase(dbConnection, new SqliteCompiler());
             services.AddSingleton(ctx => db);
 
-            services.AddSingleton<ICryptoNameResolver, CryptoNameResolverImpl>();
+            services.AddSingleton<ICryptocurrencyResolver, CryptocurrencyResolverImpl>();
             services.AddSingleton<ISummaryService, SummaryServiceImpl>();
             
             services.AddSingleton<IPortfolioRepository, SqlKataPortfolioRepository>();

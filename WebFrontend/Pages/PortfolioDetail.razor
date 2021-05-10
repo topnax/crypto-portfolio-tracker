@@ -11,7 +11,7 @@
 @inject IMarketOrderService MarketOrderService;
 @inject ICryptoStatsSource CryptoStatsSource;
 @inject ISummaryService SummaryService;
-@inject ICryptoNameResolver CryptoNameResolver;
+@inject ICryptocurrencyResolver CryptocurrencyResolver;
 
 <style>
     .demo-mat-card {
@@ -140,15 +140,15 @@
     private async void _loadEntryInfo()
     {
         // resolve names of all portfolio entries 
-        await CryptoNameResolver.Refresh();
-        var portfolioEntriesNames = await Task.WhenAll(
+        await CryptocurrencyResolver.Refresh();
+        var portfolioCryptocurrencyEntries = await Task.WhenAll(
             ActivePortfolioEntries.Select(
-                async entry => (await CryptoNameResolver.Resolve(entry.Symbol)).ToLower())
+                async entry => (await CryptocurrencyResolver.Resolve(entry.Symbol)))
             );
 
         // fetch market entries of all entries of the portfolio 
         var marketEntries = await CryptoStatsSource.GetMarketEntries(
-            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(), portfolioEntriesNames
+            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(), portfolioCryptocurrencyEntries.Select(c => c.Id).ToArray()
             );
 
         // create a dictionary where a symbol is mapped to a market entry
@@ -191,13 +191,13 @@
 
         // create portfolio entry table rows
         PortfolioEntryRows = entrySummaries.Zip(ActivePortfolioEntries).Select(
-            (tuple) => new PortfolioEntryRow(
+            tuple => new PortfolioEntryRow(
                 // symbol of the portfolio entry
                 tuple.Second.Symbol,
                 // current price of the entry's asset 
                 symbolsToMarketEntries[tuple.Second.Symbol].CurrentPrice,
                 // asset's price change since the last 24h 
-                new decimal(symbolsToMarketEntries[tuple.Second.Symbol].PriceChangePercentage24H),
+                new decimal(symbolsToMarketEntries[tuple.Second.Symbol].PriceChangePercentage24H ?? 0),
                 // percentage within the portfolio entry
                 portfolioTotalMarketValue > 0 ? (tuple.First.MarketValue / portfolioTotalMarketValue) * 100 : 0,
                 // absolute change within the portfolio entry
