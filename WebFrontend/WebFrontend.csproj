@@ -1,22 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>WebFrontend</AssemblyName>
     <RootNamespace>WebFrontend</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="ElectronNET.API" Version="11.5.1" />
     <PackageReference Include="MatBlazor" Version="2.8.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.4" />
     <PackageReference Include="SqlKata" Version="2.3.2" />
     <PackageReference Include="SqlKata.Execution" Version="2.3.2" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\CryptoStatsSource\CryptoStatsSource.csproj" />
     <ProjectReference Include="..\Repository\Repository.csproj" />
     <ProjectReference Include="..\Services\Services\Services.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Remove="electron.manifest.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ProgramWithoutElectron.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="electron.manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

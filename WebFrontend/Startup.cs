@@ -1,7 +1,9 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 using CryptoStatsSource;
 using Database;
+using ElectronNET.API;
 using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -90,6 +92,7 @@ namespace WebFrontend
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
+            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
         }
     }
 }
