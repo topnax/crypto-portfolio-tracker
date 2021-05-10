@@ -43,8 +43,8 @@
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
 
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
             <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton>Portfolio Detail</MatH5>
             @if (ActivePortfolio != null)
             {
@@ -116,10 +116,10 @@
                 <MatProgressBar Indeterminate="true"></MatProgressBar>
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}"); }'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Settings" Label="Manage portfolio entries" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}"); }'></MatFAB>
 
 
 @code
