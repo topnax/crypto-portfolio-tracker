@@ -6,6 +6,7 @@ namespace Repository
     // TODO comments
     public interface IRepository<T>
     {
+        // TODO remove from IRepository
         public object ToRow(T entry);
 
         public int Add(T entry);
