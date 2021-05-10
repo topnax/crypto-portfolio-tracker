@@ -31,11 +31,20 @@
         margin-top: 0px;
         margin-bottom: 0px;
     }    
+    
     .app-fab--absolute {
         position: fixed;
         bottom: 1rem;
         right: 1rem;
     }
+    
+    .mat-paper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1em;
+    } 
     
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
@@ -120,7 +129,7 @@
             }
             else if (TableRowsItems.Count == 0)
             {
-                <MatH6>No orders found...</MatH6> 
+                <MatPaper Elevation="2"><span>No market orders were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new market order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{ActivePortfolioEntry.Id}");}'></MatButton></div></MatPaper>
             }
             else
             {

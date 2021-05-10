@@ -31,6 +31,14 @@
         bottom: 1rem;
         right: 1rem;
     }
+    
+    .mat-paper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1em;
+    } 
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
@@ -100,7 +108,7 @@
                 }
                 else
                 {
-                    <MatH6>No portfolio entries found...</MatH6>
+                    <MatPaper Elevation="2"><span>No portfolio entries were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new portfolio entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}");}'></MatButton></div></MatPaper>
                 }
             }
             else

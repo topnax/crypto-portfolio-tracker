@@ -27,6 +27,14 @@
         right: 1rem;
     }
     
+    .mat-paper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1em;
+    } 
+    
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
@@ -34,7 +42,15 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
             <MatH5>Portfolios</MatH5>
-            @if (PortfoliosWithEntries != null)
+            @if (PortfoliosWithEntries == null)
+            {
+                <MatProgressBar Indeterminate="true"></MatProgressBar>
+            }
+            else if (PortfoliosWithEntries.Count < 1)
+            {
+                <MatPaper Elevation="2"><span>No portfolios were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio");}'></MatButton></div></MatPaper>
+            }
+            else
             {
                 @foreach (var portfolioWithEntries in PortfoliosWithEntries)
                 {
@@ -75,10 +91,6 @@
                         </MatCardContent>
                     </MatCard>
                 }
-            }
-            else
-            {
-                <MatProgressBar Indeterminate="true"></MatProgressBar>
             }
         </div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
