@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CryptoStatsSource.model;
 
@@ -42,7 +43,10 @@ namespace CryptoStatsSource
             _nameToCryptocurrencyDictionary = new();
             
             // fetch all cryptocurrencies and add them to the dictionary using the symbol as a key
-            (await _cryptoStatsSource.GetAvailableCryptocurrencies()).ForEach(c =>
+            (await _cryptoStatsSource.GetAvailableCryptocurrencies())
+                // workaround till Coingecko removes binance-peg-cardano entry
+                .Where(c => c.Symbol != "ada" && c.Id != "binance-peg-cardano").ToList()
+                .ForEach(c =>
                 _nameToCryptocurrencyDictionary.TryAdd(c.Symbol, c));
         }
 
