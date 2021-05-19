@@ -44,8 +44,8 @@ namespace CryptoStatsSource
             
             // fetch all cryptocurrencies and add them to the dictionary using the symbol as a key
             (await _cryptoStatsSource.GetAvailableCryptocurrencies())
-                // workaround till Coingecko removes binance-peg-cardano entry
-                .Where(c => c.Symbol != "ada" && c.Id != "binance-peg-cardano").ToList()
+                // workaround till Coingecko removes binance-peg entries
+                .Where(c => !c.Id.Contains("binance-peg")).ToList()
                 .ForEach(c =>
                 _nameToCryptocurrencyDictionary.TryAdd(c.Symbol, c));
         }
