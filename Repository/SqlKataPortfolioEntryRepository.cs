@@ -7,7 +7,7 @@ namespace Repository
 {
     public class SqlKataPortfolioEntryRepository : SqlKataRepository<PortfolioEntry>, IPortfolioEntryRepository
     {
-        public SqlKataPortfolioEntryRepository(SqlKataDatabase db) : base(db, "portfolio_entries")
+        public SqlKataPortfolioEntryRepository(SqlKataDatabase db) : base(db, SqlSchema.TablePortfolioEntries)
         {
         }
 
@@ -22,9 +22,9 @@ namespace Repository
         public override PortfolioEntry FromRow(dynamic d) => new((string) d.symbol, (int) d.portfolio_id, (int) d.id);
 
         public List<PortfolioEntry> GetAllByPortfolioId(int portfolioId) =>
-            RowsToObjects(Db.Get().Query(tableName).Where("portfolio_id", portfolioId).Get());
+            RowsToObjects(Db.Get().Query(tableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Get());
 
         public int DeletePortfolioEntries(int portfolioId) =>
-            Db.Get().Query(tableName).Where("portfolio_id", portfolioId).Delete();
+            Db.Get().Query(tableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Delete();
     }
 }

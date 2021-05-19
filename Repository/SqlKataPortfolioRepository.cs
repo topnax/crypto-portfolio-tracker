@@ -5,7 +5,7 @@ namespace Repository
 {
     public class SqlKataPortfolioRepository : SqlKataRepository<Portfolio>, IPortfolioRepository
     {
-        public SqlKataPortfolioRepository(SqlKataDatabase db) : base(db, "portfolios")
+        public SqlKataPortfolioRepository(SqlKataDatabase db) : base(db, SqlSchema.TablePortfolios)
         {
         }
 

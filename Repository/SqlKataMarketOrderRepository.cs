@@ -11,7 +11,7 @@ namespace Repository
     {
         private const int DecimalPrecision = 100000000;
         
-        public SqlKataMarketOrderRepository(SqlKataDatabase db) : base(db, "market_orders")
+        public SqlKataMarketOrderRepository(SqlKataDatabase db) : base(db, SqlSchema.TableMarketOrders)
         {
         }
 
@@ -36,9 +36,9 @@ namespace Repository
                 (int) d.id, (int) d.portfolio_entry_id);
 
         public List<MarketOrder> GetAllByPortfolioEntryId(int portfolioEntryId) =>
-            RowsToObjects(Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryId).Get());
+            RowsToObjects(Db.Get().Query(tableName).Where(SqlSchema.MarketOrdersPortfolioEntryId, portfolioEntryId).Get());
 
         public int DeletePortfolioEntryOrders(int portfolioEntryOrder) =>
-            Db.Get().Query(tableName).Where("portfolio_entry_id", portfolioEntryOrder).Delete();
+            Db.Get().Query(tableName).Where(SqlSchema.MarketOrdersPortfolioEntryId, portfolioEntryOrder).Delete();
     }
 }
