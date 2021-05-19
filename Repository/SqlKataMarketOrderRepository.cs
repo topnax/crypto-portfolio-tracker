@@ -38,7 +38,7 @@ namespace Repository
         public List<MarketOrder> GetAllByPortfolioEntryId(int portfolioEntryId) =>
             RowsToObjects(Db.Get().Query(tableName).Where(SqlSchema.MarketOrdersPortfolioEntryId, portfolioEntryId).Get());
 
-        public int DeletePortfolioEntryOrders(int portfolioEntryOrder) =>
-            Db.Get().Query(tableName).Where(SqlSchema.MarketOrdersPortfolioEntryId, portfolioEntryOrder).Delete();
+        public int DeletePortfolioEntryOrders(int portfolioEntryId) =>
+            Db.Get().Query(tableName).Where(SqlSchema.MarketOrdersPortfolioEntryId, portfolioEntryId).Delete();
     }
 }
