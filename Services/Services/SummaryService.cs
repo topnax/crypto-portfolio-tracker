@@ -6,8 +6,25 @@ using Model;
 
 namespace Services
 {
+    /// <summary>
+    /// A service that is responsible for computing summaries (total profit, cost,...) of orders, portfolio entries and
+    /// even portfolios. 
+    /// </summary>
     public interface ISummaryService
     {
+        /// <param name="AbsoluteChange">
+        /// Absolute change of the of the tracked entity (typically in a USD, EUR,...) 
+        /// </param>
+        /// <param name="RelativeChange">
+        /// Relative change of the of the tracked entity (0 meaning change whatsoever, 1.0 meaning 100% increase in market value,
+        /// -1.0) meaning -100% decrease in market value 
+        /// </param>
+        /// <param name="MarketValue">
+        /// Total market value of the tracked entity (entity size multiplied by the current entity value) 
+        /// </param>
+        /// <param name="Cost">
+        /// Cost of the tracked entity (entity size multiplied by the price of the entity at the time it was traded)
+        /// </param>
         public record Summary(decimal AbsoluteChange, decimal RelativeChange, decimal MarketValue, decimal Cost);
 
         public Summary GetMarketOrderSummary(MarketOrder order, decimal assetPrice);
@@ -97,6 +114,5 @@ namespace Services
 
         public ISummaryService.Summary GetPortfolioSummary(List<ISummaryService.Summary> portfolioEntrySummaries) =>
             GetAverageOfSummaries(portfolioEntrySummaries);
-
     }
 }
