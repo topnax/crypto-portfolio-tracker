@@ -4,19 +4,21 @@ namespace Database
 {
     public class SqlSchema
     {
+        public const string TableIdPrimaryKey = "id";
+        
         public const string TablePortfolios = "portfolios";
-        public const string PortfoliosId = "id";
+        public const string PortfoliosId = TableIdPrimaryKey;
         public const string PortfoliosName = "name";
         public const string PortfoliosDescription = "description";
         public const string PortfoliosCurrencyCode = "currency_code";
         
         public const string TablePortfolioEntries = "portfolio_entries";
-        public const string PortfolioEntriesId = "id";
+        public const string PortfolioEntriesId = TableIdPrimaryKey;
         public const string PortfolioEntriesSymbol = "symbol";
         public const string PortfolioEntriesPortfolioId = "portfolio_id";
         
         public const string TableMarketOrders = "market_orders";
-        public const string MarketOrdersId = "id";
+        public const string MarketOrdersId = TableIdPrimaryKey;
         public const string MarketOrdersFilledPrice = "filled_price";
         public const string MarketOrdersFee = "fee";
         public const string MarketOrdersSize = "size";

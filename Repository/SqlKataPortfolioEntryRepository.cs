@@ -5,26 +5,29 @@ using SqlKata.Execution;
 
 namespace Repository
 {
+    /// <summary>
+    /// Implements the IPortfolioEntryRepository by extending SqlKataRepository and implementing necessary methods
+    /// </summary>
     public class SqlKataPortfolioEntryRepository : SqlKataRepository<PortfolioEntry>, IPortfolioEntryRepository
     {
         public SqlKataPortfolioEntryRepository(SqlKataDatabase db) : base(db, SqlSchema.TablePortfolioEntries)
         {
         }
 
-        protected override int _getEntryId(PortfolioEntry entry) => entry.Id;
+        protected override int GetEntryId(PortfolioEntry entry) => entry.Id;
 
-        public override object ToRow(PortfolioEntry entry) => new
+        protected override object ToRow(PortfolioEntry entry) => new
         {
             symbol = entry.Symbol,
             portfolio_id = entry.PortfolioId
         };
 
-        public override PortfolioEntry FromRow(dynamic d) => new((string) d.symbol, (int) d.portfolio_id, (int) d.id);
+        protected override PortfolioEntry FromRow(dynamic d) => new((string) d.symbol, (int) d.portfolio_id, (int) d.id);
 
         public List<PortfolioEntry> GetAllByPortfolioId(int portfolioId) =>
-            RowsToObjects(Db.Get().Query(tableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Get());
+            RowsToObjects(Db.Get().Query(TableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Get());
 
         public int DeletePortfolioEntries(int portfolioId) =>
-            Db.Get().Query(tableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Delete();
+            Db.Get().Query(TableName).Where(SqlSchema.PortfolioEntriesPortfolioId, portfolioId).Delete();
     }
 }
