@@ -60,7 +60,7 @@ namespace Repository
         /// Deletes all market orders of the portfolio entry given by an ID
         /// </summary>
         /// <param name="portfolioEntryId">ID of the entry whose orders should be deleted</param>
-        /// <returns>A flag indicating whether the orders have been successfully deleted</returns>
+        /// <returns>Number of orders deleted</returns>
         public int DeletePortfolioEntryOrders(int portfolioEntryId);
     }
 
