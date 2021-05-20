@@ -6,6 +6,9 @@ using Repository;
 
 namespace Services
 {
+    /// <summary>
+    /// A service that is responsible for managing portfolio entries and storing them to a persistent repository.
+    /// </summary>
     public interface IPortfolioEntryService
     {
         /// <summary>

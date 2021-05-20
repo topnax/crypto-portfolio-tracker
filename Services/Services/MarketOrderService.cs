@@ -5,6 +5,9 @@ using Repository;
 
 namespace Services
 {
+    /// <summary>
+    /// A service that is responsible for managing market orders and storing them to a persistent repository.
+    /// </summary>
     public interface IMarketOrderService
     {
         /// <summary>
