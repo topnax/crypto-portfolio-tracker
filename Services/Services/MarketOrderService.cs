@@ -28,7 +28,7 @@ namespace Services
         bool DeleteMarketOrder(MarketOrder order);
 
         /// <summary>
-        /// Updates the given order in the repository. An order with the same ID in the repository is replaced with the one
+        /// Updates the given order in the repository. The order with the same ID in the repository is replaced with the one
         /// passed.
         /// </summary>
         /// <param name="order">Updated order</param>

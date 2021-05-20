@@ -86,7 +86,7 @@ namespace Tests.Unit.Service
             var service = new PortfolioEntryServiceImpl(repositoryMock.Object, marketOrderServiceMock.Object);
 
             // act
-            var updated = service.UpdatePortfolio(entryToBeUpdated);
+            var updated = service.UpdatePortfolioEntry(entryToBeUpdated);
 
             // assert
             Assert.True(updated);
