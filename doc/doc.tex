@@ -69,21 +69,24 @@
 
 
 \let\oldsection\section
-\renewcommand\section{\clearpage\oldsection}
+\renewcommand
+
+
+\section{\clearpage\oldsection}
 
 \begin{document}
-	% this has to be placed here, after document has been created
-	% \counterwithout{lstlisting}{chapter}
-	\renewcommand{\lstlistingname}{Ukázka kódu}
-	\renewcommand{\lstlistlistingname}{Seznam ukázek kódu}
+    % this has to be placed here, after document has been created
+    % \counterwithout{lstlisting}{chapter}
+    \renewcommand{\lstlistingname}{Ukázka kódu}
+    \renewcommand{\lstlistlistingname}{Seznam ukázek kódu}
     \begin{titlepage}
 
         \centering
 
         \vspace*{\baselineskip}
         \begin{figure}[H]
-        \centering
-        \includegraphics[width=7cm]{img/fav-logo.jpg}
+            \centering
+            \includegraphics[width=7cm]{img/fav-logo.jpg}
         \end{figure}
 
         \vspace*{1\baselineskip}
@@ -115,43 +118,45 @@
     \tableofcontents
     \pagebreak
 
-\section{Zadání práce}
-Zadáním práce je vytvořit aplikaci určenou ke sledování obchodního portfólia s kryptoměnami pomocí frameworku .NET 5.0, kdy aplikace bude nabízet grafické rozhraní pro její ovládání. Aplikace musí splňovat následující body:
 
-\begin{itemize}
-    \item možnost vytvořit portfólia, do kterých budou členěněny jednotlivé transakce (jedno portfólio může obsahovat pouze transakce v jedné fiat měně)
-    \item jednotlivé transakce budou obsahovat informaci o nákupní či prodejní ceně za jednu minci kryptoměny, počet mincí, kterých se obchod týkal, datum uskutečnění obchodu a poplatek za jeho zprostředkování
-    \item možnost zobrazit si celkový zisk či ztrátu portfólia 
-    \item možnost zobrazit si zisk či ztrátu na úrovni jednotlivých transakcí
-    \item možnost zobrazit si procentuální složení daného portfólia
-    \item možnost získat aktuální kurz vybrané kryptoměny ze zdroje dostupného přes veřejně dostupné REST API 
-    \item vhodně navržená architektura umožující možnost jednoduchou výměnu datové vrstvy či zdroje aktuálního kurzu
-\end{itemize}
+    \section{Zadání práce}
+    Zadáním práce je vytvořit aplikaci určenou ke sledování obchodního portfólia s kryptoměnami pomocí frameworku .NET 5.0, kdy aplikace bude nabízet grafické rozhraní pro její ovládání. Aplikace musí splňovat následující body:
 
-    
-\section{Sledování obchodního portfólia s kryptoměnami}
+    \begin{itemize}
+        \item možnost vytvořit portfólia, do kterých budou členěněny jednotlivé transakce (jedno portfólio může obsahovat pouze transakce v jedné fiat měně)
+        \item jednotlivé transakce budou obsahovat informaci o nákupní či prodejní ceně za jednu minci kryptoměny, počet mincí, kterých se obchod týkal, datum uskutečnění obchodu a poplatek za jeho zprostředkování
+        \item možnost zobrazit si celkový zisk či ztrátu portfólia
+        \item možnost zobrazit si zisk či ztrátu na úrovni jednotlivých transakcí
+        \item možnost zobrazit si procentuální složení daného portfólia
+        \item možnost získat aktuální kurz vybrané kryptoměny ze zdroje dostupného přes veřejně dostupné REST API
+        \item vhodně navržená architektura umožující možnost jednoduchou výměnu datové vrstvy či zdroje aktuálního kurzu
+    \end{itemize}
 
-Obchodování kryptoměň spočívá v nákupu a prodeji kryptoměn na burzách za účelem zisku, kdy obchodník chce prodat kryptoměny za vyšší částku než je nakoupil. Je typické, že takový obchodník provádí velké množství obchodů (až několik týdně) a i přesto, že burzy s kryptoměnami sice poskytují přehled historie uskutečněných transakcí, tak tento přehled nebývá často dostatečně obsáhlý a některé informace, jako například zisk či ztráta, se v něm nezobrazují. Dále je také časté, že obchodníci používají k obchodování více než jednu burzu, a tak vzniká potřeba nějaké služby či aplikace, ve které by byly transakce ze všech burz uložené, a která by nabízela jednoduché a společné rozhraní pro všechny burzy. Od takové služby je vyžadovaný i kvalitní přehled zobrazující aktuální výkon obchodování a celkovou hodnotu výdělku či ztráty. Mezi nejpopulárnější kryptoměnové burzy patří například \textit{Coinbase} či \textit{Binance}. 
 
-Za předpokladu existence takové aplikace by jejím dalším využitím, jelikož sdružuje transakce ze všech burz, bylo použití při vyplňování daňového přiznání, kdy je velmi výhodné, že aplikace zobrazuje všechny obchodníkovy transakce včetně zisku či ztráty.  
+    \section{Sledování obchodního portfólia s kryptoměnami}
 
-Aplikací, které se zaměřují na sledování obchodního portfólia s kryptoměnami existuje několik, kdy mezi ty nejpoužívanější patří Blockfolio\cite{blockfolio2021} (Android a iOS), Delta\cite{delta2021} (Android a iOS) a Moonitor\cite{moonitor2021} (macOS, Windows a Linux). Tyto aplikace splňují požadavek přehledného zobrazení výnosnosti obchodování i na úrovni jednotlivých transakcí, avšak během jejich používání můžou často vzniknout nové požadavky specifické danému uživateli, jako například možnost importu transakcí z API nějaké méně známé burzy či jiný výpočet celkového zisku portfólia, které do aplikace pravděpodobně nikdy nebudou zapracovány. Řešením pro technicky zdatné uživatele by bylo si takovou aplikaci navrhnout a napragramovat, avšak vytváření architektury a základní logiky pro správu a sledování portfólia (zádávní transakcí a jejich přehled) pro ně může být časově náročné a tudíž odrazující. 
+    Obchodování kryptoměň spočívá v nákupu a prodeji kryptoměn na burzách za účelem zisku, kdy obchodník chce prodat kryptoměny za vyšší částku než je nakoupil. Je typické, že takový obchodník provádí velké množství obchodů (až několik týdně) a i přesto, že burzy s kryptoměnami sice poskytují přehled historie uskutečněných transakcí, tak tento přehled nebývá často dostatečně obsáhlý a některé informace, jako například zisk či ztráta, se v něm nezobrazují. Dále je také časté, že obchodníci používají k obchodování více než jednu burzu, a tak vzniká potřeba nějaké služby či aplikace, ve které by byly transakce ze všech burz uložené, a která by nabízela jednoduché a společné rozhraní pro všechny burzy. Od takové služby je vyžadovaný i kvalitní přehled zobrazující aktuální výkon obchodování a celkovou hodnotu výdělku či ztráty. Mezi nejpopulárnější kryptoměnové burzy patří například \textit{Coinbase} či \textit{Binance}.
 
-\begin{figure}[!ht]
-\centering
-{\includegraphics[width=5.5cm]{img/blockfolio.png}}
-\caption{Mobilní aplikace Blockfolio umožňující sledovat kryptoměnové portfólio}
-\label{fig:simple-vrp-czech}
-\end{figure}
+    Za předpokladu existence takové aplikace by jejím dalším využitím, jelikož sdružuje transakce ze všech burz, bylo použití při vyplňování daňového přiznání, kdy je velmi výhodné, že aplikace zobrazuje všechny obchodníkovy transakce včetně zisku či ztráty.
 
-\section{Datový zdroj s aktuálním kurzem kryptoměn}
+    Aplikací, které se zaměřují na sledování obchodního portfólia s kryptoměnami existuje několik, kdy mezi ty nejpoužívanější patří Blockfolio\cite{blockfolio2021} (Android a iOS), Delta\cite{delta2021} (Android a iOS) a Moonitor\cite{moonitor2021} (macOS, Windows a Linux). Tyto aplikace splňují požadavek přehledného zobrazení výnosnosti obchodování i na úrovni jednotlivých transakcí, avšak během jejich používání můžou často vzniknout nové požadavky specifické danému uživateli, jako například možnost importu transakcí z API nějaké méně známé burzy či jiný výpočet celkového zisku portfólia, které do aplikace pravděpodobně nikdy nebudou zapracovány. Řešením pro technicky zdatné uživatele by bylo si takovou aplikaci navrhnout a napragramovat, avšak vytváření architektury a základní logiky pro správu a sledování portfólia (zádávní transakcí a jejich přehled) pro ně může být časově náročné a tudíž odrazující.
 
-Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměnami je třeba nalézt vhodný zdroj dat, který bude využíván k získávání aktuálního kurzu sledovaných kryptoměn. Mezi hlavní požadavky na takový datový zdroj je jeho dostupnostie jednoduchost rozhraní a množina podporovaných kurzů. Ideálním zdrojem je tedy takový zdroj, který poskytuje aktuální i historický kurz na všech burzách prostřednictvím REST API bez nutnosti registrace.
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=5.5cm]{img/blockfolio.png}}
+        \caption{Mobilní aplikace Blockfolio umožňující sledovat kryptoměnové portfólio}
+        \label{fig:simple-vrp-czech}
+    \end{figure}
 
-\subsection{Webový zdroj CoinGecko}
-Aktuální i historický kurz drtivé většiny všech existujících kryptoměn bez nutnosti registrace nabízí pomocí REST rozhraní webová služba CoinGecko\cite{coingecko2021}. Jediným omezením tohoto API je počet provedených požadavků za minutu, který je stanoven na 100, což je pro aplikaci určenou ke sledování kryptoměnového portfólia více než dostačující.
 
-\begin{lstlisting}
+    \section{Datový zdroj s aktuálním kurzem kryptoměn}
+
+    Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměnami je třeba nalézt vhodný zdroj dat, který bude využíván k získávání aktuálního kurzu sledovaných kryptoměn. Mezi hlavní požadavky na takový datový zdroj je jeho dostupnostie jednoduchost rozhraní a množina podporovaných kurzů. Ideálním zdrojem je tedy takový zdroj, který poskytuje aktuální i historický kurz na všech burzách prostřednictvím REST API bez nutnosti registrace.
+
+    \subsection{Webový zdroj CoinGecko}
+    Aktuální i historický kurz drtivé většiny všech existujících kryptoměn bez nutnosti registrace nabízí pomocí REST rozhraní webová služba CoinGecko\cite{coingecko2021}. Jediným omezením tohoto API je počet provedených požadavků za minutu, který je stanoven na 100, což je pro aplikaci určenou ke sledování kryptoměnového portfólia více než dostačující.
+
+    \begin{lstlisting}
 \$ curl -X GET "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd" -H  "accept: application/json"
 
 {
@@ -159,71 +164,74 @@ Aktuální i historický kurz drtivé většiny všech existujících kryptoměn
     "usd": 56224
   }
 }
-\end{lstlisting}
+    \end{lstlisting}
 
-\subsection{Výběr databáze pro implementaci datové vrstvy aplikace}
+    \subsection{Výběr databáze pro implementaci datové vrstvy aplikace}
 
-Jelikož vytvářená aplikace není určená pro použití vícero uživateli najednou, ale pouze pro jednoho uživatele na jednom zařízení, tak pro ukládání dat aplikace je vhodná lokální databáze. 
+    Jelikož vytvářená aplikace není určená pro použití vícero uživateli najednou, ale pouze pro jednoho uživatele na jednom zařízení, tak pro ukládání dat aplikace je vhodná lokální databáze.
 
-V úvahu připadá ukládat portfólia a transakce ve formátu JSON či XML přímo na souborový systém, ale z důvodu relace M:N mezi portfólii a kryptoměnami nejsou tyto typy databází příliš vhodné. Jako lepší volba tedy jeví nějaká relační databáze, např. SQLite, která je často používána při tvorbě desktopových aplikací a ukládá se ve formě jednoho souboru na souborový systém zařízení.
+    V úvahu připadá ukládat portfólia a transakce ve formátu JSON či XML přímo na souborový systém, ale z důvodu relace M:N mezi portfólii a kryptoměnami nejsou tyto typy databází příliš vhodné. Jako lepší volba tedy jeví nějaká relační databáze, např. SQLite, která je často používána při tvorbě desktopových aplikací a ukládá se ve formě jednoho souboru na souborový systém zařízení.
 
 
+    \section{Popis architektury vytvořené aplikace}
 
-\section{Popis architektury vytvořené aplikace}
-\subsection{Databázová vrstva}
-Ve vytvořené aplikaci je datová vrstva implementována pomocí tzv. \textit{repozitářů}, kdy každý repozitář představuje perzistentní úložiště dané entity, do kterého lze zapisovat a následně z něj číst.
+    \subsection{Databázová vrstva}
+    Ve vytvořené aplikaci je datová vrstva implementována pomocí tzv. \textit{repozitářů}, kdy každý repozitář představuje perzistentní úložiště dané entity, do kterého lze zapisovat a následně z něj číst.
 
-Kontrakt generického rozhraní repozitáře se skládá z následujících definic metod:
-\begin{itemize}
-    \item \texttt{public int Add(T entry)} -- přidá daný objekt do perzistentního úložiště a vrátí vygenerované ID
-    \item \texttt{public T Get(int id)} -- vyhledá a případně vrátí objekt z perzistentního úložiště dle předaného identifikátoru \texttt{id}
-    \item \texttt{List<T> GetAll()} -- vyhledá a případně vrátí seznam všech objektů z perzistentního úložiště
-    \item \texttt{public bool Update(T entry)} -- nahraje do perzistentního úložiště aktualizovanou verzi objektu, který se zde již nachází. Vrátí \texttt{true}, pokud aktualizace proběhla úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
-    \item \texttt{public bool Delete(T entry)} -- smaže předaný objekt z úložiště a vrátí \texttt{true}, pokud smazání proběhlo úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
+    Kontrakt generického rozhraní repozitáře se skládá z následujících definic metod:
+    \begin{itemize}
+        \item \texttt{public int Add(T entry)} -- přidá daný objekt do perzistentního úložiště a vrátí vygenerované ID
+        \item \texttt{public T Get(int id)} -- vyhledá a případně vrátí objekt z perzistentního úložiště dle předaného identifikátoru \texttt{id}
+        \item \texttt{List<T> GetAll()} -- vyhledá a případně vrátí seznam všech objektů z perzistentního úložiště
+        \item \texttt{public bool Update(T entry)} -- nahraje do perzistentního úložiště aktualizovanou verzi objektu, který se zde již nachází. Vrátí \texttt{true}, pokud aktualizace proběhla úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
+        \item \texttt{public bool Delete(T entry)} -- smaže předaný objekt z úložiště a vrátí \texttt{true}, pokud smazání proběhlo úspěšně nebo \texttt{false}, pokud během této operace došlo k nějaké chybě.
 
-\end{itemize}
+    \end{itemize}
 
-\noindent Ve vytvořené aplikaci jsou definovány následující repozitáře:
-\begin{itemize} 
-    \item \texttt{IPortfolioRepository} -- úložiště objektů představujících jednotlivá portfólia spravované v aplikaci
-    \item \texttt{IPortfolioEntryRepository} -- úložiště objektů představujících položky existujících portfólií 
-    \item \texttt{IMarketOrderRepository} -- úložiště objektů představujících uskutečněné obchody dané položky portfólia
-\end{itemize}
+    \noindent Ve vytvořené aplikaci jsou definovány následující repozitáře:
+    \begin{itemize}
+        \item \texttt{IPortfolioRepository} -- úložiště objektů představujících jednotlivá portfólia spravované v aplikaci
+        \item \texttt{IPortfolioEntryRepository} -- úložiště objektů představujících položky existujících portfólií
+        \item \texttt{IMarketOrderRepository} -- úložiště objektů představujících uskutečněné obchody dané položky portfólia
+    \end{itemize}
 
-\subsubsection{Generování SQL dotazů}
-K jednoduchému a intuitivnímu generování SQL dotazů je použita knihovna \textbf{SqlKata Query Builder}\footnote{\url{https://github.com/sqlkata/querybuilder}}, kdy lze SQL dotazy vytvářet pomocí řetězení volání metod poskytovaných touto knihovnou.
+    \subsubsection{Generování SQL dotazů}
+    K jednoduchému a intuitivnímu generování SQL dotazů je použita knihovna \textbf{SqlKata Query Builder}\footnote{\url{https://github.com/sqlkata/querybuilder}}, kdy lze SQL dotazy vytvářet pomocí řetězení volání metod poskytovaných touto knihovnou.
 
-\begin{lstlisting}[language=Java, caption={Příklad generování SQL dotazu pro výběr všech transakcí dané položky portfólia pomocí knihovny SqlKata Query Builder.},captionpos=b, label={lst:sm-showcase}]
+    \begin{lstlisting}[language=Java, caption={Příklad generování SQL dotazu pro výběr všech transakcí dané položky portfólia pomocí knihovny SqlKata Query Builder.},captionpos=b, label={lst:sm-showcase}]
 Db.Get().Query("orders").Where("portfolio_entry_id", portfolioEntryId).Get()
-\end{lstlisting}
+    \end{lstlisting}
 
-Tato knihovna přímo umožňuje nad předaným databázovým spojením vygenerovaný SQL dotaz přímo vykonat, kdy k této činnosti využívá knihovnu \textbf{Dapper}\footnote{\url{https://github.com/DapperLib/Dapper}}.
+    Tato knihovna přímo umožňuje nad předaným databázovým spojením vygenerovaný SQL dotaz přímo vykonat, kdy k této činnosti využívá knihovnu \textbf{Dapper}\footnote{\url{https://github.com/DapperLib/Dapper}}.
     Výsledkem metod bez specifikování typu pro vykonání generovaných dotazů jsou objekty typu \texttt{dynamic}, které je třeba mapovat na instance tříd dle modelu entity se kterou pracujeme.
 
-\begin{lstlisting}[language=Java,caption={Příklad mapování objektu typu \texttt{dynamic} na instanci třídy \texttt{Portfolio}.},captionpos=b, label={lst:sm-mapping}]
+    \begin{lstlisting}[language=Java,caption={Příklad mapování objektu typu \texttt{dynamic} na instanci třídy \texttt{Portfolio}.},captionpos=b, label={lst:sm-mapping}]
 public override Portfolio FromRow(dynamic d) =>
             new Portfolio((string) d.name, (string) d.description, (Currency) d.currency_code, (int) d.id);
-\end{lstlisting}
+    \end{lstlisting}
 
-Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny možné typy stejná, tak je tato část kódu sdílena pomocí abstraktní třídy \texttt{SqlKataRepository}. Implementace pro konkrétní třídy modelu musí akorát implementovat kód pro vytvoření instance dané třídy z objektu typu \texttt{dynamic} a naopak. V aplikaci se nachází implementace \texttt{SqlKataPortfolioRepository}, \texttt{SqlKataPortfolioEntryRepository} a \texttt{SqlKataMarketOrderRepository}.
+    Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny možné typy stejná, tak je tato část kódu sdílena pomocí abstraktní třídy \texttt{SqlKataRepository}. Implementace pro konkrétní třídy modelu musí akorát implementovat kód pro vytvoření instance dané třídy z objektu typu \texttt{dynamic} a naopak. V aplikaci se nachází implementace \texttt{SqlKataPortfolioRepository}, \texttt{SqlKataPortfolioEntryRepository} a \texttt{SqlKataMarketOrderRepository}.
 
-\subsection{Služba pro výpočet výkonu jednotlivých entit}
-Aby bylo možné vypočítat výkon (zisk či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), tak bylo vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
+    \subsection{Služba pro výpočet výkonu jednotlivých entit}
+    Aby bylo možné vypočítat výkon (zisk či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), tak bylo vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
+    
 
-\section{Framework pro grafické rozhraní}
-\textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
 
-\section{Oveření kvality vytvořeného software}
+    \section{Framework pro grafické rozhraní}
+    \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
 
-Pro ověření kvality vytvořeného software pro sledování obchodního portfólia s kryptoměnami byly vytvořeny desítky jednotkových a integračních testů ověřující funkčnost základních modulů. Tyto testy se nachází v projektu \texttt{Tests}. Jako testovací framework byl zvolen framework \texttt{XUnit}\footnote{\url{https://github.com/xunit/xunit}}.
 
-Knihovna \texttt{moq}\footnote{\url{https://github.com/moq/moq4}} byla použita pro vytvoření \textbf{mock} objektů datové vrstvy při testování kódu služeb \texttt{PortfolioService}, \texttt{PortfolioEntryService} a \texttt{MarketOrderService} (jednotkové testy).
+    \section{Oveření kvality vytvořeného software}
 
-Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}. 
+    Pro ověření kvality vytvořeného software pro sledování obchodního portfólia s kryptoměnami byly vytvořeny desítky jednotkových a integračních testů ověřující funkčnost základních modulů. Tyto testy se nachází v projektu \texttt{Tests}. Jako testovací framework byl zvolen framework \texttt{XUnit}\footnote{\url{https://github.com/xunit/xunit}}.
 
-Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového zdroje pro získvání informací o aktuálním stavu trhu s kryptoměnami.
+    Knihovna \texttt{moq}\footnote{\url{https://github.com/moq/moq4}} byla použita pro vytvoření \textbf{mock} objektů datové vrstvy při testování kódu služeb \texttt{PortfolioService}, \texttt{PortfolioEntryService} a \texttt{MarketOrderService} (jednotkové testy).
 
-\begin{lstlisting}[caption={Struktura projektu \texttt{Tests} obsahující integrační a jednotkové testy}, captionpos=b]
+    Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}.
+
+    Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového zdroje pro získvání informací o aktuálním stavu trhu s kryptoměnami.
+
+    \begin{lstlisting}[caption={Struktura projektu \texttt{Tests} obsahující integrační a jednotkové testy}, captionpos=b]
             |-- Integration
             |   |-- CryptoStatsSource
             |   |   |-- CryptoNameResolverTest.cs
@@ -238,11 +246,11 @@ Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového 
                     |-- PortfolioEntryServiceTest.cs
                     |-- PortfolioServiceTest.cs
                     `-- SummaryServiceTest.cs
-\end{lstlisting}
+    \end{lstlisting}
 
 
 
-\printbibliography
+    \printbibliography
 
 
 \end{document} 
