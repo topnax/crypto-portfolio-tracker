@@ -260,6 +260,16 @@ public override Portfolio FromRow(dynamic d) =>
     
     \subsubsection{Výpočet výkonu portfólia}
     Výpočet celkového výkonu portfólia se vypočte tak, že jsou zprůměrovány výkony všech jeho položek.
+
+    \subsubsection{Projekt \texttt{Utils}}
+    V tomto projektu se nachází pomocné třídy definující metody, které usnadňují práci s některými datovými typy. 
+    Mezi takové třídy patří:
+
+    \begin{itemize}
+        \item \texttt{CurrencyUtils} -- statická třída definující metody k získávání zkratky měny či formátování částky v dané měně
+        \item \texttt{DecimalUtils} -- statická třída definující metody k formátování číselných hodnot
+        \item \texttt{EnumUtils} -- statická třída definující metodu k získání všech možných hodnot libovolného výčtového typu
+    \end{itemize}
     
     \section{Framework pro grafické rozhraní}
     \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
