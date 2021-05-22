@@ -1,3 +1,4 @@
+%! suppress = Unicode
 \documentclass[12pt, a4paper]{article}
 
 \usepackage[czech,shorthands=off]{babel}
@@ -207,6 +208,19 @@ public override Portfolio FromRow(dynamic d) =>
     \end{lstlisting}
 
     Jelikož velká část kódu pro implementaci metod repozitáře je pro všechny možné typy stejná, tak je tato část kódu sdílena pomocí abstraktní třídy \texttt{SqlKataRepository}. Implementace pro konkrétní třídy modelu musí akorát implementovat kód pro vytvoření instance dané třídy z objektu typu \texttt{dynamic} a naopak. V aplikaci se nachází implementace \texttt{SqlKataPortfolioRepository}, \texttt{SqlKataPortfolioEntryRepository} a \texttt{SqlKataMarketOrderRepository}.
+    
+    \subsection{Služba \texttt{IPortfolioService}}
+    Tato služba poskytuje rozhraní pro správu portfólií v perzistentním úložišti.
+    Umožňuje vytvořit a přidat nové portfólio do repozitáře na základě jeho atributů předaných pomocí parametrů.
+    Dále také poskytuje metodu pro smazání portfólia, která smaže i všechny jeho položky.
+    
+    \subsection{Služba \texttt{IPortfolioEntryService}}
+    Velmi podobně jako služba \texttt{IPortfolioService}, tato služba poskytuje rozhraní pro správu položek portfólií v perzistentním úložišti.
+    Kromě vytvoření a přidání nových položek na základě parametrů také nabízí metodu pro její smazání, která smažá i všechny transakce, které k ní byly přiřazeny. 
+    Dále disponuje metodou pro výběr všech položek, které patří do vybraného portfólia.
+    
+    \subsection{Služba \texttt{IMarketOrderService}}
+    Rozhraní pro správu transakcí v perzistentním úložišti poskytuje právě tato služba, kdy poskytuje i metodu pro vyhledání všech transakcí patřících do vybrané položky portfólia.
 
     \subsection{Služba pro výpočet výkonu jednotlivých entit}
     Aby bylo možné vypočítat výkon (zisk či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), tak bylo vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
