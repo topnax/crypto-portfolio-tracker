@@ -146,11 +146,13 @@
     \end{figure}
 
 
-    \section{Datový zdroj s aktuálním kurzem kryptoměn}
+    \section{Analýza}
+    
+    \subsection{Datový zdroj s aktuálním kurzem kryptoměn}
 
     Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměnami je třeba nalézt vhodný zdroj dat, který bude využíván k získávání aktuálního kurzu sledovaných kryptoměn. Mezi hlavní požadavky na takový datový zdroj je jeho dostupnostie jednoduchost rozhraní a množina podporovaných kurzů. Ideálním zdrojem je tedy takový zdroj, který poskytuje aktuální i historický kurz na všech burzách prostřednictvím REST API bez nutnosti registrace.
 
-    \subsection{Webový zdroj CoinGecko}
+    \subsubsection{Webový zdroj CoinGecko}
     Aktuální i historický kurz drtivé většiny všech existujících kryptoměn bez nutnosti registrace nabízí pomocí REST rozhraní webová služba CoinGecko\cite{coingecko2021}. Jediným omezením tohoto API je počet provedených požadavků za minutu, který je stanoven na 100, což je pro aplikaci určenou ke sledování kryptoměnového portfólia více než dostačující.
 
     \begin{lstlisting}
@@ -168,7 +170,6 @@
     Jelikož vytvářená aplikace není určená pro použití vícero uživateli najednou, ale pouze pro jednoho uživatele na jednom zařízení, tak pro ukládání dat aplikace je vhodná lokální databáze.
 
     V úvahu připadá ukládat portfólia a transakce ve formátu JSON či XML přímo na souborový systém, ale z důvodu relace M:N mezi portfólii a kryptoměnami nejsou tyto typy databází příliš vhodné. Jako lepší volba tedy jeví nějaká relační databáze, např. SQLite, která je často používána při tvorbě desktopových aplikací a ukládá se ve formě jednoho souboru na souborový systém zařízení.
-
 
     \section{Popis architektury vytvořené aplikace}
 
@@ -222,6 +223,20 @@ public override Portfolio FromRow(dynamic d) =>
     \subsection{Služba \texttt{IMarketOrderService}}
     Rozhraní pro správu transakcí v perzistentním úložišti poskytuje právě tato služba, kdy poskytuje i metodu pro vyhledání všech transakcí patřících do vybrané položky portfólia.
 
+    \subsection{Napojení na online datový zdroj kurzů kryptoměn}
+    Aby aplikace mohla zobrazovat nejaktuálnější výnosnost investicí, tak potřebuje být schopna získávat data z datového zdroje kurzů kryptoměn.
+    Pro tyto účely slouží obecné rozhraní \texttt{ICryptoStatsSource}, které definuje následující metody:
+
+    \begin{itemize}
+        \item \texttt{GetMarketEntries(string currency, params string[] ids)} -- stáhne nejaktuálnější informace o vybraných kryptoměnách, kdy údaje o cenách jsou ve měně vybrané pomocí parametru \texttt{currency}.
+        Mezi stahované informace patří například zkratka kryptoměny, její název, aktuální hodnota či tržní kapitalizace.
+        \item \texttt{GetAvailableCryptocurrencies()} -- stáhne seznam kryptoměn, na které se může volající datového zdroje tázat.
+        V seznamu dostupných kryptoměn je u každé informace o jejím názvu, zkratce a identifikátoru.
+    \end{itemize}
+
+    Ve vytvořené aplikaci se nachází implementace \texttt{CoingeckoSource}, která k získávání informací o kryptoměnách používá REST API rozhraní služby Coingecko.
+    K vytváření HTTP požadavků, pomocí kterých komunikuje se zmíněnou službou, tato implementace používá knihovnu \textbf{TinyRestClient}\footnote{\url{https://github.com/jgiacomini/Tiny.RestClient}}.
+    
     \subsection{Služba pro výpočet výkonu jednotlivých entit}
     Aby bylo možné vypočítat výkon (zisk či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), tak bylo vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
     
