@@ -68,11 +68,7 @@
 }
 
 
-\let\oldsection\section
-\renewcommand
-
-
-\section{\clearpage\oldsection}
+\let\oldsection\section\renewcommand\section{\clearpage\oldsection}
 
 \begin{document}
     % this has to be placed here, after document has been created
@@ -215,8 +211,27 @@ public override Portfolio FromRow(dynamic d) =>
     \subsection{Služba pro výpočet výkonu jednotlivých entit}
     Aby bylo možné vypočítat výkon (zisk či ztráta) jednotlivých entit (portfólio, položka portfólia či uskutečněný obchod), tak bylo vytvořeno rozhraní \texttt{ISummaryService} a jeho implementace \texttt{SummaryServiceImpl}.
     
-
-
+    \subsubsection{Výpočet výkonu transakce}
+    Výpočet výkonu jednotlivých transakcí je inspirován výpočtem výkonu v aplikaci Blockfolio, kdy se nebere v potaz informace, zdali daná transakce byla nákup či prodej.
+    Před výpočtem je nastavena aktuální cena za jednu minci kryptoměny, pomocí které se vypočítává, zdali je transakce v zisku či ztrátě.
+    
+    Nejdřív se vypočte aktuální hodnota transakce tak, že se vynásobí cena za jednu minci jejím objemem.
+    Od aktuální hodnoty transakce se odečte její hodnota při jejím vytvoření (investovaná částka), čímž získáme informaci, jestli je v zisku či ztrátě.
+    Porovnáním poměru aktuálním hodnoty vůči hodnotě při vytvoření transakce získáme její relativní změnu.
+    
+    \subsubsection{Výpočet výkonu položky portfólia}
+    Při výpočtu výkonu položky portfólia se iteruje nad jejími transakcemi a sčítá se celkový obchodovaný objem.
+    U transakcí, které představují prodej, se z celkové sumy obchodovaného objemu odečítá.
+    Nakonec se celkový obchodovaný objem vynásobí aktuální cenou komodity, čímž se získá aktuální tržní hodnota dané položky portfólia.
+    
+    Celková změna hodnoty položky je pak vypočtena jako součet celkové tržní hodnoty a hodnoty prodejů, odečtena od celkové investice a sumy poplatků za transakce. 
+    Relativní změna představuje poměr mezi tržní hodnotou a celkové investice, ke které je připočtena suma poplatků.
+    
+    Výpočet výkonu položky portfólia je inspirován výpočtem v aplikaci Blockfolio.
+    
+    \subsubsection{Výpočet výkonu portfólia}
+    Výpočet celkového výkonu portfólia se vypočte tak, že jsou zprůměrovány výkony všech jeho položek.
+    
     \section{Framework pro grafické rozhraní}
     \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
 
