@@ -111,12 +111,15 @@ namespace Services
                     totalHoldingSize += order.Size * (order.Buy ? 1 : -1);
                     // compute the value of the order
                     var orderValue = order.Size * order.FilledPrice;
+                    
                     if (!order.Buy)
                     {
+                        // sum all value of all sell transactions
                         totalSellValue += orderValue;
                     }
                     else
                     {
+                        // sum cost of all buy transactions
                         totalCost += orderValue;
                     }
 
