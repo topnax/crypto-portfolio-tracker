@@ -362,7 +362,25 @@ public override Portfolio FromRow(dynamic d) =>
     \end{lstlisting}
     
     \section{Závěr}
-    \textbf{TODO}
+    V rámci této semestrální práce byla navržena a implementovaná multiplatformní desktopová aplikace využívající frameworky
+    Blazor a Electron k vytvoření grafického uživatelského rozhraní, která splňuje všechny požadované body zadání.
+    Uživateli umožňuje zadávat uskutečněné transakce a třídit je do jednotlivých portfólií, které jsou ukládány do perzistentního
+    datového úložiště na souborovém systému s využitím databázové technologie SQLite.
+    
+    Navržená a implementovaná architektura od sebe odděluje logické části aplikace, a tak například dovoluje jednoduše změnit zdroj kurzů kryptoměn či implementaci datové vrstvy,
+    čímž aplikaci činí robustní a lehce rozšiřitelnou.
+    
+    Vytvořená aplikace díky připojení na online datový zdroj kurzů kryptoměn služby CoinGecko umožňuje vypočítat výnosnost
+    zadaných investic, což splňuje hlavní požadavky investorů a obchodníků s kryptoměnami na takovou aplikaci.
+    
+    Ověření kvality vytvořeného software je implementováno jak na úrovni jednotkových testů, tak i na úrovni integračních testů,
+    kdy se ověřuje správný zápis do databáze či napojení na online datový zdroj. Pokrytí projektů \texttt{Services},
+    \texttt{Repository} a \texttt{CryptoStatsSource} dosahuje hodnoty 100 procent.
+    
+    Jako možné rozšíření aplikace lze považovat vylepšení datové vrstvy tak, aby nepoužívala objekty typu \texttt{dynamic},
+    a více tak využívala funkcionalitu knihovny Dapper.
+    Dalším rozšířením by mohlo být pokrytí uživatelského rozhraní automatickými testy, například pomocí nástroje Robot
+    framework.
     
     \section{Uživatelská příručka}
     
