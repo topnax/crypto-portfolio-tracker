@@ -301,10 +301,122 @@ public override Portfolio FromRow(dynamic d) =>
                     |-- PortfolioServiceTest.cs
                     `-- SummaryServiceTest.cs
     \end{lstlisting}
+    
+    \section{Uživatelská příručka}
+    
+    \subsection{Úvodní obrazovka}
+    Na úvodní obrazovce aplikace se nachází seznam všech vytvořených portfólií, kdy po kliknutí na jeho položku se otevře detail vybraného portfólia.
+    U každého portfólia se nachází i tlačítka k otevření formuláře pro jeho úpravu či smazání.
+    Nachází se zde také tlačítko, které po stisknutí otevře obrazovku k vytváření nových portfólií.
 
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Úvodní obrazovka zobrazující seznam všech portfólií}
+        \label{fig:portfolio-list}
+    \end{figure}
 
+    \subsection{Detail portfólia}
+    K zobrazení výkonu vybraného portfólia a všech položek, které se v něm nachází, je určena právě tato stránka,
+    na které se v její horní části nachází celková hodnota portfólia a jeho procentuální výnosnost.
+    V tabulce, která je umístěna uprostřed obrazovky, se nachází seznam všech položek portfólia obsahující informaci o
+    aktuální ceně sledovaných kryptoměn a jejich podílu v zobrazovaném portfóliu.
+    Po kliknutí na položku v tabulce se otevře detail vybrané položky portfólia.
+
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Obrazovka zobrazující detail portfólia}
+        \label{fig:portfolio-detail}
+    \end{figure}
+    
+    V dolní části obrazovky se nachází tlačítko pro správu položek portfólia.
+    
+    \subsection{Formulář pro vytváření/editaci portfólií}
+    K vytváření či editaci portfólií slouží jednoduchý formulář, který obsahuje povinná vstupní pole pro zadání názvu portfólia a jeho popisu.
+    Dále obsahuje tlačítka pro výběr v jaké měně se budou prováděny transakce.
+    Nakonec se ve spodní části nachází tlačítka pro odeslání formuláře či jeho obnovení.
+
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Formulář k vytvoření či editaci portfólia}
+        \label{fig:portfolio-form}
+    \end{figure}
+
+    \subsection{Detail položky portfólia}
+    Detail položky portfólia obsahuje v horní části stránky detailní výpis její výnosnosti, který se skládá z následujících údajů:
+    \begin{itemize}
+        \item \textit{Market value} -- aktuální hodnota položky portfólia
+        \item \textit{Holdings} -- aktuálně vlastněný objem kryptoměny, které se vybraná položka týká
+        \item \textit{Profit/Loss} -- zisk či ztráta ve měně portfólia, do kterého položka patří
+        \item \textit{Net cost} -- celková investovaná částka do kryptoměny vybrané položky
+        \item \textit{Avg net cost} -- průměrná nákupní cena dané položky
+        \item \textit{Percent change} -- procentuální zisk či ztráta vybrané položky
+    \end{itemize}
+    
+    Pod výpisem výnosnosti se nachází tabulka všech uskutečněných transakcí v rámci této položky, která obsahuje následující sloupce:
+    \begin{itemize}
+        \item \textit{Date} -- datum, kdy byla transakce uskutečněna
+        \item \textit{Size} -- počet obchodovaných mincí dané kryptoměny
+        \item \textit{Price} -- cena, za kterou byla obchodována jedna mince kryptoměny
+        \item \textit{Market value} -- aktuální hodnota obchodovaného množství kryptoměny (vzhledem k jejímu aktuálnímu kurzu)
+        \item \textit{Change} -- výnosnost či zisk vybrané transakce v absolutní a relativní hodnotě
+        \item \textit{Actions} -- tlačítka pro smazání či úpravu transakce
+    \end{itemize}
+    
+    Ve spodní části obrazovky je umístěné tlačítko pro přidání nové transakce.
+
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Obrazovka zobrazující detail položky portfólia}
+        \label{fig:entry-detail}
+    \end{figure}
+    
+    Po kliknutí na řádku transakce se objeví okno s výpisem ostatních informací o transakci, jako například její hodnota
+    v době vzniku či poplatek za její uskutečnění.
+    
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Okno s detailem vybrané transakce}
+        \label{fig:transaction-detail}
+    \end{figure}
+    
+    \subsection{Formulář pro vytvoření či editaci transakce}
+    K vytvoření či editaci transakce slouží jednoduchý formmulář, do kterého je třeba zadat následující údaje:
+    
+    \begin{itemize}
+        \item cena za jednu minci kryptoměny
+        \item obchodovaný objem transakce
+        \item poplatek za uskutečnění transakce
+        \item datum uskutečnění transakce
+    \end{itemize}
+    Dále se v tomto formuláři nachází zaškrtávací pole pro specifikaci, zdali daná transakce představovala nákup či prodej.
+    
+    Ve spodní části formuláře se nachází tlačítka pro odeslání a obnovení formuláře.
+
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Formulář pro editaci či vytvoření ransakce}
+        \label{fig:transaction-form}
+    \end{figure}
+
+    \subsection{Obrazovka správy položek portfólia}
+    Možnost přidávat či odebírat položky z portfólia umožňuje obrazovka, na které je zobrazena tabulka obsahující seznam
+    kryptoměn, které lze v aplikaci sledovat. U každé kryptoměny se nachází tlačtíko pro její odebrání či přidání do portfólia.
+    
+    Dostupné kryptoměny lze filtrovat, a to tak, že se do vstupního pole nad tabulkou zadá zkratka hledaná kryptoměny, kdy po stisknutí klávesy \texttt{ENTER} se tato kryptoměna vyhledá.
+
+    \begin{figure}[!ht]
+        \centering
+        {\includegraphics[width=\textwidth]{example-image-a}}
+        \caption{Obrazovka správy položek portólia}
+        \label{fig:portfolio-entry-mngmnt}
+    \end{figure}
 
     \printbibliography
-
 
 \end{document} 
