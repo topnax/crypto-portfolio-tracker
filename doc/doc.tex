@@ -298,9 +298,29 @@ public override Portfolio FromRow(dynamic d) =>
         \item \texttt{EnumUtils} -- statická třída definující metodu k získání všech možných hodnot libovolného výčtového typu
     \end{itemize}
     
-    \section{Framework pro grafické rozhraní}
-    \textit{Frontend realizovaný pomocí Blazor frameworku, zabalený do Electron wrapperu}
-
+    \subsection{Projekt \texttt{WebFrontend}}
+    Definice grafického uživatelského rozhraní spolu s jeho logikou se nachází v projektu \texttt{WebFrontend}, kdy byl
+    použit framework Blazor.
+    
+    V souboru \texttt{Startup.cs} se nachází konfigurace a inicializace aplikace, kdy je nutné vytvořit strom závislostí,
+    které pak jednotlivé obrazovky využívají. Konfiguruje se zde i například připojení k SQLite databázi.
+    
+    \subsubsection{Adresář \texttt{Pages}} 
+    V adresáři \texttt{Pages} jsou umístěny soubory s příponou \texttt{.razor}, které využívají syntax kombinující HTML
+    a C\# k definici následujících interaktivních webových stránek:
+    
+    \begin{itemize}
+        \item \texttt{EditMarketOrder.razor} -- definice obrazovky pro úpravu existující transakce
+        \item \texttt{EditPortfolio.razor} -- definice obrazovky pro úpravu existujícího portfólia
+        \item \texttt{Index.razor} -- definice úvodní obrazovky zobrazující seznam existujících portfólií
+        \item \texttt{NewMarketOrder.razor} -- definice obrazovky k vytvoření nové transakce
+        \item \texttt{PortfolioDetail.razor} -- definice obrazovky zobrazující informace o vybraném portfóliu
+        \item \texttt{PortfolioEntryDetail.razor} -- definice obrazovky zobrazující informace o vybrané položce portfólia
+        \item \texttt{PortfolioEntryManagement.razor} -- definice obrazovky ke správě položek portfólia
+    \end{itemize}
+   
+    Samotná implementace těchto obrazovek implementuje pouze minimální aplikační logiku, jelikož hojně využívá rozhraní z projektu
+    \texttt{Services}, která ji jsou dostupná pomocí stromu závislostí s využitím anotace \texttt{@inject}. 
 
     \section{Oveření kvality vytvořeného software}
 
@@ -328,6 +348,9 @@ public override Portfolio FromRow(dynamic d) =>
                     |-- PortfolioServiceTest.cs
                     `-- SummaryServiceTest.cs
     \end{lstlisting}
+    
+    \section{Závěr}
+    \textbf{TODO}
     
     \section{Uživatelská příručka}
     
