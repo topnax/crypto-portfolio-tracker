@@ -118,5 +118,20 @@ namespace Tests.Unit.Service
             // assert
             Assert.True(delete);
         }
+
+        [Fact]
+        public void DeletePortfolioEntries_CallsRepository()
+        {
+            // arrange
+            var portfolioEntryId = 15;
+            var repositoryMock = new Mock<IMarketOrderRepository>();
+            var service = new MarketOrderServiceImpl(repositoryMock.Object);
+
+            // act
+            service.DeletePortfolioEntryOrders(portfolioEntryId);
+
+            // assert
+            repositoryMock.Verify(x => x.DeletePortfolioEntryOrders(It.Is<int>(id => id == portfolioEntryId)));
+        }
     }
 }

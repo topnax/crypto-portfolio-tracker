@@ -70,6 +70,21 @@ namespace Tests.Unit.Service
             ), summary);
         }
 
+        [Fact]
+        public void GetMarketOrderSummary_ZeroCost_Returns_Zero_Summary()
+        {
+            var service = new SummaryServiceImpl();
+            MarketOrder order = new(10000m, 0m, 0m, DateTime.Now, true);
+            var summary = service.GetMarketOrderSummary(order, 5000m);
+
+            Assert.Equal(new ISummaryService.Summary(
+                0,
+                0,
+                0,
+                0
+            ), summary);
+        }
+
         // PortfolioEntrySummary tests
 
         [Fact]
@@ -127,6 +142,23 @@ namespace Tests.Unit.Service
         }
 
         [Fact]
+        public void GetPortfolioEntrySummary_ZeroCost_Returns_Zero_Summary()
+        {
+            var service = new SummaryServiceImpl();
+            var summary = service.GetPortfolioEntrySummary(new()
+            {
+                new(10000m, 0m, 0m, DateTime.Now, true),
+            }, 40000);
+
+            Assert.Equal(new ISummaryService.Summary(
+                0m,
+                0m,
+                0m,
+                0m
+            ), summary);
+        }
+
+        [Fact]
         public void GetPortfolioEntrySummary_WithFee_InProfit_WithSell_Returns_Correct_Summary()
         {
             var service = new SummaryServiceImpl();
@@ -159,5 +191,21 @@ namespace Tests.Unit.Service
                 summary
             );
         }
+        
+            [Fact]
+            public void GetPortfolioSummary_ZeroCost_Returns_ZeroSummary()
+            {
+                var service = new SummaryServiceImpl();
+                var summary = service.GetPortfolioSummary(new()
+                {
+                    new(10000m, 1, 20000m, 0),
+                    new(2000m, 2, 3000m, 0),
+                });
+                
+                Assert.Equal(
+                    new ISummaryService.Summary(0m, 0m, 0m, 0m),
+                    summary
+                );
+            }
     }
 }

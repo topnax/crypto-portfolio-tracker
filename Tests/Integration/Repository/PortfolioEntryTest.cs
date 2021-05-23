@@ -176,7 +176,7 @@ namespace Tests.Integration.Repository
         {
             // fixture unique to this test
             var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
-            
+
             // arrange
             var btcEntry = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
             var ethEntry = new PortfolioEntry("eth", portfolioEntryRepositoryFixture.DefaultPortfolioId);
@@ -213,7 +213,7 @@ namespace Tests.Integration.Repository
             {
                 Id = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(firstEntry)
             };
-            
+
             secondEntry = secondEntry with
             {
                 Id = _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(secondEntry)
@@ -223,7 +223,49 @@ namespace Tests.Integration.Repository
             // assert
             Assert.Null(_portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(firstEntry.Id));
             Assert.Equal(secondEntry, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.Get(secondEntry.Id));
-            Assert.Equal(1, _portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAll().Count);
+            Assert.Single(_portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAll());
+        }
+
+        [Fact]
+        public void DeletePortfolioEntries_Deletes_Correct_Entries()
+        {
+            // fixture unique to this test
+            var portfolioEntryRepositoryFixture = new SqlKataPortfolioEntryRepositoryFixture();
+
+            // arrange
+            var portfolioEntry1 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry2 = new PortfolioEntry("ada", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+            var portfolioEntry3 = new PortfolioEntry("ltc", portfolioEntryRepositoryFixture.DefaultPortfolioId);
+
+            var portfolioEntry4 = new PortfolioEntry("btc", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+            var portfolioEntry5 = new PortfolioEntry("eth", portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+
+            // act
+            portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry1);
+            portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry2);
+            portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry3);
+
+            portfolioEntry4 = portfolioEntry4 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry4)
+            };
+            portfolioEntry5 = portfolioEntry5 with
+            {
+                Id = portfolioEntryRepositoryFixture.PortfolioEntryRepository.Add(portfolioEntry5)
+            };
+            portfolioEntryRepositoryFixture.PortfolioEntryRepository.DeletePortfolioEntries(
+                portfolioEntryRepositoryFixture.DefaultPortfolioId);
+
+            // assert
+             
+            Assert.Empty(portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(portfolioEntryRepositoryFixture.DefaultPortfolioId));
+            
+            var loadedPortfoliosSecondaryPortfolio =
+                portfolioEntryRepositoryFixture.PortfolioEntryRepository.GetAllByPortfolioId(
+                    portfolioEntryRepositoryFixture.SecondaryPortfolioId);
+            Assert.Equal(2, loadedPortfoliosSecondaryPortfolio.Count);
+            Assert.Equal(new List<PortfolioEntry> {portfolioEntry4, portfolioEntry5},
+                loadedPortfoliosSecondaryPortfolio);
         }
     }
 }

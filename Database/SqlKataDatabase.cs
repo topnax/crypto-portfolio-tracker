@@ -26,8 +26,6 @@ namespace Database
 
         public void Dispose()
         {
-            // TODO check whether dispose is called
-            Console.WriteLine("Disposing SqlKataDatabase");
             _dbConnection.Close();
         }
     }
