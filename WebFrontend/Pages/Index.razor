@@ -39,8 +39,8 @@
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
 
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
             <MatH5>Portfolios</MatH5>
             @if (PortfoliosWithEntries == null)
             {
@@ -93,7 +93,7 @@
                 }
             }
         </div>
-        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-3"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
 <MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio");}'></MatFAB>

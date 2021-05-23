@@ -17,15 +17,17 @@
 
 <div class="mat-layout-grid">
     <div class="mat-layout-grid-inner">
-        <div class="mat-layout-grid-cell">
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
             <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}"); }'>Back</MatButton>
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Edit a market order</h2>
-                    <EntryForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit" ></EntryForm> 
+                    <EntryForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></EntryForm>
                 </MatCardContent>
             </MatCard>
         </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
 
@@ -34,7 +36,7 @@
 {
     [Parameter]
     public int OrderId { get; set; }
-    
+
     protected EntryForm.NewOrderModel InitialOrderModel;
     protected Portfolio ActivePortfolio;
     protected PortfolioEntry ActiveEntry;
@@ -42,7 +44,7 @@
 
     protected override void OnInitialized()
     {
-        ActiveMarketOrder = MarketOrderService.GetMarketOrder(OrderId); 
+        ActiveMarketOrder = MarketOrderService.GetMarketOrder(OrderId);
         ActiveEntry = PortfolioEntrySerivce.GetPortfolioEntry(ActiveMarketOrder.PortfolioEntryId);
         ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
         InitialOrderModel = new();
