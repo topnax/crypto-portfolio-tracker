@@ -170,6 +170,33 @@
     Jelikož vytvářená aplikace není určená pro použití vícero uživateli najednou, ale pouze pro jednoho uživatele na jednom zařízení, tak pro ukládání dat aplikace je vhodná lokální databáze.
 
     V úvahu připadá ukládat portfólia a transakce ve formátu JSON či XML přímo na souborový systém, ale z důvodu relace M:N mezi portfólii a kryptoměnami nejsou tyto typy databází příliš vhodné. Jako lepší volba tedy jeví nějaká relační databáze, např. SQLite, která je často používána při tvorbě desktopových aplikací a ukládá se ve formě jednoho souboru na souborový systém zařízení.
+    
+    \subsection{Výběr frameworku pro implementaci GUI}
+    Jedním s cílů této semestrální práce bylo, aby vytvořená aplikace byla spustitelná jak na platformě Windows, tak i na platformě Linux.
+    Ačkoliv platforma .NET je multiplatformní, tak při vývoji aplikací s grafickým uživatelským rozhraním nárážíme na problém,
+    kdy tato platforma nenabízí nástroje pro jeho tvorbu s použitím na různých platformách.
+    
+    \subsubsection{.NET MAUI}
+    Zkratka \textbf{MAUI} je označení pro připravovaný framework pro tvorbu multiplatformních aplikací využívající
+    grafické uživatelské rozhraní a znamená .NET Multi-platform App UI\footnote{\url{https://devblogs.microsoft.com/xamarin/the-new-net-multi-platform-app-ui-maui/}}.
+    Tento framework je vyvíjen jako open-source software a na jeho vývoji se podílí hlavně Microsoft, který slibuje podporu
+    platforem Android, iOS, a UWP. Zatím je však pouze ve vývoji a bude vydán společně s .NET 6.
+
+    \subsubsection{Avalonia UI}
+    Dalším z multiplatformní frameworků dostupných pro platformu .NET je framework Avalonia UI\footnote{\url{https://avaloniaui.net/}}
+    umožňující vytvářet desktopové aplikace pro Windows, macOS a Linux, kdy k definici uživatelského rozhraní používá formát
+    XAML. Aktuální verze tohoto frameworku je v0.10.5 a tudíž se stále ještě nachází v aktivním vývoji, kdy se mohou v jeho API objevovat
+    významné změny.
+
+    \subsubsection{Blazor}
+    Framework Blazor\footnote{\url{https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor}} umožňuje vývojářům vytvářet
+    interaktivní webové aplikace postavené na platformě .NET v jazyce HTML s využitím CSS a je součástí frameworku
+    ASP.NET\footnote{\url{https://dotnet.microsoft.com/apps/aspnet}}.
+    Jeho použití je pak možné jak na platformě Windows, tak i macOS a Linux.
+    
+    Skutečnost, že Blazor umožňuje vytvářet webové aplikace postavené na platformě .NET, lze v kombinaci s platformou Electron\footnote{\url{https://www.electronjs.org/}}
+    využít ke tvorbě multiplatformních desktopových aplikací, kdy je vývojáři k tomuto účelu hojně využíván\footnote{\url{https://www.electronjs.org/apps}},
+    a podporuje platformy Windows, macOS i Linux.
 
     \section{Popis architektury vytvořené aplikace}
 
@@ -261,7 +288,7 @@ public override Portfolio FromRow(dynamic d) =>
     \subsubsection{Výpočet výkonu portfólia}
     Výpočet celkového výkonu portfólia se vypočte tak, že jsou zprůměrovány výkony všech jeho položek.
 
-    \subsubsection{Projekt \texttt{Utils}}
+    \subsection{Projekt \texttt{Utils}}
     V tomto projektu se nachází pomocné třídy definující metody, které usnadňují práci s některými datovými typy. 
     Mezi takové třídy patří:
 
