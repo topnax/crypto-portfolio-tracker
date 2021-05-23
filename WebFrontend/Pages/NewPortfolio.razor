@@ -1,11 +1,11 @@
 ﻿@page "/newportfolio"
-@using Model
 @using Services
 @using Utils
+@using Model
 @inject IPortfolioService PortfolioService
 @inject IMatDialogService MatDialogService
 @inject IMatToaster Toaster
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 
 
 <style>
@@ -18,8 +18,10 @@
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-        
-            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton></MatH5>
+
+            <MatH5>
+                <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton>
+            </MatH5>
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>New portfolio</h2>
@@ -40,8 +42,11 @@
 {
     private void OnCreateFormSubmitted(PortfolioForm.NewPortfolioModel formModel)
     {
+        // create the portfolio
         PortfolioService.CreatePortfolio(formModel.Name, formModel.Description, formModel.SelectedCurrency);
+        // reset the model
         formModel.Reset();
+        // notify the user
         Toaster.Add("New portfolio successfully added", MatToastType.Success, "", "");
     }
 }
