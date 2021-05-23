@@ -1,8 +1,8 @@
 ﻿@page "/"
-@using Model
 @using Services
 @using Utils
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Model
+@inject NavigationManager NavigationManager
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject IMatDialogService MatDialogService
@@ -26,15 +26,6 @@
         bottom: 1rem;
         right: 1rem;
     }
-    
-    .mat-paper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 1em;
-    } 
-    
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
@@ -42,17 +33,22 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
             <MatH5>Portfolios</MatH5>
-            @if (PortfoliosWithEntries == null)
+            @if (_portfoliosWithEntries == null)
             {
                 <MatProgressBar Indeterminate="true"></MatProgressBar>
             }
-            else if (PortfoliosWithEntries.Count < 1)
+            else if (_portfoliosWithEntries.Count < 1)
             {
-                <MatPaper Elevation="2"><span>No portfolios were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio");}'></MatButton></div></MatPaper>
+                <MatPaper Elevation="2">
+                    <span>No portfolios were found.</span>
+                    <div>
+                        <MatButton Style="margin-top:1em;" Label="Create a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio"); }'></MatButton>
+                    </div>
+                </MatPaper>
             }
             else
             {
-                @foreach (var portfolioWithEntries in PortfoliosWithEntries)
+                @foreach (var portfolioWithEntries in _portfoliosWithEntries)
                 {
                     <MatCard class="demo-mat-card" OnCli>
                         <MatCardContent>
@@ -96,12 +92,13 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio");}'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new portfolio" OnClick='() => { NavigationManager.NavigateTo($"newportfolio"); }'></MatFAB>
 
 
 @code
 {
-    protected List<Tuple<Portfolio, List<PortfolioEntry>>> PortfoliosWithEntries;
+    // list of portfolios with entries mapped to them
+    private List<Tuple<Portfolio, List<PortfolioEntry>>> _portfoliosWithEntries;
 
     protected record PortfolioEntryRow(string symbol, decimal currentPrice, decimal relativeChange, decimal percentage);
 
@@ -112,7 +109,7 @@
 
     private void LoadPortfolios()
     {
-        PortfoliosWithEntries = PortfolioService.GetPortfolios().Select(
+        _portfoliosWithEntries = PortfolioService.GetPortfolios().Select(
             portfolio => new Tuple<Portfolio, List<PortfolioEntry>>(
                 portfolio,
                 PortfolioEntryService.GetPortfolioEntries(portfolio.Id)
@@ -127,11 +124,15 @@
 
     private async void DeletePortfolio(Portfolio portfolio)
     {
+        // let user confirm whether he wants to delete the portfolio
         var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this portfolio including all of it's portfolio entries and market orders?");
         if (result)
         {
+            // delete portfolio
             PortfolioService.DeletePortfolio(portfolio);
+            // reload the portfolio list 
             LoadPortfolios();
+            // refresh the UI
             StateHasChanged();
             Toaster.Add($"Portfolio \"{portfolio.Name}\" sucessfully deleted", MatToastType.Info, "", "");
         }
@@ -141,7 +142,7 @@
     {
         NavigationManager.NavigateTo($"/newportfolioentry/{portfolio.Id}");
     }
-    
+
     private void ViewPortfolio(Portfolio portfolio)
     {
         NavigationManager.NavigateTo($"/portfolios/{portfolio.Id}");
