@@ -1,8 +1,10 @@
 <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <MatPortalHost/> 
-        <MatToastContainer />
+        <MatThemeProvider Theme="appTheme">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+            <MatPortalHost/>
+            <MatToastContainer/>
+        </MatThemeProvider>
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">
@@ -10,3 +12,12 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+
+@code
+{
+    MatTheme appTheme = new()
+    {
+        Primary = MatThemeColors.BlueGrey._500.Value
+    };
+}
