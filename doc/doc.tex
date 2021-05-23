@@ -320,7 +320,19 @@ public override Portfolio FromRow(dynamic d) =>
     \end{itemize}
    
     Samotná implementace těchto obrazovek implementuje pouze minimální aplikační logiku, jelikož hojně využívá rozhraní z projektu
-    \texttt{Services}, která ji jsou dostupná pomocí stromu závislostí s využitím anotace \texttt{@inject}. 
+    \texttt{Services}, která ji jsou dostupná pomocí stromu závislostí s využitím anotace \texttt{@inject}.
+
+    \subsubsection{Adresář \texttt{Shared}}
+    Znovupoužitelné komponenty grafického rozhraní se nachází ve složce \texttt{Shared} a používají se v následujících definicích obrazovek:
+
+    \begin{itemize}
+        \item \texttt{LabelDecimalValue.razor} -- definice komponenty, která umožňuje zobrazit libovolné číslo a přiřadit
+        k němu nějaký popisek. V aplikaci se využívá k zobrazování vlastností a výkonosti jednotlivých sledovaných entit
+        (portfólia, položky portfóli či transakce).
+        \item \texttt{OrderForm.razor} -- definice formuláře, který se používá na stránkách pro vytvoření a úpravu transakce
+        \item \texttt{MainLayout.razor} -- definice obsahující základní HTML prvky, které obalují obsah jednotlivých stránek implementující obrazovky
+        \item \texttt{PortfolioForm.razor} -- definice formuláře, který se používá na stránkách pro vytvoření a úpravu portfólia
+    \end{itemize}
 
     \section{Oveření kvality vytvořeného software}
 
