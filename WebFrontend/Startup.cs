@@ -9,9 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Model;
 using Repository;
-using ServerSideBlazor.Data;
 using Services;
 using SqlKata.Compilers;
 
@@ -33,7 +31,6 @@ namespace WebFrontend
             services.AddScoped<HttpClient>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddMatBlazor();
             
             services.AddMatToaster(config =>
