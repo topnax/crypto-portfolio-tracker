@@ -1,12 +1,12 @@
 ﻿@page "/newmarketorder/{entryId:int}"
-@using Model
 @using Services
+@using Model
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntrySerivce
 @inject IMarketOrderService MarketOrderService
 @inject IMatDialogService MatDialogService
 @inject IMatToaster Toaster
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 
 
 <style>
@@ -19,11 +19,11 @@
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}"); }'>Back</MatButton>
+            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{_activeEntry.Id}"); }'>Back</MatButton>
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Create a new market order</h2>
-                    <OrderForm Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
+                    <OrderForm Currency="@_activePortfolio.Currency" Symbol="@_activeEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
                 </MatCardContent>
             </MatCard>
         </div>
@@ -37,20 +37,28 @@
     [Parameter]
     public int EntryId { get; set; }
 
-    protected Portfolio ActivePortfolio = new("", "", Currency.Usd);
-    protected PortfolioEntry ActiveEntry = new("btc", 1);
+    // the active portfolio
+    private Portfolio _activePortfolio = new("", "", Currency.Usd);
+    
+    // entry to which the entry will be added 
+    private PortfolioEntry _activeEntry = new("", 1);
 
     protected override void OnInitialized()
     {
-        ActiveEntry = PortfolioEntrySerivce.GetPortfolioEntry(EntryId);
-        ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
+        // load the portfolio entry
+        _activeEntry = PortfolioEntrySerivce.GetPortfolioEntry(EntryId);
+        
+        // load the portfolio the entry belongs to
+        _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
     }
 
     private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
     {
-        Console.WriteLine("OnCreateOrderFormSubmit " + formModel);
-        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, !formModel.SellOrder, ActiveEntry.Id);
+        // create the market order
+        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, !formModel.SellOrder, _activeEntry.Id);
+        // reset the form model
         formModel.Reset();
+        // notify user 
         Toaster.Add("New order successfully added", MatToastType.Success, "", "");
     }
 }
