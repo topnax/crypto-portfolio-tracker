@@ -1,11 +1,9 @@
 ﻿@page "/portfolios/{portfolioId:int}"
-@using Model
 @using Services
 @using Utils
 @using CryptoStatsSource
-@using CryptoStatsSource.model
-@using System.Diagnostics
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@using Model
+@inject NavigationManager NavigationManager
 @inject IPortfolioService PortfolioService
 @inject IPortfolioEntryService PortfolioEntryService
 @inject IMarketOrderService MarketOrderService;
@@ -31,44 +29,35 @@
         bottom: 1rem;
         right: 1rem;
     }
-    
-    .mat-paper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 1em;
-    } 
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
-
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
             <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($""); }'>Back</MatButton>Portfolio Detail</MatH5>
-            @if (ActivePortfolio != null)
+            @if (_activePortfolio != null)
             {
                 <MatCard class="demo-mat-card">
                     <MatCardContent>
                         <div class="demo-mat-card-content">
                             <MatHeadline6 class="clear-margin">
                                 <MatChipSet Style="align-items: center">
-                                    <MatH5 Class="clear-margin">@ActivePortfolio.Name</MatH5>
-                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency)"/>
+                                    <MatH5 Class="clear-margin">@_activePortfolio.Name</MatH5>
+                                    <MatChip Style="vertical-align: center" Label="@CurrencyUtils.GetCurrencyLabel(_activePortfolio.Currency)"/>
                                 </MatChipSet>
                             </MatHeadline6>
-                            <span style="padding-left: 4px;">@ActivePortfolio.Description</span>
+                            <span style="padding-left: 4px;">@_activePortfolio.Description</span>
                         </div>
                         <MatBody2 class="demo-mat-card-content clear-margin">
                             <div class="mat-layout-grid">
                                 <div class="mat-layout-grid-inner" style="align-items: center">
-                                    @if (PortfolioSummary != null)
+                                    @if (_portfolioSummary != null)
                                     {
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                                            <LabelDecimalValue Label="Market Value" Value="@(CurrencyUtils.Format(PortfolioSummary.MarketValue, ActivePortfolio.Currency))"></LabelDecimalValue>
+                                            <LabelDecimalValue Label="Market Value" Value="@(CurrencyUtils.Format(_portfolioSummary.MarketValue, _activePortfolio.Currency))"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: end">
-                                            <LabelDecimalValue Positive="PortfolioSummary.RelativeChange >= 0" ValueColorBasedOnValue="true" Label="Total Change" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(PortfolioSummary.RelativeChange * 100m) + "%")"></LabelDecimalValue>
+                                            <LabelDecimalValue Positive="_portfolioSummary.RelativeChange >= 0" ValueColorBasedOnValue="true" Label="Total Change" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(_portfolioSummary.RelativeChange * 100m) + "%")"></LabelDecimalValue>
                                         </div>
                                     }
                                     else
@@ -81,13 +70,13 @@
                     </MatCardContent>
                 </MatCard>
 
-                @if (PortfolioEntryRows == null)
+                @if (_portfolioEntryRows == null)
                 {
                     <MatProgressBar Indeterminate="true"></MatProgressBar>
                 }
-                else if (PortfolioEntryRows.Count > 0)
+                else if (_portfolioEntryRows.Count > 0)
                 {
-                    <MatTable Items="@PortfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
+                    <MatTable Items="@_portfolioEntryRows" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
                         <MatTableHeader>
                             <th>Coin</th>
                             <th>Price</th>
@@ -97,18 +86,23 @@
                         <MatTableRow>
                             <td>@context.Symbol.ToUpper()</td>
                             <td>
-                                <div style="min-width: 8rem">@(CurrencyUtils.Format(context.CurrentPrice, ActivePortfolio.Currency))</div>
+                                <div style="min-width: 8rem">@(CurrencyUtils.Format(context.CurrentPrice, _activePortfolio.Currency))</div>
                             </td>
                             <td style='color: @(context.RelativeChange >= 0 ? "#17a104" : "#FF0000"); min-width: 7rem;'>
                                 <div style="min-width: 6rem">@DecimalUtils.FormatTwoDecimalPlaces(context.RelativeChange)%</div>
                             </td>
-                            <td>@(CurrencyUtils.Format(context.MarketValue, ActivePortfolio.Currency)) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Percentage))%)</td>
+                            <td>@(CurrencyUtils.Format(context.MarketValue, _activePortfolio.Currency)) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Percentage))%)</td>
                         </MatTableRow>
                     </MatTable>
                 }
                 else
                 {
-                    <MatPaper Elevation="2"><span>No portfolio entries were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new portfolio entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}");}'></MatButton></div></MatPaper>
+                    <MatPaper Elevation="2">
+                        <span>No portfolio entries were found.</span>
+                        <div>
+                            <MatButton Style="margin-top:1em;" Label="Create a new portfolio entry" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{_activePortfolio.Id}"); }'></MatButton>
+                        </div>
+                    </MatPaper>
                 }
             }
             else
@@ -119,7 +113,7 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Settings" Label="Manage portfolio entries" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{ActivePortfolio.Id}"); }'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Settings" Label="Manage portfolio entries" OnClick='() => { NavigationManager.NavigateTo($"newportfolioentry/{_activePortfolio.Id}"); }'></MatFAB>
 
 
 @code
@@ -127,20 +121,20 @@
     [Parameter]
     public int PortfolioId { get; set; }
 
-    protected Portfolio ActivePortfolio;
+    private Portfolio _activePortfolio;
 
-    protected ISummaryService.Summary PortfolioSummary = null;
+    private ISummaryService.Summary _portfolioSummary;
 
-    protected List<PortfolioEntry> ActivePortfolioEntries;
+    private List<PortfolioEntry> _activePortfolioEntries;
 
-    protected List<PortfolioEntryRow> PortfolioEntryRows;
+    private List<PortfolioEntryRow> _portfolioEntryRows;
 
     protected record PortfolioEntryRow(string Symbol, decimal CurrentPrice, decimal RelativeChange, decimal Percentage, decimal AbsoluteChange, decimal MarketValue, int EntryId);
 
     protected override void OnInitialized()
     {
-        ActivePortfolio = PortfolioService.GetPortfolio(PortfolioId);
-        ActivePortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
+        _activePortfolio = PortfolioService.GetPortfolio(PortfolioId);
+        _activePortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
         _loadEntryInfo();
     }
 
@@ -150,55 +144,49 @@
         // resolve names of all portfolio entries 
         await CryptocurrencyResolver.Refresh();
         var portfolioCryptocurrencyEntries = await Task.WhenAll(
-            ActivePortfolioEntries.Select(
+            _activePortfolioEntries.Select(
                 async entry => (await CryptocurrencyResolver.Resolve(entry.Symbol)))
             );
 
         // fetch market entries of all entries of the portfolio 
         var marketEntries = await CryptoStatsSource.GetMarketEntries(
-            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(), portfolioCryptocurrencyEntries.Select(c => c.Id).ToArray()
+            CurrencyUtils.GetCurrencyLabel(_activePortfolio.Currency).ToLower(), portfolioCryptocurrencyEntries.Select(c => c.Id).ToArray()
             );
 
         // create a dictionary where a symbol is mapped to a market entry
         var symbolsToMarketEntries = marketEntries.ToDictionary(entry => entry.Symbol, entry => entry);
 
-        // TODO fix low low low market cap non existing altcoins 
         // compute portfolio entry summaries 
-        var entrySummaries = ActivePortfolioEntries.Select(
+        var entrySummaries = _activePortfolioEntries.Select(
             portfolioEntry =>
             {
                 // find the evaluation of the entry's asset
                 var marketEntry = symbolsToMarketEntries.GetValueOrDefault(portfolioEntry.Symbol);
 
-                if (marketEntry == null)
-                {
-                    // TODO market entry is null
-                }
-                
                 // fetch all orders of the currently iterated portfolio entry
                 var entryMarketOrders = MarketOrderService.GetPortfolioEntryOrders(portfolioEntry.Id);
-                
+
                 // compute the summary of the entry based on market orders
                 return SummaryService.GetPortfolioEntrySummary(entryMarketOrders, marketEntry.CurrentPrice);
             }
             ).ToList();
 
         // compute portfolio's summary based on summaries of it's entries
-        PortfolioSummary = SummaryService.GetPortfolioSummary(entrySummaries);
+        _portfolioSummary = SummaryService.GetPortfolioSummary(entrySummaries);
 
         // if the cost of the summary is zero, set the relative change to zero
-        if (PortfolioSummary.Cost == 0)
+        if (_portfolioSummary.Cost == 0)
         {
-            PortfolioSummary = PortfolioSummary with {
+            _portfolioSummary = _portfolioSummary with {
                 RelativeChange = 0
-           };
+                };
         }
 
         // compute the total value of the portfolio by summing market values of all entries
         var portfolioTotalMarketValue = entrySummaries.Sum(summary => summary.MarketValue);
 
         // create portfolio entry table rows
-        PortfolioEntryRows = entrySummaries.Zip(ActivePortfolioEntries).Select(
+        _portfolioEntryRows = entrySummaries.Zip(_activePortfolioEntries).Select(
             tuple => new PortfolioEntryRow(
                 // symbol of the portfolio entry
                 tuple.Second.Symbol,
@@ -216,7 +204,8 @@
                 tuple.Second.Id
                 )
             ).ToList();
-        
+
+        // update the UI
         StateHasChanged();
     }
 
@@ -224,8 +213,8 @@
     {
         if (row != null)
         {
+            // entry row has been clicked, open it's detail
             NavigationManager.NavigateTo($"entries/{((PortfolioEntryRow) row).EntryId}");
         }
     }
-
 }
