@@ -4,7 +4,7 @@
 @using Utils
 @using CryptoStatsSource
 @using CryptoStatsSource.model
-@inject Microsoft.AspNetCore.Components.NavigationManager NavigationManager
+@inject NavigationManager NavigationManager
 @inject IMatDialogService MatDialogService
 @inject IMatToaster Toaster
 @inject IPortfolioService PortfolioService
@@ -38,39 +38,31 @@
         right: 1rem;
     }
     
-    .mat-paper {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        padding: 1em;
-    } 
-    
 </style>
 <div class="mat-layout-grid mat-layout-grid-align-center">
     <div class="mat-layout-grid-inner center">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{ActivePortfolio.Id}"); }'>Back</MatButton>Portfolio Entry</MatH5>
+            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{_activePortfolio.Id}"); }'>Back</MatButton>Portfolio Entry</MatH5>
             <MatCard class="demo-mat-card">
                 <MatCardContent>
-                    @if(ActivePortfolioEntry != null)
+                    @if(_activePortfolioEntry != null)
                     {
                         <div class="demo-mat-card-content">
                             <MatHeadline6 class="clear-margin">
                                 <MatChipSet Style="align-items: center">
-                                    @if (PortfolioCryptocurrencyEntry != null)
+                                    @if (_portfolioCryptocurrencyEntry != null)
                                     {
-                                        <MatH5 Class="clear-margin-vertical">@PortfolioCryptocurrencyEntry.Name</MatH5>
+                                        <MatH5 Class="clear-margin-vertical">@_portfolioCryptocurrencyEntry.Name</MatH5>
                                     }
                                     else
                                     {
                                         <MatProgressCircle Indeterminate="true"/>
                                     }
-                                    <MatChip Style="vertical-align: center" Label="@(CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency))"/>
-                                    @if (CurrentEntryAssetMarketEntry != null)
+                                    <MatChip Style="vertical-align: center" Label="@(CurrencyUtils.GetCurrencyLabel(_activePortfolio.Currency))"/>
+                                    @if (_currentEntryAssetMarketEntry != null)
                                     {
-                                        <MatH6 Class="clear-margin-vertical" Style="text-align: end;float: end;">1 @ActivePortfolioEntry.Symbol.ToUpper() = @CurrencyUtils.Format(CurrentEntryAssetMarketEntry.CurrentPrice, ActivePortfolio.Currency)</MatH6>
+                                        <MatH6 Class="clear-margin-vertical" Style="text-align: end;float: end;">1 @_activePortfolioEntry.Symbol.ToUpper() = @CurrencyUtils.Format(_currentEntryAssetMarketEntry.CurrentPrice, _activePortfolio.Currency)</MatH6>
                                     }
                                     else
                                     {
@@ -81,31 +73,31 @@
                         </div>
 
                         <MatBody2 class="demo-mat-card-content clear-margin">
-                            @if (EntrySummary != null)
+                            @if (_entrySummary != null)
                             {
                                 <div class="mat-layout-grid">
                                     <div class="mat-layout-grid-inner" style="align-items: center">
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
-                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(EntrySummary.MarketValue, ActivePortfolio.Currency))" Label="Market Value"></LabelDecimalValue>
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(_entrySummary.MarketValue, _activePortfolio.Currency))" Label="Market Value"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
-                                            <LabelDecimalValue Value="@(DecimalUtils.FormatTrimZeros(TotalHoldings))" Label="Holdings"></LabelDecimalValue>
+                                            <LabelDecimalValue Value="@(DecimalUtils.FormatTrimZeros(_totalHoldings))" Label="Holdings"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="text-align: end">
-                                            <LabelDecimalValue Positive="@(EntrySummary.AbsoluteChange >= 0)" ValueColorBasedOnValue="true" Value="@(CurrencyUtils.FormatWithPlusSign(EntrySummary.AbsoluteChange, ActivePortfolio.Currency))" Label="Profit/Loss"></LabelDecimalValue>
+                                            <LabelDecimalValue Positive="@(_entrySummary.AbsoluteChange >= 0)" ValueColorBasedOnValue="true" Value="@(CurrencyUtils.FormatWithPlusSign(_entrySummary.AbsoluteChange, _activePortfolio.Currency))" Label="Profit/Loss"></LabelDecimalValue>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mat-layout-grid">
                                     <div class="mat-layout-grid-inner" style="align-items: center">
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
-                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(EntrySummary.Cost, ActivePortfolio.Currency))" Label="Net Cost"></LabelDecimalValue>
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(_entrySummary.Cost, _activePortfolio.Currency))" Label="Net Cost"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4">
-                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(TotalHoldings > 0 ? (EntrySummary.Cost / TotalHoldings) : 0, ActivePortfolio.Currency))" Label="Avg Net Cost"></LabelDecimalValue>
+                                            <LabelDecimalValue Value="@(CurrencyUtils.Format(_totalHoldings > 0 ? (_entrySummary.Cost / _totalHoldings) : 0, _activePortfolio.Currency))" Label="Avg Net Cost"></LabelDecimalValue>
                                         </div>
                                         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-4" style="text-align: end">
-                                            <LabelDecimalValue Positive="@(EntrySummary.RelativeChange >= 0)" ValueColorBasedOnValue="true" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(EntrySummary.RelativeChange * 100) + "%")" Label="Percent Change"></LabelDecimalValue>
+                                            <LabelDecimalValue Positive="@(_entrySummary.RelativeChange >= 0)" ValueColorBasedOnValue="true" Value="@(DecimalUtils.FormatTwoDecimalPlacesWithPlusSign(_entrySummary.RelativeChange * 100) + "%")" Label="Percent Change"></LabelDecimalValue>
                                         </div>
                                     </div>
                                 </div>
@@ -123,17 +115,17 @@
                     }
                 </MatCardContent>
             </MatCard>
-            @if (TableRowsItems == null)
+            @if (_tableRowsItems == null)
             {
                 <MatProgressBar Indeterminate="true"></MatProgressBar>
             }
-            else if (TableRowsItems.Count == 0)
+            else if (_tableRowsItems.Count == 0)
             {
-                <MatPaper Elevation="2"><span>No market orders were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new market order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{ActivePortfolioEntry.Id}");}'></MatButton></div></MatPaper>
+                <MatPaper Elevation="2"><span>No market orders were found.</span><div><MatButton Style="margin-top:1em;" Label="Create a new market order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{_activePortfolioEntry.Id}");}'></MatButton></div></MatPaper>
             }
             else
             {
-                <MatTable Items="@TableRowsItems" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
+                <MatTable Items="@_tableRowsItems" Striped="true" AllowSelection="true" RowClass="tester" class="mat-elevation-z5" ShowPaging="false" PageSize="9999" SelectionChanged="SelectionChangedEvent">
                     <MatTableHeader>
                         <th>Date</th>
                         <th>Size</th>
@@ -149,21 +141,21 @@
                         <td>
                             @if (@context.Item1.Buy)
                             {
-                                <div style="min-width: 8rem">@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                                <div style="min-width: 8rem">@context.Item1.Size @_activePortfolioEntry.Symbol.ToUpper()</div>
                             }
                             else
                             {
-                                <div style="min-width: 8rem; color: #FF0000;">-@context.Item1.Size @ActivePortfolioEntry.Symbol.ToUpper()</div>
+                                <div style="min-width: 8rem; color: #FF0000;">-@context.Item1.Size @_activePortfolioEntry.Symbol.ToUpper()</div>
                             }
                         </td>
                         <td>
-                            <div style="min-width: 8rem">@(CurrencyUtils.Format(context.Item1.FilledPrice, ActivePortfolio.Currency))</div>
+                            <div style="min-width: 8rem">@(CurrencyUtils.Format(context.Item1.FilledPrice, _activePortfolio.Currency))</div>
                         </td>
                         <td>
-                            <div style="min-width: 9.2rem">@CurrencyUtils.Format(context.Item2.MarketValue, ActivePortfolio.Currency)</div>
+                            <div style="min-width: 9.2rem">@CurrencyUtils.Format(context.Item2.MarketValue, _activePortfolio.Currency)</div>
                         </td>
                         <td style='color: @(context.Item2.RelativeChange >= 0 ? "#17a104" : "#FF0000")'>
-                            <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, ActivePortfolio.Currency) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Item2.RelativeChange * 100))%)</div>
+                            <div style="min-width: 9rem">@CurrencyUtils.Format(context.Item2.AbsoluteChange, _activePortfolio.Currency) (@(DecimalUtils.FormatTwoDecimalPlaces(context.Item2.RelativeChange * 100))%)</div>
                         </td>
                         <td>
                             <MatIconButton Icon="edit" OnClick="() => EditMarketOrder(context.Item1)"></MatIconButton>
@@ -176,36 +168,36 @@
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
     </div>
 </div>
-<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{ActivePortfolioEntry.Id}");}'></MatFAB>
+<MatFAB Class="app-fab--absolute" Icon="@MatIconNames.Add" Label="Add a new order" OnClick='() => { NavigationManager.NavigateTo($"newmarketorder/{_activePortfolioEntry.Id}");}'></MatFAB>
 
-<MatDialog @bind-IsOpen="@OrderDetailDialogIsOpen">
+<MatDialog @bind-IsOpen="@_orderDetailDialogIsOpen">
     <MatDialogTitle>Market Order Detail</MatDialogTitle>
     <MatDialogContent>
-        @if (OrderToBeShown != null)
+        @if (_orderToBeShown != null)
         {
             <div class="mat-layout-grid">
                 <div class="mat-layout-grid-inner" style="align-items: center">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                        <LabelDecimalValue Smaller="true" Value="@($"{ActivePortfolioEntry.Symbol.ToUpper()}/{CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency)}")" Label="Trading Pair"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@($"{_activePortfolioEntry.Symbol.ToUpper()}/{CurrencyUtils.GetCurrencyLabel(_activePortfolio.Currency)}")" Label="Trading Pair"></LabelDecimalValue>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right">
-                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item1.FilledPrice, ActivePortfolio.Currency))" Label="Price"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(_orderToBeShown.Item1.FilledPrice, _activePortfolio.Currency))" Label="Price"></LabelDecimalValue>
                     </div>
                 </div>
                 <div class="mat-layout-grid-inner" style="align-items: center; margin-top: 2rem;">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item1.Fee, ActivePortfolio.Currency))" Label="Fee"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(_orderToBeShown.Item1.Fee, _activePortfolio.Currency))" Label="Fee"></LabelDecimalValue>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right">
-                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item2.Cost, ActivePortfolio.Currency))" Label="Cost (fees included)"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(_orderToBeShown.Item2.Cost, _activePortfolio.Currency))" Label="Cost (fees included)"></LabelDecimalValue>
                     </div>
                 </div>
                 <div class="mat-layout-grid-inner" style="align-items: center;margin-top: 2rem; ">
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6">
-                        <LabelDecimalValue Smaller="true" ValueColorBasedOnValue="true" Positive="@(OrderToBeShown.Item2.RelativeChange >= 0)" Value="@(DecimalUtils.FormatTwoDecimalPlaces(OrderToBeShown.Item2.RelativeChange * 100) + "%")" Label="Change"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" ValueColorBasedOnValue="true" Positive="@(_orderToBeShown.Item2.RelativeChange >= 0)" Value="@(DecimalUtils.FormatTwoDecimalPlaces(_orderToBeShown.Item2.RelativeChange * 100) + "%")" Label="Change"></LabelDecimalValue>
                     </div>
                     <div class="mat-layout-grid-cell mat-layout-grid-cell-span-6" style="text-align: right">
-                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(OrderToBeShown.Item1.Size * CurrentEntryAssetMarketEntry.CurrentPrice, ActivePortfolio.Currency))" Label="Current Value"></LabelDecimalValue>
+                        <LabelDecimalValue Smaller="true" Value="@(CurrencyUtils.Format(_orderToBeShown.Item1.Size * _currentEntryAssetMarketEntry.CurrentPrice, _activePortfolio.Currency))" Label="Current Value"></LabelDecimalValue>
                     </div>
                 </div>
             </div>
@@ -218,44 +210,59 @@
 
 @code
 {
-   //SummaryService.GetMarketOrderSummary(OrderToBeShown, CurrentEntryAssetMarketEntry.CurrentPrice).RelativeChange, ActivePortfolio.Currency) 
+    // ID of the entry whose detail should be displayed
     [Parameter]
     public int EntryId { get; set; }
     
-    protected Portfolio ActivePortfolio;
-    protected PortfolioEntry ActivePortfolioEntry; 
-    protected MarketEntry CurrentEntryAssetMarketEntry; 
-    protected Cryptocurrency PortfolioCryptocurrencyEntry;
-    protected ISummaryService.Summary EntrySummary;
-    protected decimal TotalHoldings = 0;
+    // portfolio the entry belongs to
+    private Portfolio _activePortfolio;
     
-    protected bool OrderDetailDialogIsOpen;
-    protected Tuple<MarketOrder, ISummaryService.Summary> OrderToBeShown;
+    // the entry to be displayed
+    private PortfolioEntry _activePortfolioEntry; 
+    
+    // market entry of the portfolio entry
+    private MarketEntry _currentEntryAssetMarketEntry; 
+    
+    // cryptocurrency of the portfolio entry
+    private Cryptocurrency _portfolioCryptocurrencyEntry;
+    
+    // summary of the entry
+    private ISummaryService.Summary _entrySummary;
+    
+    // total holdings of the active entry 
+    private decimal _totalHoldings;
 
-    protected List<Tuple<MarketOrder, ISummaryService.Summary>> TableRowsItems;
+    // flag indicating whether order's detail is open
+    private bool _orderDetailDialogIsOpen;
+    
+    // order whose detail should be displayed 
+    private Tuple<MarketOrder, ISummaryService.Summary> _orderToBeShown;
+
+    // list of market orders mapped to summaries
+    private List<Tuple<MarketOrder, ISummaryService.Summary>> _tableRowsItems;
 
     protected override void OnInitialized()
     {
         // get the portfolio entry
-        ActivePortfolioEntry = PortfolioEntryService.GetPortfolioEntry(EntryId);
+        _activePortfolioEntry = PortfolioEntryService.GetPortfolioEntry(EntryId);
         
         // get the entry's portfolio
-        ActivePortfolio = PortfolioService.GetPortfolio(ActivePortfolioEntry.PortfolioId);
+        _activePortfolio = PortfolioService.GetPortfolio(_activePortfolioEntry.PortfolioId);
     }
 
     protected override async Task OnInitializedAsync()
     {
         // resolve the name of the cryptocurrency (using the symbol)
-         PortfolioCryptocurrencyEntry = await CryptocurrencyResolver.Resolve(ActivePortfolioEntry.Symbol);
+         _portfolioCryptocurrencyEntry = await CryptocurrencyResolver.Resolve(_activePortfolioEntry.Symbol);
 
         await UpdateEntrySummary();
     }
 
     private void SetEntryLoading()
     {
-        CurrentEntryAssetMarketEntry = null;
-        TableRowsItems = null;
-        EntrySummary = null;
+        _currentEntryAssetMarketEntry = null;
+        _tableRowsItems = null;
+        _entrySummary = null;
         StateHasChanged();
     }
 
@@ -263,27 +270,27 @@
     {
         
         // fetch the price of the entry's asset
-        // TODO null?
-        CurrentEntryAssetMarketEntry = (await CryptoStatsSource.GetMarketEntries(
-            CurrencyUtils.GetCurrencyLabel(ActivePortfolio.Currency).ToLower(),
-            PortfolioCryptocurrencyEntry.Id
+        _currentEntryAssetMarketEntry = (await CryptoStatsSource.GetMarketEntries(
+            CurrencyUtils.GetCurrencyLabel(_activePortfolio.Currency).ToLower(),
+            _portfolioCryptocurrencyEntry.Id
             ))[0];
 
         // get all orders of the portfolio entry
-        var entryOrders = MarketOrderService.GetPortfolioEntryOrders(ActivePortfolioEntry.Id);
+        var entryOrders = MarketOrderService.GetPortfolioEntryOrders(_activePortfolioEntry.Id);
 
         // compute summaries of all orders in the entry
         var entrySummaries = entryOrders.Select(order =>
-            SummaryService.GetMarketOrderSummary(order, CurrentEntryAssetMarketEntry.CurrentPrice));
+            SummaryService.GetMarketOrderSummary(order, _currentEntryAssetMarketEntry.CurrentPrice));
 
-        TotalHoldings = entryOrders.Sum(order => order.Size * (order.Buy ? 1 : -1));
+        // compute the total holdings by adding all buy order sizes and subtracting sell order sizes
+        _totalHoldings = entryOrders.Sum(order => order.Size * (order.Buy ? 1 : -1));
 
         // zip entry orders and summaries into a table rows
-        TableRowsItems = entryOrders.Zip(entrySummaries)
+        _tableRowsItems = entryOrders.Zip(entrySummaries)
             .Select(tuple => new Tuple<MarketOrder, ISummaryService.Summary>(tuple.First, tuple.Second)).ToList();
 
         // compute suummary of this entry
-        EntrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, CurrentEntryAssetMarketEntry.CurrentPrice);
+        _entrySummary = SummaryService.GetPortfolioEntrySummary(entryOrders, _currentEntryAssetMarketEntry.CurrentPrice);
     }
 
     public void EditMarketOrder(MarketOrder order)
@@ -293,12 +300,16 @@
 
     async void DeletePortfolio(MarketOrder order)
     {
+        // let the user  confirm that he really wants to delete an entry
         var result = await MatDialogService.ConfirmAsync("Do you really wish to delete this market order?");
         if (result)
         {
+            // delete the order
             MarketOrderService.DeleteMarketOrder(order);
             SetEntryLoading();
+            // update the summary of the entry
             await UpdateEntrySummary();
+            // refressh the UI
             StateHasChanged();
             Toaster.Add("Order successfully deleted", MatToastType.Success, "", "");
         }
@@ -306,15 +317,15 @@
 
     void ShowOrderDetail(Tuple<MarketOrder, ISummaryService.Summary> order)
     {
-        OrderToBeShown = order;
-        OrderDetailDialogIsOpen = true;
+        _orderToBeShown = order;
+        _orderDetailDialogIsOpen = true;
         StateHasChanged();
     }
 
     void HideOrderDetail()
     {
-        OrderToBeShown = null;
-        OrderDetailDialogIsOpen = false;
+        _orderToBeShown = null;
+        _orderDetailDialogIsOpen = false;
         StateHasChanged();
     }
 
@@ -322,6 +333,7 @@
     {
         if (obj != null)
         {   
+            // order has been clicked, show its detail
             ShowOrderDetail((Tuple<MarketOrder, ISummaryService.Summary>) obj) ;
         }
     }
