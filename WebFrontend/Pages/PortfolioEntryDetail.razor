@@ -51,7 +51,7 @@
     <div class="mat-layout-grid-inner center">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{ActivePortfolio.Id}"); }'>Back</MatButton>
+            <MatH5><MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-right: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/portfolios/{ActivePortfolio.Id}"); }'>Back</MatButton>Portfolio Entry</MatH5>
             <MatCard class="demo-mat-card">
                 <MatCardContent>
                     @if(ActivePortfolioEntry != null)
