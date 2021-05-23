@@ -23,7 +23,7 @@
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Edit a market order</h2>
-                    <EntryForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></EntryForm>
+                    <OrderForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
                 </MatCardContent>
             </MatCard>
         </div>
@@ -37,7 +37,7 @@
     [Parameter]
     public int OrderId { get; set; }
 
-    protected EntryForm.NewOrderModel InitialOrderModel;
+    protected OrderForm.NewOrderModel InitialOrderModel;
     protected Portfolio ActivePortfolio;
     protected PortfolioEntry ActiveEntry;
     protected MarketOrder ActiveMarketOrder;
@@ -55,7 +55,7 @@
         InitialOrderModel.SellOrder = !ActiveMarketOrder.Buy;
     }
 
-    private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
+    private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
     {
         MarketOrderService.UpdateMarketOrder(ActiveMarketOrder with {
             FilledPrice = formModel.FilledPrice, 

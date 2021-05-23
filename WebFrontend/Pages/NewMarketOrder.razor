@@ -23,7 +23,7 @@
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Create a new market order</h2>
-                    <EntryForm Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></EntryForm>
+                    <OrderForm Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
                 </MatCardContent>
             </MatCard>
         </div>
@@ -46,7 +46,7 @@
         ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
     }
 
-    private void OnCreateOrderFormSubmit(EntryForm.NewOrderModel formModel)
+    private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
     {
         Console.WriteLine("OnCreateOrderFormSubmit " + formModel);
         MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, !formModel.SellOrder, ActiveEntry.Id);
