@@ -19,11 +19,11 @@
     <div class="mat-layout-grid-inner">
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
         <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
-            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}"); }'>Back</MatButton>
+            <MatButton Outlined="true" Icon="keyboard_arrow_left" Style="margin-bottom: 1rem;" OnClick='() => { NavigationManager.NavigateTo($"/entries/{_activeEntry.Id}"); }'>Back</MatButton>
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Edit a market order</h2>
-                    <OrderForm Edit="true" FormModel="@InitialOrderModel" Currency="@ActivePortfolio.Currency" Symbol="@ActiveEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
+                    <OrderForm Edit="true" FormModel="@_initialOrderModel" Currency="@_activePortfolio.Currency" Symbol="@_activeEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
                 </MatCardContent>
             </MatCard>
         </div>
@@ -34,30 +34,42 @@
 
 @code
 {
+    // ID of the order to be edited
     [Parameter]
     public int OrderId { get; set; }
 
-    protected OrderForm.NewOrderModel InitialOrderModel;
-    protected Portfolio ActivePortfolio;
-    protected PortfolioEntry ActiveEntry;
-    protected MarketOrder ActiveMarketOrder;
+    // order form model
+    private OrderForm.NewOrderModel _initialOrderModel;
+
+    // portfolio the order will belong to
+    private Portfolio _activePortfolio;
+    
+    // portfolio entry the order will belong to
+    private PortfolioEntry _activeEntry;
+    
+    // edited order
+    private MarketOrder _activeMarketOrder;
 
     protected override void OnInitialized()
     {
-        ActiveMarketOrder = MarketOrderService.GetMarketOrder(OrderId);
-        ActiveEntry = PortfolioEntrySerivce.GetPortfolioEntry(ActiveMarketOrder.PortfolioEntryId);
-        ActivePortfolio = PortfolioService.GetPortfolio(ActiveEntry.PortfolioId);
-        InitialOrderModel = new();
-        InitialOrderModel.Fee = ActiveMarketOrder.Fee;
-        InitialOrderModel.Size = ActiveMarketOrder.Size;
-        InitialOrderModel.FilledPrice = ActiveMarketOrder.FilledPrice;
-        InitialOrderModel.OrderDate = ActiveMarketOrder.Date;
-        InitialOrderModel.SellOrder = !ActiveMarketOrder.Buy;
+        // fetch the order to be edited
+        _activeMarketOrder = MarketOrderService.GetMarketOrder(OrderId);
+        _activeEntry = PortfolioEntrySerivce.GetPortfolioEntry(_activeMarketOrder.PortfolioEntryId);
+        _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
+        
+        // initialize the order form model
+        _initialOrderModel = new();
+        _initialOrderModel.Fee = _activeMarketOrder.Fee;
+        _initialOrderModel.Size = _activeMarketOrder.Size;
+        _initialOrderModel.FilledPrice = _activeMarketOrder.FilledPrice;
+        _initialOrderModel.OrderDate = _activeMarketOrder.Date;
+        _initialOrderModel.SellOrder = !_activeMarketOrder.Buy;
     }
 
     private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
     {
-        MarketOrderService.UpdateMarketOrder(ActiveMarketOrder with {
+        // update the order
+        MarketOrderService.UpdateMarketOrder(_activeMarketOrder with {
             FilledPrice = formModel.FilledPrice, 
             Fee = formModel.Fee, 
             Size = formModel.Size, 
@@ -65,6 +77,8 @@
             Buy = !formModel.SellOrder
             });
         Toaster.Add("Order successfully edited", MatToastType.Success, "", "");
-        NavigationManager.NavigateTo($"/entries/{ActiveEntry.Id}");
+        
+        // navigate back to the portfolio entry detail
+        NavigationManager.NavigateTo($"/entries/{_activeEntry.Id}");
     }
 }
