@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CryptoStatsSource;
 using Database;
 using ElectronNET.API;
+using ElectronNET.API.Entities;
 using MatBlazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -89,7 +90,24 @@ namespace WebFrontend
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
+
+            if (HybridSupport.IsElectronActive)
+            {
+                ElectronBootstrap();
+            }            
+        }
+        
+        public async void ElectronBootstrap()
+        {
+            var url = new BrowserWindowOptions();
+            url.Show = false;
+            url.Height = 940;
+            url.Width = 1152;
+            var browserWindow = await Electron.WindowManager.CreateWindowAsync(url);
+            await browserWindow.WebContents.Session.ClearCacheAsync();
+            browserWindow.RemoveMenu();
+            browserWindow.OnReadyToShow += () => browserWindow.Show();
+            browserWindow.SetTitle("Crypto Portfolio Tracker");
         }
     }
 }
