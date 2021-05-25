@@ -308,9 +308,13 @@ public override Portfolio FromRow(dynamic d) =>
     \subsection{Projekt \texttt{WebFrontend}}
     Definice grafického uživatelského rozhraní spolu s jeho logikou se nachází v projektu \texttt{WebFrontend}, kdy byl
     použit framework Blazor.
+    Jedná se o spustitelný projekt, který nastartuje celou aplikaci.
     
     V souboru \texttt{Startup.cs} se nachází konfigurace a inicializace aplikace, kdy je nutné vytvořit strom závislostí,
-    které pak jednotlivé obrazovky využívají. Konfiguruje se zde i například připojení k SQLite databázi.
+    které pak jednotlivé obrazovky využívají.
+    Konfiguruje se zde i například připojení k SQLite databázi.
+    
+    Tento projekt používá knihovnu Electron.NET k tomu, aby ji bylo možné spustit v Electron kontejneru. 
     
     \subsubsection{Adresář \texttt{Pages}} 
     V adresáři \texttt{Pages} jsou umístěny soubory s příponou \texttt{.razor}, které využívají syntax kombinující HTML
@@ -389,9 +393,15 @@ public override Portfolio FromRow(dynamic d) =>
     Dalším rozšířením by mohlo být pokrytí uživatelského rozhraní automatickými testy, například pomocí nástroje Robot
     framework.
     
-    \subsection{Programátorský deník}
+    Navzdory velkému vynaloženému úsilí se nepovedlo sestavit pomocí knihovny Electron.NET soubor se spustitelnou verzí aplikaci
+    pro nejrozšířenější desktopové platformy. Pravděpodobně se jedná o chybu dané knihovny\footnote{\url{https://github.com/ElectronNET/Electron.NET/issues/398}}.
+    Spuštění Electron kontejneru je však možné pomocí příkazu 
+    \texttt{electronize start /PublishSingleFile false /PublishReadyToRun false --no-self-contained} vykonaného v 
+    kořeni projektu \texttt{WebFrontend}.
+    
+    \section{Programátorský deník}
     K vytvoření programátorského deníku byl používán software Toggl\footnote{\url{https://toggl.com/}}, kdy byl podle něj
-    naměřen celkový čas strávený na této semestrální práci 74 hodin:
+    naměřen celkový čas strávený na této semestrální práci 77 hodin:
     
     \begin{itemize}
         \item \textbf{3h} -- úvodní seznámení s frameworkem Blazor, výběr a napojení na datový zdroj CoinGecko
@@ -399,7 +409,7 @@ public override Portfolio FromRow(dynamic d) =>
         \item \textbf{9h} -- implementace projektu \texttt{Services} a její pokrytí testy
         \item \textbf{11h} -- návrh a implementace GUI
         \item \textbf{5h} -- implementace volání služeb z GUI
-        \item \textbf{4.5h} -- použití frameworku Electron
+        \item \textbf{7.5h} -- použití frameworku Electron
         \item \textbf{8h} -- implementace služby k výpočtu výkonosti entit a její pokrytí testy
         \item \textbf{4h} -- doladění aplikace, vylepšení pokrytí testy
         \item \textbf{20h} -- psaní dokumentace
