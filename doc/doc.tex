@@ -136,7 +136,7 @@
 
     Za předpokladu existence takové aplikace by jejím dalším využitím, jelikož sdružuje transakce ze všech burz, bylo použití při vyplňování daňového přiznání, kdy je velmi výhodné, že aplikace zobrazuje všechny obchodníkovy transakce včetně zisku či ztráty.
 
-    Aplikací, které se zaměřují na sledování obchodního portfólia s kryptoměnami existuje několik, kdy mezi ty nejpoužívanější patří Blockfolio\cite{blockfolio2021} (Android a iOS), Delta\cite{delta2021} (Android a iOS) a Moonitor\cite{moonitor2021} (macOS, Windows a Linux). Tyto aplikace splňují požadavek přehledného zobrazení výnosnosti obchodování i na úrovni jednotlivých transakcí, avšak během jejich používání můžou často vzniknout nové požadavky specifické danému uživateli, jako například možnost importu transakcí z API nějaké méně známé burzy či jiný výpočet celkového zisku portfólia, které do aplikace pravděpodobně nikdy nebudou zapracovány. Řešením pro technicky zdatné uživatele by bylo si takovou aplikaci navrhnout a napragramovat, avšak vytváření architektury a základní logiky pro správu a sledování portfólia (zádávní transakcí a jejich přehled) pro ně může být časově náročné a tudíž odrazující.
+    Aplikací, které se zaměřují na sledování obchodního portfólia s kryptoměnami existuje několik, kdy mezi ty nejpoužívanější patří Blockfolio\cite{blockfolio2021} (Android a iOS), Delta\cite{delta2021} (Android a iOS) a Moonitor\cite{moonitor2021} (macOS, Windows a Linux). Tyto aplikace splňují požadavek přehledného zobrazení výnosnosti obchodování i na úrovni jednotlivých transakcí, avšak během jejich používání můžou často vzniknout nové požadavky specifické danému uživateli, jako například možnost importu transakcí z API nějaké méně známé burzy či jiný výpočet celkového zisku portfólia, které do aplikace pravděpodobně nikdy nebudou zapracovány. Řešením pro technicky zdatné uživatele by bylo si takovou aplikaci navrhnout a naprogramovat, avšak vytváření architektury a základní logiky pro správu a sledování portfólia (zadávání transakcí a jejich přehled) pro ně může být časově náročné a tudíž odrazující.
 
     \begin{figure}[!ht]
         \centering
@@ -150,7 +150,7 @@
     
     \subsection{Datový zdroj s aktuálním kurzem kryptoměn}
 
-    Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměnami je třeba nalézt vhodný zdroj dat, který bude využíván k získávání aktuálního kurzu sledovaných kryptoměn. Mezi hlavní požadavky na takový datový zdroj je jeho dostupnostie jednoduchost rozhraní a množina podporovaných kurzů. Ideálním zdrojem je tedy takový zdroj, který poskytuje aktuální i historický kurz na všech burzách prostřednictvím REST API bez nutnosti registrace.
+    Pro vývoj aplikace určené ke sledování obchodního portfólia s kryptoměnami je třeba nalézt vhodný zdroj dat, který bude využíván k získávání aktuálního kurzu sledovaných kryptoměn. Mezi hlavní požadavky na takový datový zdroj je jeho dostupnost, jednoduchost rozhraní a množina podporovaných kurzů. Ideálním zdrojem je tedy takový zdroj, který poskytuje aktuální i historický kurz na všech burzách prostřednictvím REST API bez nutnosti registrace.
 
     \subsubsection{Webový zdroj CoinGecko}
     Aktuální i historický kurz drtivé většiny všech existujících kryptoměn bez nutnosti registrace nabízí pomocí REST rozhraní webová služba CoinGecko\cite{coingecko2021}. Jediným omezením tohoto API je počet provedených požadavků za minutu, který je stanoven na 100, což je pro aplikaci určenou ke sledování kryptoměnového portfólia více než dostačující.
@@ -173,7 +173,7 @@
     
     \subsection{Výběr frameworku pro implementaci GUI}
     Jedním s cílů této semestrální práce bylo, aby vytvořená aplikace byla spustitelná jak na platformě Windows, tak i na platformě Linux.
-    Ačkoliv platforma .NET je multiplatformní, tak při vývoji aplikací s grafickým uživatelským rozhraním nárážíme na problém,
+    Ačkoliv platforma .NET je multiplatformní, tak při vývoji aplikací s grafickým uživatelským rozhraním narážíme na problém,
     kdy tato platforma nenabízí nástroje pro jeho tvorbu s použitím na různých platformách.
     
     \subsubsection{.NET MAUI}
@@ -251,7 +251,7 @@ public override Portfolio FromRow(dynamic d) =>
     
     \subsection{Služba \texttt{IPortfolioEntryService}}
     Velmi podobně jako služba \texttt{IPortfolioService}, tato služba poskytuje rozhraní pro správu položek portfólií v perzistentním úložišti.
-    Kromě vytvoření a přidání nových položek na základě parametrů také nabízí metodu pro její smazání, která smažá i všechny transakce, které k ní byly přiřazeny. 
+    Kromě vytvoření a přidání nových položek na základě parametrů také nabízí metodu pro její smazání, která smaže i všechny transakce, které k ní byly přiřazeny. 
     Dále disponuje metodou pro výběr všech položek, které patří do vybraného portfólia.
     
     \subsection{Služba \texttt{IMarketOrderService}}
@@ -338,14 +338,14 @@ public override Portfolio FromRow(dynamic d) =>
 
     \begin{itemize}
         \item \texttt{LabelDecimalValue.razor} -- definice komponenty, která umožňuje zobrazit libovolné číslo a přiřadit
-        k němu nějaký popisek. V aplikaci se využívá k zobrazování vlastností a výkonosti jednotlivých sledovaných entit
+        k němu nějaký popisek. V aplikaci se využívá k zobrazování vlastností a výkonnosti jednotlivých sledovaných entit
         (portfólia, položky portfóli či transakce).
         \item \texttt{OrderForm.razor} -- definice formuláře, který se používá na stránkách pro vytvoření a úpravu transakce
         \item \texttt{MainLayout.razor} -- definice obsahující základní HTML prvky, které obalují obsah jednotlivých stránek implementující obrazovky
         \item \texttt{PortfolioForm.razor} -- definice formuláře, který se používá na stránkách pro vytvoření a úpravu portfólia
     \end{itemize}
 
-    \section{Oveření kvality vytvořeného software}
+    \section{Ověření kvality vytvořeného software}
 
     Pro ověření kvality vytvořeného software pro sledování obchodního portfólia s kryptoměnami byly vytvořeny desítky jednotkových a integračních testů ověřující funkčnost základních modulů. Tyto testy se nachází v projektu \texttt{Tests}. Jako testovací framework byl zvolen framework \texttt{XUnit}\footnote{\url{https://github.com/xunit/xunit}}.
 
@@ -353,7 +353,7 @@ public override Portfolio FromRow(dynamic d) =>
 
     Během integračních testů repozitářů datové vrstvy není použita databáze umístěná na souborovém systému, nýbrž databáze uložená v operační paměti z důvodu urychlení vykonávání testů. Připojení k databázi umístěné v operační paměti slouží řetězec \texttt{Data Source=:memory:}.
 
-    Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového zdroje pro získvání informací o aktuálním stavu trhu s kryptoměnami.
+    Vytvořené integrační testy ověřují funkčnost datové vrstvy a datového zdroje pro získávání informací o aktuálním stavu trhu s kryptoměnami.
 
     \begin{lstlisting}[caption={Struktura projektu \texttt{Tests} obsahující integrační a jednotkové testy}, captionpos=b]
             |-- Integration
@@ -499,7 +499,7 @@ public override Portfolio FromRow(dynamic d) =>
 
     \newpage
     \subsection{Formulář pro vytvoření či editaci transakce}
-    K vytvoření či editaci transakce slouží jednoduchý formmulář, do kterého je třeba zadat následující údaje:
+    K vytvoření či editaci transakce slouží jednoduchý formulář, do kterého je třeba zadat následující údaje:
     
     \begin{itemize}
         \item cena za jednu minci kryptoměny
@@ -528,7 +528,7 @@ public override Portfolio FromRow(dynamic d) =>
     \begin{figure}[!ht]
         \centering
         {\includegraphics[width=\textwidth]{img/cpt-screenshots/portfolio-entry-mngmt.png}}
-        \caption{Obrazovka správy položek portólia}
+        \caption{Obrazovka správy položek portfólia}
         \label{fig:portfolio-entry-mngmnt}
     \end{figure}
 
