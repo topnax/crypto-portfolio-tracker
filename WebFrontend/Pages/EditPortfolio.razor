@@ -9,8 +9,17 @@
 
 
 <style>
+    .demo-mat-card {
+        max-width: 400px;
+        margin-bottom: 2em;
+    }
+
     .demo-mat-card-content {
         padding: 1rem;
+    }
+
+    .clear-margin {
+        margin: 0px;
     }
 </style>
 
@@ -27,7 +36,7 @@
                     <PortfolioForm
                         DefaultCurrency="@Currency.Usd"
                         AvailableCurrencies="@(EnumUtils.GetEnumList<Currency>())"
-                        FormModel="_formModel"
+                        FormModel="_formFormModel"
                         Edit="true"
                         OnSubmitEventHandler="@OnCreateFormSubmitted">
                     </PortfolioForm>
@@ -46,7 +55,7 @@
     public int PortfolioId { get; set; }
 
     // model of the form
-    private readonly PortfolioForm.NewPortfolioModel _formModel = new(Currency.Usd);
+    private readonly PortfolioForm.PortfolioFormModel _formFormModel = new(Currency.Usd);
 
     // currently edited portfolio
     private Portfolio _activePortfolio;
@@ -57,19 +66,19 @@
         _activePortfolio = PortfolioService.GetPortfolio(PortfolioId);
         
         // update the form model
-        _formModel.Name = _activePortfolio.Name;
-        _formModel.Description = _activePortfolio.Description;
+        _formFormModel.Name = _activePortfolio.Name;
+        _formFormModel.Description = _activePortfolio.Description;
     }
 
-    private void OnCreateFormSubmitted(PortfolioForm.NewPortfolioModel formModel)
+    private void OnCreateFormSubmitted(PortfolioForm.PortfolioFormModel formFormModel)
     {
         // update the portfolio
         PortfolioService.UpdatePortfolio(_activePortfolio with {
-            Name = formModel.Name,
-            Description = formModel.Description
+            Name = formFormModel.Name,
+            Description = formFormModel.Description
             });
         // reset the form 
-        formModel.Reset();
+        formFormModel.Reset();
         Toaster.Add("Portfolio successfully edited", MatToastType.Success, "", "");
         
         // navigate back to the portfolio detail

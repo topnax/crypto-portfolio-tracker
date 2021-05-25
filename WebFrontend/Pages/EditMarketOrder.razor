@@ -23,7 +23,7 @@
             <MatCard>
                 <MatCardContent class="demo-mat-card-content">
                     <h2>Edit a market order</h2>
-                    <OrderForm Edit="true" FormModel="@_initialOrderModel" Currency="@_activePortfolio.Currency" Symbol="@_activeEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
+                    <OrderForm Edit="true" FormModel="@_initialOrderFormModel" Currency="@_activePortfolio.Currency" Symbol="@_activeEntry.Symbol" OnSubmitEventHandler="@OnCreateOrderFormSubmit"></OrderForm>
                 </MatCardContent>
             </MatCard>
         </div>
@@ -39,7 +39,7 @@
     public int OrderId { get; set; }
 
     // order form model
-    private OrderForm.NewOrderModel _initialOrderModel;
+    private OrderForm.OrderFormModel _initialOrderFormModel;
 
     // portfolio the order will belong to
     private Portfolio _activePortfolio;
@@ -58,23 +58,23 @@
         _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
         
         // initialize the order form model
-        _initialOrderModel = new();
-        _initialOrderModel.Fee = _activeMarketOrder.Fee;
-        _initialOrderModel.Size = _activeMarketOrder.Size;
-        _initialOrderModel.FilledPrice = _activeMarketOrder.FilledPrice;
-        _initialOrderModel.OrderDate = _activeMarketOrder.Date;
-        _initialOrderModel.SellOrder = !_activeMarketOrder.Buy;
+        _initialOrderFormModel = new();
+        _initialOrderFormModel.Fee = _activeMarketOrder.Fee;
+        _initialOrderFormModel.Size = _activeMarketOrder.Size;
+        _initialOrderFormModel.FilledPrice = _activeMarketOrder.FilledPrice;
+        _initialOrderFormModel.OrderDate = _activeMarketOrder.Date;
+        _initialOrderFormModel.SellOrder = !_activeMarketOrder.Buy;
     }
 
-    private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
+    private void OnCreateOrderFormSubmit(OrderForm.OrderFormModel formFormModel)
     {
         // update the order
         MarketOrderService.UpdateMarketOrder(_activeMarketOrder with {
-            FilledPrice = formModel.FilledPrice, 
-            Fee = formModel.Fee, 
-            Size = formModel.Size, 
-            Date = formModel.OrderDate,
-            Buy = !formModel.SellOrder
+            FilledPrice = formFormModel.FilledPrice, 
+            Fee = formFormModel.Fee, 
+            Size = formFormModel.Size, 
+            Date = formFormModel.OrderDate,
+            Buy = !formFormModel.SellOrder
             });
         Toaster.Add("Order successfully edited", MatToastType.Success, "", "");
         

@@ -47,24 +47,30 @@
 
 
 @code {
+    // model of the portfolio form
     [Parameter]
-    public NewPortfolioModel FormModel { get; set; } = new (Currency.Usd);
+    public PortfolioFormModel FormModel { get; set; } = new (Currency.Usd);
     
-    [Parameter] public EventCallback<NewPortfolioModel> OnSubmitEventHandler { get; set; }
+    // callback called when the form is submitted
+    [Parameter] public EventCallback<PortfolioFormModel> OnSubmitEventHandler { get; set; }
     
+    // list of currencies available
     [Parameter]
     public List<Currency> AvailableCurrencies { get; set; }
     
+    // default currency to be used
     [Parameter]
     public Currency DefaultCurrency { get; set; } = Currency.Usd;
     
+    // flag indicating whether an existing portfolio will be edited or a new one created
     [Parameter] public bool Edit { get; set; }
     
-    public class NewPortfolioModel
+    public class PortfolioFormModel
     {
+        // default currency to be used
         private Currency _defaultCurrency;
 
-        public NewPortfolioModel(Currency defaultCurrency)
+        public PortfolioFormModel(Currency defaultCurrency)
         {
             _defaultCurrency = defaultCurrency;
             SelectedCurrency = defaultCurrency;

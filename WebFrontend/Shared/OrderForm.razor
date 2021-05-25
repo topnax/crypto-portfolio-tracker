@@ -56,34 +56,44 @@
 </EditForm>
 
 @code {
+    // model of the form
     [Parameter]
-    public NewOrderModel FormModel { get; set; } = new ();
+    public OrderFormModel FormModel { get; set; } = new ();
     
-    [Parameter] public EventCallback<NewOrderModel> OnSubmitEventHandler { get; set; }
+    // callback when the form is submitted
+    [Parameter] public EventCallback<OrderFormModel> OnSubmitEventHandler { get; set; }
 
+    // currency of the transaction 
     [Parameter] public Currency Currency { get; set; }
     
+    // traded cryptocurrency symbol
     [Parameter] public string Symbol { get; set; }
     
+    // flag indicating whether the order should be created or an existing one should be edited
     [Parameter] public bool Edit { get; set; }
     
     
-    public class NewOrderModel
+    public class OrderFormModel
     {
+        // transaction filled price
         [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
+        [CustomValidation(typeof(OrderFormModel), nameof(NonZeroValue))]
         public decimal FilledPrice { get; set; }
 
+        // size of the transaction
         [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonZeroValue))]
+        [CustomValidation(typeof(OrderFormModel), nameof(NonZeroValue))]
         public decimal Size { get; set; }
 
+        // fee for the transaction 
         [Required]
-        [CustomValidation(typeof(NewOrderModel), nameof(NonNegativeValue))]
+        [CustomValidation(typeof(OrderFormModel), nameof(NonNegativeValue))]
         public decimal Fee { get; set; }
 
+        // date at which the transaction was performed
         [Required] public DateTime OrderDate = DateTime.Now;
         
+        // a flag indicating whether the transaction was a sell
         [Required] public bool SellOrder;
 
         public void Reset()

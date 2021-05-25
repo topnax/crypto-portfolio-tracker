@@ -40,12 +40,12 @@
 
 @code
 {
-    private void OnCreateFormSubmitted(PortfolioForm.NewPortfolioModel formModel)
+    private void OnCreateFormSubmitted(PortfolioForm.PortfolioFormModel formFormModel)
     {
         // create the portfolio
-        PortfolioService.CreatePortfolio(formModel.Name, formModel.Description, formModel.SelectedCurrency);
+        PortfolioService.CreatePortfolio(formFormModel.Name, formFormModel.Description, formFormModel.SelectedCurrency);
         // reset the model
-        formModel.Reset();
+        formFormModel.Reset();
         // notify the user
         Toaster.Add("New portfolio successfully added", MatToastType.Success, "", "");
     }

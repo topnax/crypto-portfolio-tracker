@@ -119,7 +119,9 @@
     protected override async Task OnInitializedAsync()
     {
         // find all available cryptocurrencies
-        _availableCryptocurrencies = await CryptoStatsSource.GetAvailableCryptocurrencies();
+        _availableCryptocurrencies = (await CryptoStatsSource.GetAvailableCryptocurrencies())
+            // workaround till Coingecko removes binance-peg entries
+            .Where(c => !c.Id.Contains("binance-peg")).ToList();
         _filteredCryptocurrencies = _availableCryptocurrencies;
         UpdateAvailableCryptocurrencies(_availableCryptocurrencies);
     }

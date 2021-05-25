@@ -52,12 +52,12 @@
         _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
     }
 
-    private void OnCreateOrderFormSubmit(OrderForm.NewOrderModel formModel)
+    private void OnCreateOrderFormSubmit(OrderForm.OrderFormModel formFormModel)
     {
         // create the market order
-        MarketOrderService.CreateMarketOrder(formModel.FilledPrice, formModel.Fee, formModel.Size, formModel.OrderDate, !formModel.SellOrder, _activeEntry.Id);
+        MarketOrderService.CreateMarketOrder(formFormModel.FilledPrice, formFormModel.Fee, formFormModel.Size, formFormModel.OrderDate, !formFormModel.SellOrder, _activeEntry.Id);
         // reset the form model
-        formModel.Reset();
+        formFormModel.Reset();
         // notify user 
         Toaster.Add("New order successfully added", MatToastType.Success, "", "");
     }
