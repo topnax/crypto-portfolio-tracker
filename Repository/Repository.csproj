@@ -4,6 +4,7 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>Repository</AssemblyName>
         <RootNamespace>Repository</RootNamespace>
+        <SelfContained>false</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>

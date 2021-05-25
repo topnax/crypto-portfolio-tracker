@@ -4,6 +4,7 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>CryptoStatsSource</AssemblyName>
         <RootNamespace>CryptoStatsSource</RootNamespace>
+        <SelfContained>false</SelfContained>
     </PropertyGroup>
 
     <ItemGroup>

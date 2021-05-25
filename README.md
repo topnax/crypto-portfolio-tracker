@@ -9,4 +9,6 @@ A tracker of your crypto portfolio, written in C# using .NET core. Made as KIV/N
         - integration tests ready
   - Blazor app startup with DI
     - fetching basic cryptocurrency stats via CG datasource and showing it on the "Fetch Data" page
+## Electron
+```electronize start /PublishSingleFile false /PublishReadyToRun false --no-self-contained```
   
