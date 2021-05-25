@@ -7,9 +7,22 @@
         </MatThemeProvider>
     </Found>
     <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p>Sorry, there's nothing at this address.</p>
-        </LayoutView>
+        <MatThemeProvider Theme="appTheme">
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="mat-layout-grid mat-layout-grid-align-center">
+                    <div class="mat-layout-grid-inner center">
+
+                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
+                            <MatPaper Elevation="2" style="padding:1em">
+                                <span>There is nothing at this address.</span>
+                            </MatPaper>
+                        </div>
+                        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+                    </div>
+                </div>
+            </LayoutView>
+        </MatThemeProvider>
     </NotFound>
 </Router>
 

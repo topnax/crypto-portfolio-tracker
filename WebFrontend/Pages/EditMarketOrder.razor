@@ -54,6 +54,13 @@
     {
         // fetch the order to be edited
         _activeMarketOrder = MarketOrderService.GetMarketOrder(OrderId);
+
+        if (_activeEntry == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+            
         _activeEntry = PortfolioEntrySerivce.GetPortfolioEntry(_activeMarketOrder.PortfolioEntryId);
         _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
         

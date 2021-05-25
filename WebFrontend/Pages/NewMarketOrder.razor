@@ -48,6 +48,12 @@
         // load the portfolio entry
         _activeEntry = PortfolioEntrySerivce.GetPortfolioEntry(EntryId);
         
+        if (_activeEntry == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+        
         // load the portfolio the entry belongs to
         _activePortfolio = PortfolioService.GetPortfolio(_activeEntry.PortfolioId);
     }

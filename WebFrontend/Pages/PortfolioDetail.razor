@@ -126,15 +126,20 @@
 
 @code
 {
+    // id of the portfolio whose detail should be shown
     [Parameter]
     public int PortfolioId { get; set; }
 
+    // portfolio whose detail should be shown
     private Portfolio _activePortfolio;
 
+    // summary of the portfolio
     private ISummaryService.Summary _portfolioSummary;
 
+    // entries of the portfolio
     private List<PortfolioEntry> _activePortfolioEntries;
 
+    // rows of the portfolio entry table
     private List<PortfolioEntryRow> _portfolioEntryRows;
 
     protected record PortfolioEntryRow(string Symbol, decimal CurrentPrice, decimal RelativeChange, decimal Percentage, decimal AbsoluteChange, decimal MarketValue, int EntryId);
@@ -142,6 +147,12 @@
     protected override void OnInitialized()
     {
         _activePortfolio = PortfolioService.GetPortfolio(PortfolioId);
+        if (_activePortfolio == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+        
         _activePortfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
         _loadEntryInfo();
     }

@@ -112,6 +112,12 @@
         // load the portfolio using the specified ID
         _portfolio = PortfolioService.GetPortfolio(PortfolioId);
         
+        if (_portfolio == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+        
         // load all entries of the portfolio
         _portfolioEntries = PortfolioEntryService.GetPortfolioEntries(PortfolioId);
     }

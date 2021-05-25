@@ -254,6 +254,12 @@
         // get the portfolio entry
         _activePortfolioEntry = PortfolioEntryService.GetPortfolioEntry(EntryId);
         
+        if (_activePortfolioEntry == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+        
         // get the entry's portfolio
         _activePortfolio = PortfolioService.GetPortfolio(_activePortfolioEntry.PortfolioId);
     }

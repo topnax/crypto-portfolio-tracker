@@ -65,6 +65,12 @@
         // find the portfolio
         _activePortfolio = PortfolioService.GetPortfolio(PortfolioId);
         
+        if (_activePortfolio == null)
+        {
+            NavigationManager.NavigateTo("/notfound");
+            return;
+        }
+        
         // update the form model
         _formFormModel.Name = _activePortfolio.Name;
         _formFormModel.Description = _activePortfolio.Description;

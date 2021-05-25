@@ -1,0 +1,50 @@
+﻿@page "/notfound"
+@using Services
+@inject NavigationManager NavigationManager
+@inject IPortfolioService PortfolioService
+@inject IPortfolioEntryService PortfolioEntryService
+@inject IMatDialogService MatDialogService
+@inject IMatToaster Toaster
+
+<style>
+    .demo-mat-card {
+        margin-bottom: 2em;
+    }
+
+    .demo-mat-card-content {
+        padding: 1rem;
+    }
+
+    .clear-margin {
+        margin: 0px;
+    }
+    
+    .app-fab--absolute {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .mat-paper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1em;
+    } 
+</style>
+<div class="mat-layout-grid mat-layout-grid-align-center">
+    <div class="mat-layout-grid-inner center">
+
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-8">
+            <MatPaper Elevation="2">
+                <span>Resource not found</span>
+                <div>
+                    <MatButton Style="margin-top:1em;" Label="Back to portfolio list" OnClick='() => { NavigationManager.NavigateTo($"/"); }'></MatButton>
+                </div>
+            </MatPaper>
+        </div>
+        <div class="mat-layout-grid-cell mat-layout-grid-cell-span-2"></div>
+    </div>
+</div>
